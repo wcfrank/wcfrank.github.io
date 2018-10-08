@@ -115,20 +115,22 @@
 
 
 
-  <meta name="description" content="在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。争取用最简单直白的方式来解释KKT条件。 首先，KKT条件定义： 对于极小化问题  \begin{array}{ll} \text{min}  &amp; f(x) \\ \text{s.t.} &amp; h_i(x) = 0,  ~~i =1,\dots, m\\             &amp; g_j(x) \le 0, ~~j= 1,\dots,">
+  <meta name="description" content="在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。争取用最简单直白的方式来解释KKT条件。 首先，KKT条件定义 对于极小化问题  \begin{array}{ll} \text{min}  &amp; f(x) \\ \text{s.t.} &amp; h_i(x) = 0,  ~~i =1,\dots, m\\             &amp; g_j(x) \le 0, ~~j= 1,\dots,">
 <meta name="keywords" content="SVM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="KKT条件的通俗理解">
 <meta property="og:url" content="http://yoursite.com/2018/09/26/KKT/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。争取用最简单直白的方式来解释KKT条件。 首先，KKT条件定义： 对于极小化问题  \begin{array}{ll} \text{min}  &amp; f(x) \\ \text{s.t.} &amp; h_i(x) = 0,  ~~i =1,\dots, m\\             &amp; g_j(x) \le 0, ~~j= 1,\dots,">
+<meta property="og:description" content="在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。争取用最简单直白的方式来解释KKT条件。 首先，KKT条件定义 对于极小化问题  \begin{array}{ll} \text{min}  &amp; f(x) \\ \text{s.t.} &amp; h_i(x) = 0,  ~~i =1,\dots, m\\             &amp; g_j(x) \le 0, ~~j= 1,\dots,">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://i.loli.net/2018/10/07/5bba148adec0d.jpg">
 <meta property="og:image" content="https://i.loli.net/2018/10/07/5bba1cd5c34b2.jpg">
-<meta property="og:updated_time" content="2018-10-07T15:16:30.900Z">
+<meta property="og:image" content="https://i.loli.net/2018/10/08/5bbb5c605bdf8.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/10/08/5bbb5d6aa68ae.jpg">
+<meta property="og:updated_time" content="2018-10-08T15:17:33.758Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="KKT条件的通俗理解">
-<meta name="twitter:description" content="在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。争取用最简单直白的方式来解释KKT条件。 首先，KKT条件定义： 对于极小化问题  \begin{array}{ll} \text{min}  &amp; f(x) \\ \text{s.t.} &amp; h_i(x) = 0,  ~~i =1,\dots, m\\             &amp; g_j(x) \le 0, ~~j= 1,\dots,">
+<meta name="twitter:description" content="在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。争取用最简单直白的方式来解释KKT条件。 首先，KKT条件定义 对于极小化问题  \begin{array}{ll} \text{min}  &amp; f(x) \\ \text{s.t.} &amp; h_i(x) = 0,  ~~i =1,\dots, m\\             &amp; g_j(x) \le 0, ~~j= 1,\dots,">
 <meta name="twitter:image" content="https://i.loli.net/2018/10/07/5bba148adec0d.jpg">
 
 
@@ -376,7 +378,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-07 23:16:30" itemprop="dateModified" datetime="2018-10-07T23:16:30+08:00">2018-10-07</time>
+                <time title="修改时间：2018-10-08 23:17:33" itemprop="dateModified" datetime="2018-10-08T23:17:33+08:00">2018-10-08</time>
               
             
           </span>
@@ -435,7 +437,7 @@
 
       
         <p>在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。<br>争取用最简单直白的方式来解释KKT条件。</p>
-<h2 id="首先，KKT条件定义："><a href="#首先，KKT条件定义：" class="headerlink" title="首先，KKT条件定义："></a>首先，KKT条件定义：</h2><!-- $$\begin{align}
+<h2 id="首先，KKT条件定义"><a href="#首先，KKT条件定义" class="headerlink" title="首先，KKT条件定义"></a>首先，KKT条件定义</h2><!-- $$\begin{align}
 a &= b + c \nonumber \\
 x &= yz \nonumber\\
 l &= m - n \nonumber
@@ -453,13 +455,13 @@ l &= m - n \nonumber
 h_i(x) = 0 , ~~ i=1, \dots, m \\
 g_j(x) \le 0, ~~ j=1, \dots, l \\
 \mu_j \ge 0 \\
-\mu_j h_j = 0
-\end{cases}</script><p>满足KKT条件的解，是极值点的必要条件。</p>
-<h2 id="无约束情形："><a href="#无约束情形：" class="headerlink" title="无约束情形："></a>无约束情形：</h2><p>$\min f(x)$直接求这个函数的极小值即可。在图上画等值线，在某个点达到极小值。</p>
-<h2 id="仅等式约束情形："><a href="#仅等式约束情形：" class="headerlink" title="仅等式约束情形："></a>仅等式约束情形：</h2><ol>
-<li><p>假设只有一个等式约束函数$h(x)=0$，等式约束使得，$f(x)$的极值点，在等值线与$h(x)$相切的地方达到。<br>相切的地方，$f(x)$和$h(x)$的梯度在同一条直线上，因此$\bigtriangledown f(x) + \lambda\bigtriangledown h(x) = 0$<br><img src="https://i.loli.net/2018/10/07/5bba148adec0d.jpg" alt="image"></p>
+\mu_j g_j = 0
+\end{cases}</script><p>满足KKT条件的解，是极值点的<strong>必要条件</strong>。</p>
+<h2 id="无约束情形"><a href="#无约束情形" class="headerlink" title="无约束情形"></a>无约束情形</h2><p>$\min f(x)$直接求这个函数的极小值$~\bigtriangledown f = 0~$即可。在图上画等值线，在某个点达到极小值。</p>
+<h2 id="仅等式约束情形"><a href="#仅等式约束情形" class="headerlink" title="仅等式约束情形"></a>仅等式约束情形</h2><ol>
+<li><p>假设只有一个等式约束函数$h(x)=0$，等式约束使得，$f(x)$的极值点，在等值线与$h(x)$相切的地方达到。<br>相切的地方，$f(x)$和$h(x)$的梯度在同一条直线上，因此$\bigtriangledown f(x) + \lambda\bigtriangledown h(x) = 0$<br><img src="https://i.loli.net/2018/10/07/5bba148adec0d.jpg" alt="constriants1.jpg"></p>
 </li>
-<li><p>多等式约束：<br>多个等式约束时，$\bigtriangledown f(x)$在$\bigtriangledown h_1(x)$和$\bigtriangledown h_2(x)$张成的空间中，所以$\bigtriangledown f(x) + \lambda_1\bigtriangledown h_1(x) + \lambda_1\bigtriangledown h_2(x) = 0$.<br><img src="https://i.loli.net/2018/10/07/5bba1cd5c34b2.jpg" alt="image"><br>想象该图的目标函数是一个球体，最小值应在球心处达到，然后在球上被$g_1$和$g_2$俩函数切了两刀，最小值只能在两刀相交的一条线$C$上达到了。切线上$f(x)$的梯度方向确实是$g_1$和$g_2$的线性组合。</p>
+<li><p>多等式约束：<br>多个等式约束时，$\bigtriangledown f(x)$在$\bigtriangledown h_1(x)$和$\bigtriangledown h_2(x)$张成的空间中，所以$\bigtriangledown f(x) + \lambda_1\bigtriangledown h_1(x) + \lambda_1\bigtriangledown h_2(x) = 0$.<br><img src="https://i.loli.net/2018/10/07/5bba1cd5c34b2.jpg" alt="constraints2.jpg"><br>想象该图的目标函数是一个球体，最小值应在球心处达到，然后在球上被$g_1$和$g_2$俩函数切了两刀，最小值只能在两刀相交的一条线$C$上达到了。切线上$f(x)$的梯度方向确实是$g_1$和$g_2$的线性组合。</p>
 </li>
 </ol>
 <p>当只有等式约束时，只需求解方程组：</p>
@@ -467,6 +469,31 @@ g_j(x) \le 0, ~~ j=1, \dots, l \\
 \bigtriangledown f(x) + \sum\limits_i^m\lambda_i\bigtriangledown h_i(x) = 0 \\
 h_i(x) = 0, ~~ i=1,2,\dots,m
 \end{cases}</script><p>从拉格朗日乘子法的角度也可以推出以上这个方程组：将等式约束写入目标函数，变成无约束问题，并且令新的目标函数为$~L(x,\lambda) = f(x) + \sum\limits_i\lambda_i h_i(x)$，然后对$x$、$\lambda$求偏导，即得到上面的方程组。这里$\lambda$称为拉格朗日乘子。</p>
+<h2 id="不等式约束情形"><a href="#不等式约束情形" class="headerlink" title="不等式约束情形"></a>不等式约束情形</h2><p>先考虑一个简单情形，目标函数是同心圆$~\min f(x_1, x_2) = x_1^2 + x_2^2~$. 无约束时极值点在原点（0，0）达到。如果有约束：</p>
+<script type="math/tex; mode=display">\begin{array}{ll}
+\text{min}  & f(x_1, x_2) \\
+\text{s.t.} & g_1(x_1, x_2) = x_1 + x_2 -1 \le 0
+\end{array}</script><p><img src="https://i.loli.net/2018/10/08/5bbb5c605bdf8.jpg" alt="constraints3.jpg"><br>从图上可以看出，不等式约束经过原点（极值点）。这时这个约束没有起作用，极值点依然只需求解$f$的导数而得到。</p>
+<p>另一种情况就是不等式约束起作用，如果有约束：</p>
+<script type="math/tex; mode=display">\begin{array}{ll}
+\text{min}  & f(x_1, x_2) \\
+\text{s.t.} & g_2(x_1, x_2) = x_1 + x_2 +2 \le 0
+\end{array}</script><p><img src="https://i.loli.net/2018/10/08/5bbb5d6aa68ae.jpg" alt="constraints4.jpg"><br>从图上可以看出，这个不等式起作用了，使得目标函数最小值在不等式边缘相切处达到。这时，跟等式约束$~h_2(x_1, x_2) = x_1 + x_2 + 2 = 0~$一样效果。<br>在切点处，$f~$和$~h_2~$共线，又因为$f~$的梯度方向$~\bigtriangledown f~$跟$~h_2~$的梯度方向$~\bigtriangledown h_2~$相反，所以有$~\bigtriangledown f + \mu\bigtriangledown h = 0, \mu&gt;0~$.</p>
+<p><strong>总结</strong>：当不等式不起作用时，相当于$\mu=0$，当不等式起作用时，$g(x) = 0$。<br>当只有等式约束时，只需求解方程组：</p>
+<script type="math/tex; mode=display">\begin{cases}
+\bigtriangledown f(x) + \sum\limits_j^l\mu_j\bigtriangledown g_j(x) = 0 \\
+g_j(x) \le 0, ~~ j=1,2,\dots,l \\
+\mu_j g_j(x) = 0, j=1,2,\dots, l \\
+\mu_j \ge 0, ~~ j=1,2,\dots,l
+\end{cases}</script><h2 id="综合情形"><a href="#综合情形" class="headerlink" title="综合情形"></a>综合情形</h2><p>再放一遍KKT条件，加深一下印象！</p>
+<script type="math/tex; mode=display">\begin{cases}
+\bigtriangledown f + \sum\limits_i\lambda_i\bigtriangledown h_i + \sum\limits_j\mu_j\bigtriangledown g_j = 0  \\
+h_i(x) = 0 , ~~ i=1, \dots, m \\
+g_j(x) \le 0, ~~ j=1, \dots, l \\
+\mu_j \ge 0 \\
+\mu_j g_j = 0
+\end{cases}</script><p>通俗来说，只对起作用的约束条件，拉格朗日乘子$\neq$0.</p>
+<p><strong>杨一宸的Comments</strong>：<br>KKT就是下降不可行，可行不下降；<br>按线性规划对偶的理解，就是可行方向锥里的任意向量和目标函数梯度方向的内积小于0</p>
 <p>参考资料：</p>
 <ul>
 <li><a href="https://zhuanlan.zhihu.com/p/36621652" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/36621652</a></li>
@@ -671,7 +698,7 @@ h_i(x) = 0, ~~ i=1,2,\dots,m
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先，KKT条件定义："><span class="nav-number">1.</span> <span class="nav-text">首先，KKT条件定义：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无约束情形："><span class="nav-number">2.</span> <span class="nav-text">无约束情形：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#仅等式约束情形："><span class="nav-number">3.</span> <span class="nav-text">仅等式约束情形：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先，KKT条件定义"><span class="nav-number">1.</span> <span class="nav-text">首先，KKT条件定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无约束情形"><span class="nav-number">2.</span> <span class="nav-text">无约束情形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#仅等式约束情形"><span class="nav-number">3.</span> <span class="nav-text">仅等式约束情形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不等式约束情形"><span class="nav-number">4.</span> <span class="nav-text">不等式约束情形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#综合情形"><span class="nav-number">5.</span> <span class="nav-text">综合情形</span></a></li></ol></div>
             
 
           </div>
@@ -729,7 +756,7 @@ h_i(x) = 0, ~~ i=1,2,\dots,m
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共1.6k字</span>
+  <span class="post-count">博客全站共2k字</span>
 </div>
         
 
