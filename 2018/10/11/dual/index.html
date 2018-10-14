@@ -116,17 +116,19 @@
 
 
   <meta name="description" content="本文主要介绍拉格朗日对偶与SVM的关系，以及为什么要用对偶来解决 拉格朗日对偶Primal问题考虑极小化问题  \begin{array}{ll} \text{min}  &amp; f(w) \\ \text{s.t.} &amp; g_j(w) \le 0, ~~j= 1,\dots, k\\             &amp; h_i(w) = 0,  ~~i =1,\dots, l \end{array}对于基本">
-<meta name="keywords" content="Lagrange duality,SVM">
+<meta name="keywords" content="SVM,Lagrange duality">
 <meta property="og:type" content="article">
 <meta property="og:title" content="拉格朗日对偶与SVM">
 <meta property="og:url" content="http://yoursite.com/2018/10/11/dual/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
 <meta property="og:description" content="本文主要介绍拉格朗日对偶与SVM的关系，以及为什么要用对偶来解决 拉格朗日对偶Primal问题考虑极小化问题  \begin{array}{ll} \text{min}  &amp; f(w) \\ \text{s.t.} &amp; g_j(w) \le 0, ~~j= 1,\dots, k\\             &amp; h_i(w) = 0,  ~~i =1,\dots, l \end{array}对于基本">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-13T16:16:47.947Z">
+<meta property="og:image" content="http://yoursite.com/2018/10/11/dual/dual_1.jpg">
+<meta property="og:updated_time" content="2018-10-14T15:15:41.633Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="拉格朗日对偶与SVM">
 <meta name="twitter:description" content="本文主要介绍拉格朗日对偶与SVM的关系，以及为什么要用对偶来解决 拉格朗日对偶Primal问题考虑极小化问题  \begin{array}{ll} \text{min}  &amp; f(w) \\ \text{s.t.} &amp; g_j(w) \le 0, ~~j= 1,\dots, k\\             &amp; h_i(w) = 0,  ~~i =1,\dots, l \end{array}对于基本">
+<meta name="twitter:image" content="http://yoursite.com/2018/10/11/dual/dual_1.jpg">
 
 
 
@@ -373,7 +375,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-14 00:16:47" itemprop="dateModified" datetime="2018-10-14T00:16:47+08:00">2018-10-14</time>
+                <time title="修改时间：2018-10-14 23:15:41" itemprop="dateModified" datetime="2018-10-14T23:15:41+08:00">2018-10-14</time>
               
             
           </span>
@@ -464,6 +466,42 @@ f(w), & \text{if w satisfies primal constraints} \\
 </ul>
 <p>KKT条件的第三组等式称为松弛互补条件，当<script type="math/tex">\alpha^*>0</script>时，有<script type="math/tex">g_i(w^*)=0</script>，即该约束条件$g_i(w^*)\le 0$达到等号，是”起作用”的约束条件。</p>
 <p><strong>在SVM模型中，每个训练样本点都代表一个不等式约束，那些达到等号的不等式约束，就是到分割超平面记录严格等于1的点，就是支撑向量（support vector）。SVM模型只需要确定这少数的几个支撑向量（即等式约束，即$\alpha^*&gt;0$的点）。</strong></p>
+<h1 id="对偶在SVM上的应用"><a href="#对偶在SVM上的应用" class="headerlink" title="对偶在SVM上的应用"></a>对偶在SVM上的应用</h1><h2 id="支撑向量"><a href="#支撑向量" class="headerlink" title="支撑向量"></a>支撑向量</h2><p>SVM的目标是找到最优的分割超平面，使得支撑向量到这个平面的距离最大，即能够最大程度的区分两类样本。假设总共有$m$个训练样本，每个样本有$n$个特征，<strong>目前$m, n$的大小关系不重要，后面会讨论什么时候更加适合使用对偶的思想</strong>。SVM的数学规划形式为：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+    \min\limits_{w,b} & \frac{1}{2}||w||^2 \\ 
+    \text{s.t.}       & y_i(w^Tx_i+b)\ge 1 , i=1,\dots,m
+\end{array}</script><p>我们把模型的约束条件改写为$g_i(w)=-y_i(w^Tx_i+b)+1\le 0$，与前文的格式保持一致。每一个训练样本，都对应这样一个不等式约束$g(w)$。<br><img src="/2018/10/11/dual/dual_1.jpg" alt="dual1"></p>
+<p>上图有三个支撑向量，这三个点的margin最小，这三个点对应的$g(w)=0$，也就是在最优解中，只有这三个点对应的$\alpha$可能大于0，其余点对应的$\alpha$都只能等于0（因为松弛互补条件）。一般的，支撑向量的数量比训练集合小很多。<strong>如果我们能找到一种计算方式，使得在做预测的时候，只需要考虑这几个支撑向量，那么这个问题将变得容易很多。</strong></p>
+<h2 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h2><p>我们来验证拉格朗日对偶能不能帮到我们：首先将原始SVM模型改写成无约束形式，</p>
+<script type="math/tex; mode=display">\mathcal{L}(w,b,\alpha) = \frac{1}{2}||w||^2 - \sum\limits_{i=1}^m\alpha_i[y_i(w^Tx_i+b)-1].</script><p>然后考虑它的对偶形式<script type="math/tex">\max\limits_{\alpha\ge 0}\min\limits_{w,b}\mathcal{L}(w,b,\alpha)</script>.先求内部的min，固定$\alpha$，求出$w,b$使得$\mathcal{L}(w,b,\alpha)$极小化，这个过程很简单，就是求$\frac{\partial}{\partial w}\mathcal{L}=0$，$\frac{\partial}{\partial b}\mathcal{L}=0$.</p>
+<script type="math/tex; mode=display">\frac{\partial}{\partial w}\mathcal{L}(w,b,\alpha) = w - \sum\limits_{i=1}^m\alpha_iy_ix_i =0 ~~~\Rightarrow~~~  w = \sum\limits_{i=1}^m\alpha_iy_ix_i</script><script type="math/tex; mode=display">\frac{\partial}{\partial b}\mathcal{L}(w,b,\alpha) = \sum\limits_{i=1}^m\alpha_iy_i=0</script><p>把以上两个关系式带入拉格朗日函数，得到的是$\min\limits_{w,b}\mathcal{L}$的表达式</p>
+<script type="math/tex; mode=display">\begin{array}{ll}
+\mathcal{L}(w,b,\alpha) & = \frac{1}{2}(\sum\limits_{i=1}^m\alpha_iy_ix_i)^2 - \sum\limits_{i=1}^m\alpha_iy_ix_i(\sum\limits_{i=1}^m\alpha_iy_ix_i) - b\sum\limits_{i=1}^m\alpha_iy_i + \sum\limits_{i=1}^m\alpha_i\\
+            & = \sum\limits_{i=1}^m\alpha_i - \frac{1}{2}(\sum\limits_{i=1}^m\alpha_iy_ix_i)^2 \\
+            & = \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jx_i^Tx_j
+\end{array}</script><p>现在把得到的<script type="math/tex">\min\limits_{w,b}\mathcal{L}</script>的以上表达式，外面套上$\max\limits_{\alpha\ge 0}$，得到下面的规划：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jx_i^Tx_j \\
+s.t.    & \alpha_i\ge 0, i=1,\dots, m \\
+        & \sum\limits_{i=1}^m\alpha_iy_i = 0
+\end{array}</script><p>注意，<strong>这个规划的变量只有$\alpha$</strong>。因为SVM的规划符合强对偶性，所以有<script type="math/tex">p^*=d^*</script>，因此我们可以通过求解SVM的对偶问题来解原问题。回忆我们之前讲的，只有支撑向量对应的$\alpha$才可能不为0，其他的全为0。所以对偶问题的解<script type="math/tex">\alpha_i(i=1,\dots,m)</script>，一定满足大多数均为0，只有少数几个不为0. 后面通过SMO算法可以求解此对偶问题。求解出来<script type="math/tex">\alpha_i</script>之后，可以通过$w = \sum\limits_{i=1}^m\alpha_iy_ix_i$ 进而求得$w^*$.再通过</p>
+<script type="math/tex; mode=display">b^* = -\frac{\max\limits_{i:y_i=-1}w^{*T}x_i + \min\limits_{i:y_i=1}w^{*T}x_i }{2}</script><p>求得$b^*$.</p>
+<h1 id="灵魂拷问：为什么要用对偶？"><a href="#灵魂拷问：为什么要用对偶？" class="headerlink" title="灵魂拷问：为什么要用对偶？"></a>灵魂拷问：为什么要用对偶？</h1><ol>
+<li><p>（<strong>最核心的</strong>）让我们回头再看看等式$w = \sum\limits_{i=1}^m\alpha_iy_ix_i$，完全用$\alpha$来表示最优的参数$w$。假设我们已经通过训练确定了参数$w$和$b$，现在要预测一个新的样本点$x$，我们要计算的是$w^Tx+b$，并根据结果的正负来决定$y$取值为1还是0.</p>
+<script type="math/tex; mode=display">\begin{array}{ll}
+w^Tx+b & = (\sum\limits_{i=1}^m\alpha_iy_ix_i)^Tx+b \\
+    & = \sum\limits_{i=1}^m\alpha_iy_i(x_i^Tx) +b
+\end{array}</script><p>我们早已发现，除了那些支撑向量外，其余的点对应的$\alpha$均为0。所以上式的求和项中，许多项直接为0，我们只需要计算支撑向量跟$x$的乘积。所以通过对偶的方法，引入了$\alpha$，在做预测时，计算变得非常简便。</p>
+</li>
+<li><p>原问题的拉格朗日函数<script type="math/tex">\min\limits_{w,b}\max\limits_{\alpha\ge 0}\mathcal{L}(w,b,\alpha)</script>，内测求<script type="math/tex">\theta = \max\limits_{\alpha\ge 0}\mathcal{L}</script>的部分，因为有约束条件<script type="math/tex">\alpha\ge 0</script>的缘故，求极值点比较困难，因为<script type="math/tex">\frac{\partial\theta}{\partial\alpha_i}=0</script>的<script type="math/tex">\alpha</script>不一定在<script type="math/tex">\alpha\ge 0</script>时达到。<br>但对偶问题先求$\min\limits_{w,b}\mathcal{L}$，$w,b$均没有限制，直接求偏导数等于0，得到一些关系式，带回拉格朗日函数消去$w,b$。然后再通过SMO算法来求解外侧的max部分。</p>
+</li>
+</ol>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li>重点参考Andrew Ng的<a href="http://cs229.stanford.edu/notes/cs229-notes3.pdf" target="_blank" rel="noopener">Lecture notes</a></li>
+</ul>
+<h1 id="Open问题"><a href="#Open问题" class="headerlink" title="Open问题"></a>Open问题</h1><ul>
+<li>如果从拉格朗日对偶来推导出KKT条件？目前的资料都是建立在强对偶的条件下，得到KKT。但KKT不一定要在强对偶时才能使用。</li>
+</ul>
 
       
     </div>
@@ -484,9 +522,9 @@ f(w), & \text{if w satisfies primal constraints} \\
       
         <div class="post-tags">
           
-            <a href="/tags/Lagrange-duality/" rel="tag"># Lagrange duality</a>
-          
             <a href="/tags/SVM/" rel="tag"># SVM</a>
+          
+            <a href="/tags/Lagrange-duality/" rel="tag"># Lagrange duality</a>
           
         </div>
       
@@ -663,7 +701,7 @@ f(w), & \text{if w satisfies primal constraints} \\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#拉格朗日对偶"><span class="nav-number">1.</span> <span class="nav-text">拉格朗日对偶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Primal问题"><span class="nav-number">1.1.</span> <span class="nav-text">Primal问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dual问题"><span class="nav-number">1.2.</span> <span class="nav-text">Dual问题</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#拉格朗日对偶"><span class="nav-number">1.</span> <span class="nav-text">拉格朗日对偶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Primal问题"><span class="nav-number">1.1.</span> <span class="nav-text">Primal问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dual问题"><span class="nav-number">1.2.</span> <span class="nav-text">Dual问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对偶在SVM上的应用"><span class="nav-number">2.</span> <span class="nav-text">对偶在SVM上的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#支撑向量"><span class="nav-number">2.1.</span> <span class="nav-text">支撑向量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对偶问题"><span class="nav-number">2.2.</span> <span class="nav-text">对偶问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#灵魂拷问：为什么要用对偶？"><span class="nav-number">3.</span> <span class="nav-text">灵魂拷问：为什么要用对偶？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Open问题"><span class="nav-number">5.</span> <span class="nav-text">Open问题</span></a></li></ol></div>
             
 
           </div>
@@ -721,7 +759,7 @@ f(w), & \text{if w satisfies primal constraints} \\
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共3k字</span>
+  <span class="post-count">博客全站共4.3k字</span>
 </div>
         
 
