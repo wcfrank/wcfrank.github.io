@@ -115,24 +115,25 @@
 
 
 
-  <meta name="description" content="我爱七月">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://yoursite.com/about/index.html">
+  <meta name="description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
+<meta name="keywords" content="SVM,Kenel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kenel Trick（核技巧）">
+<meta property="og:url" content="http://yoursite.com/2018/10/21/kenel/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="我爱七月">
+<meta property="og:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-09-16T02:17:02.156Z">
+<meta property="og:updated_time" content="2018-10-21T15:03:09.196Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="我爱七月">
+<meta name="twitter:title" content="Kenel Trick（核技巧）">
+<meta name="twitter:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/about/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/10/21/kenel/"/>
 
 
 
@@ -142,7 +143,7 @@
   };
 </script>
 
-  <title>about | Hardcore Coder</title>
+  <title>Kenel Trick（核技巧） | Hardcore Coder</title>
   
 
 
@@ -236,7 +237,7 @@
         
         
           
-          <li class="menu-item menu-item-about menu-item-active">
+          <li class="menu-item menu-item-about">
     <a href="/about/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
   </li>
@@ -273,28 +274,6 @@
   
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
   
 
   
@@ -321,43 +300,197 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/21/kenel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-<h1 class="post-title" itemprop="name headline">about</h1>
-
-<div class="post-meta">
-  
-  
-
-
-
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
+          <h1 class="post-title" itemprop="name headline">Kenel Trick（核技巧）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-21 00:00:00 / 修改时间：23:03:09" itemprop="dateCreated datePublished" datetime="2018-10-21T00:00:00+08:00">2018-10-21</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
           
-        
-      </div>
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/优化/" itemprop="url" rel="index"><span itemprop="name">优化</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <p>首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。<br>再次放出SVM的对偶形式：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jx_i^Tx_j \\
+s.t.    & \alpha_i\ge 0, i=1,\dots, m \\
+        & \sum\limits_{i=1}^m\alpha_iy_i = 0
+\end{array}</script><h1 id="特征映射"><a href="#特征映射" class="headerlink" title="特征映射"></a>特征映射</h1><p>先来定义一下两个不同的概念，attribute和feature，这两个词中文翻译过来都叫做特征。例如 <strong>原始</strong> 的特征$x$，比如是一个房屋的面积，它可以进一步生成许多特征，比如$x,x^2,x^3$。这里原始特征$x$定义为attribute，生成的特征$x,x^2,x^3$为features。定义从attri到features这个过程为feature mapping（特征映射），记为$\phi$。在上面这个小例子中，</p>
+<script type="math/tex; mode=display">\phi(x) = \left[
+\begin{array}{c}
+  x\\
+  x^2\\
+  x^3
+\end{array}
+\right]</script><p>对于SVM模型，我们可能不想用attributes $x$，而想用features $\phi(x)$。我们只需要把SVM对偶形式中的$x$替换成$\phi(x)$。<br>因为模型中的特征完全是$x^T_ix_j$的形式，可以写成向量内积的形式<script type="math/tex">\langle x_i, x_j\rangle</script>（最终结果是一个标量），所以我们可以把所有的内积替换成<script type="math/tex">\langle \phi(x_i), \phi(x_j)\rangle</script>。</p>
+<h1 id="核"><a href="#核" class="headerlink" title="核"></a>核</h1><p>如果有特征映射$\phi$，我们定义相应的核Kenel为</p>
+<script type="math/tex; mode=display">K(x,z) = \phi(x)^T\phi(z)</script><p><strong>所以所有出现内积$\langle x_i, x_j\rangle$的地方，我们把它们替换成核$K(x_i,x_j)$</strong>，然后SVM算法将用features来进行机器学习。<br>如果已知特征映射函数$\phi$，我们可以通过找$\phi(x_i)$和$\phi(x_j)$，计算得到核$K(x_i,x_j)$。</p>
+<p>但更有趣的是，<strong>即使有时特征映射函数$\phi$的计算量很大，甚至可能是无穷维的，核$K(x_i,x_j)$可能计算起来非常简单。这样的话，直接计算$K(x_i,x_j)$反而更加高效，我们可以得到一个高维特征空间的SVM模型，这个特征空间其实是由特征映射函数$\phi$产生的，但是我们却不必显式的计算$\phi(x)$（可能$\phi(x)$维度太高，计算量太大）。</strong></p>
+<h1 id="小例子"><a href="#小例子" class="headerlink" title="小例子"></a>小例子</h1><p>未完待续。。。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="https://www.zhihu.com/question/24627666" target="_blank" rel="noopener">机器学习有很多关于核函数的说法，核函数的定义和作用是什么？</a></li>
+</ol>
+
       
     </div>
-    
-
-
 
     
+
     
     
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SVM/" rel="tag"># SVM</a>
+          
+            <a href="/tags/Kenel/" rel="tag"># Kenel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/11/dual/" rel="next" title="拉格朗日对偶与SVM">
+                <i class="fa fa-chevron-left"></i> 拉格朗日对偶与SVM
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
   </div>
 
 
@@ -387,8 +520,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -481,6 +623,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#特征映射"><span class="nav-number">1.</span> <span class="nav-text">特征映射</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核"><span class="nav-number">2.</span> <span class="nav-text">核</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小例子"><span class="nav-number">3.</span> <span class="nav-text">小例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -669,6 +827,30 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
   
 
 
