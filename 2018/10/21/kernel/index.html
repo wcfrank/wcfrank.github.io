@@ -115,27 +115,25 @@
 
 
 
-  <meta name="description" content="本文主要介绍拉格朗日对偶与SVM的关系，以及为什么要用对偶来解决 拉格朗日对偶Primal问题考虑极小化问题  \begin{array}{ll} \text{min}  &amp; f(w) \\ \text{s.t.} &amp; g_j(w) \le 0, ~~j= 1,\dots, k\\             &amp; h_i(w) = 0,  ~~i =1,\dots, l \end{array}对于基本">
-<meta name="keywords" content="SVM,Lagrange duality">
+  <meta name="description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
+<meta name="keywords" content="SVM,Kernel">
 <meta property="og:type" content="article">
-<meta property="og:title" content="拉格朗日对偶与SVM">
-<meta property="og:url" content="http://yoursite.com/2018/10/11/dual/index.html">
+<meta property="og:title" content="Kenel Trick（核技巧）">
+<meta property="og:url" content="http://yoursite.com/2018/10/21/kernel/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="本文主要介绍拉格朗日对偶与SVM的关系，以及为什么要用对偶来解决 拉格朗日对偶Primal问题考虑极小化问题  \begin{array}{ll} \text{min}  &amp; f(w) \\ \text{s.t.} &amp; g_j(w) \le 0, ~~j= 1,\dots, k\\             &amp; h_i(w) = 0,  ~~i =1,\dots, l \end{array}对于基本">
+<meta property="og:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://yoursite.com/2018/10/11/dual/dual_1.jpg">
-<meta property="og:updated_time" content="2018-10-21T12:40:56.119Z">
+<meta property="og:updated_time" content="2018-10-22T14:44:46.059Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="拉格朗日对偶与SVM">
-<meta name="twitter:description" content="本文主要介绍拉格朗日对偶与SVM的关系，以及为什么要用对偶来解决 拉格朗日对偶Primal问题考虑极小化问题  \begin{array}{ll} \text{min}  &amp; f(w) \\ \text{s.t.} &amp; g_j(w) \le 0, ~~j= 1,\dots, k\\             &amp; h_i(w) = 0,  ~~i =1,\dots, l \end{array}对于基本">
-<meta name="twitter:image" content="http://yoursite.com/2018/10/11/dual/dual_1.jpg">
+<meta name="twitter:title" content="Kenel Trick（核技巧）">
+<meta name="twitter:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/10/11/dual/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/10/21/kernel/"/>
 
 
 
@@ -145,7 +143,7 @@
   };
 </script>
 
-  <title>拉格朗日对偶与SVM | Hardcore Coder</title>
+  <title>Kenel Trick（核技巧） | Hardcore Coder</title>
   
 
 
@@ -316,7 +314,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/11/dual/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/21/kernel/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="骚炼">
@@ -333,7 +331,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">拉格朗日对偶与SVM
+          <h1 class="post-title" itemprop="name headline">Kenel Trick（核技巧）
               
             
           </h1>
@@ -358,7 +356,7 @@
                 
               
 
-              <time title="创建时间：2018-10-11 21:21:56" itemprop="dateCreated datePublished" datetime="2018-10-11T21:21:56+08:00">2018-10-11</time>
+              <time title="创建时间：2018-10-21 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-21T00:00:00+08:00">2018-10-21</time>
             
 
             
@@ -375,7 +373,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-21 20:40:56" itemprop="dateModified" datetime="2018-10-21T20:40:56+08:00">2018-10-21</time>
+                <time title="修改时间：2018-10-22 22:44:46" itemprop="dateModified" datetime="2018-10-22T22:44:46+08:00">2018-10-22</time>
               
             
           </span>
@@ -426,84 +424,70 @@
       
 
       
-        <p>本文主要介绍拉格朗日对偶与SVM的关系，以及为什么要用对偶来解决</p>
-<h1 id="拉格朗日对偶"><a href="#拉格朗日对偶" class="headerlink" title="拉格朗日对偶"></a>拉格朗日对偶</h1><h2 id="Primal问题"><a href="#Primal问题" class="headerlink" title="Primal问题"></a>Primal问题</h2><p>考虑极小化问题</p>
-<script type="math/tex; mode=display">
-\begin{array}{ll}
-\text{min}  & f(w) \\
-\text{s.t.} & g_j(w) \le 0, ~~j= 1,\dots, k\\
-            & h_i(w) = 0,  ~~i =1,\dots, l
-\end{array}</script><p>对于基本的SVM模型，$f(x)=\frac{1}{2}||w||^2$，$g_j(w)=-y_i(w^Tx_i+b)+1\le 0$。</p>
-<p>定义拉格朗日函数为：<script type="math/tex">\mathcal{L}(w,\alpha,\beta)=f(w)+\sum\limits_{i=1}^k\alpha_ig_i(w)+\sum\limits_{i=1}^l\beta_ih_i(w)</script>，将有约束问题变成无约束的。这里使用的拉格朗日乘子的符号跟上一篇文章的不一样，不过不影响阅读。</p>
-<p>令<script type="math/tex">\theta_P(w) = \max\limits_{\alpha\ge0,\beta}\mathcal{L}(w,\alpha,\beta)</script>.我们发现，对于任意给定的$w$，如果$w$违反了约束条件（即$g_i(w)&gt;0$或者$h_i(w)\neq0$），则存在某组拉格朗日乘子，使得$\theta_P(w)=\infty$；相反，如果$w$满足约束条件，$\theta_P(w)=f(w)$。因此，</p>
-<script type="math/tex; mode=display">\theta_P(w)=
-\begin{cases}
-f(w), & \text{if w satisfies primal constraints} \\ 
-\infty, & \text{otherwise}
-\end{cases}</script><p><strong>为什么</strong> 要构造$\theta_P(w)$</p>
-<ul>
-<li>$\theta_P(w)$与原函数$f(w)$在$w$满足约束时取值相等，考虑极小化$\theta_P(w)$与极小化原问题等价；</li>
-<li>同时，又构造出$\min\max$的形式，方便后面求拉格朗日对偶</li>
-</ul>
-<p>因此，考虑极小化问题 <script type="math/tex">\min\limits_w\theta_P(w)=\min\limits_w\max\limits_{\alpha\ge0,\beta}\mathcal{L}(w,\alpha,\beta)</script>，与极小化原问题的解相同。</p>
-<h2 id="Dual问题"><a href="#Dual问题" class="headerlink" title="Dual问题"></a>Dual问题</h2><p>拉格朗日对偶（已经是无约束了），是将Primal问题的$\min$和$\max$互换，即可得到对偶问题$\max\limits_{\alpha\ge 0,\beta}\min\limits_w\mathcal{L}(w,\alpha,\beta)$，就这么简单嘎嘎。</p>
-<p>Primal问题和Dual问题是有关联的：Primal问题的最优值，是大于等于对偶问题的最优值（弱对偶性）。即</p>
-<script type="math/tex; mode=display">d^* = \max\limits_{\alpha\ge 0,\beta}\min\limits_w\mathcal{L}(w,\alpha,\beta) \le \min\limits_w\max\limits_{\alpha\ge0,\beta}\mathcal{L}(w,\alpha,\beta) = p^*</script><p>在特定情况下（Slater条件，这里不详细解释），我们有<script type="math/tex">d^* = p^*</script>(强对偶性)。在满足Slater条件时，必存在一组<script type="math/tex">w^*,\alpha^*,\beta^*</script>，使得</p>
-<ul>
-<li><script type="math/tex">w^*</script>是Primal问题的解，</li>
-<li><script type="math/tex">\alpha^*,\beta^*</script>是Dual问题的解，</li>
-<li>并且<script type="math/tex">p^*=d^*=\mathcal{L}(w^*,\alpha^*,\beta^*)</script></li>
-<li><script type="math/tex">w^*, \alpha^*,\beta^*</script>满足KKT条件：</li>
-</ul>
-<script type="math/tex; mode=display">\begin{array}{rl}
-    \frac{\partial}{\partial w_i}\mathcal{L}(w^*,\alpha^*,\beta^*) = 0, & i =1,\dots, n \\
-    \frac{\partial}{\partial \beta_i}\mathcal{L}(w^*, \alpha^*, \beta^*) =0 , & i = 1,\dots, l \\
-    \alpha^*_i g_i(w^*)  = 0, & i = 1, \dots,k \\ 
-    g_i(w^*)\le 0, & i = 1,\dots, k \\
-    \alpha^* \ge 0, & i = 1,\dots, k
-\end{array}</script><ul>
-<li>另外，如果某组<script type="math/tex">w^*, \alpha^*,\beta^*</script>满足KKT条件，则它也是原问题和对偶问题的解。</li>
-</ul>
-<p>KKT条件的第三组等式称为松弛互补条件，当<script type="math/tex">\alpha^*>0</script>时，有<script type="math/tex">g_i(w^*)=0</script>，即该约束条件$g_i(w^*)\le 0$达到等号，是”起作用”的约束条件。</p>
-<p><strong>在SVM模型中，每个训练样本点都代表一个不等式约束，那些达到等号的不等式约束，就是到分割超平面记录严格等于1的点，就是支撑向量（support vector）。SVM模型只需要确定这少数的几个支撑向量（即等式约束，即$\alpha^*&gt;0$的点）。</strong></p>
-<h1 id="对偶在SVM上的应用"><a href="#对偶在SVM上的应用" class="headerlink" title="对偶在SVM上的应用"></a>对偶在SVM上的应用</h1><h2 id="支撑向量"><a href="#支撑向量" class="headerlink" title="支撑向量"></a>支撑向量</h2><p>SVM的目标是找到最优的分割超平面，使得支撑向量到这个平面的距离最大，即能够最大程度的区分两类样本。假设总共有$m$个训练样本，每个样本有$n$个特征，<strong>目前$m, n$的大小关系不重要，后面会讨论什么时候更加适合使用对偶的思想</strong>。SVM的数学规划形式为：</p>
-<script type="math/tex; mode=display">\begin{array}{rl}
-    \min\limits_{w,b} & \frac{1}{2}||w||^2 \\ 
-    \text{s.t.}       & y_i(w^Tx_i+b)\ge 1 , i=1,\dots,m
-\end{array}</script><p>我们把模型的约束条件改写为$g_i(w)=-y_i(w^Tx_i+b)+1\le 0$，与前文的格式保持一致。每一个训练样本，都对应这样一个不等式约束$g(w)$。<br><img src="/2018/10/11/dual/dual_1.jpg" alt="dual1"></p>
-<p>上图有三个支撑向量，这三个点的margin最小，这三个点对应的$g(w)=0$，也就是在最优解中，只有这三个点对应的$\alpha$可能大于0，其余点对应的$\alpha$都只能等于0（因为松弛互补条件）。一般的，支撑向量的数量比训练集合小很多。<strong>如果我们能找到一种计算方式，使得在做预测的时候，只需要考虑这几个支撑向量，那么这个问题将变得容易很多。</strong></p>
-<h2 id="对偶问题"><a href="#对偶问题" class="headerlink" title="对偶问题"></a>对偶问题</h2><p>我们来验证拉格朗日对偶能不能帮到我们：首先将原始SVM模型改写成无约束形式，</p>
-<script type="math/tex; mode=display">\mathcal{L}(w,b,\alpha) = \frac{1}{2}||w||^2 - \sum\limits_{i=1}^m\alpha_i[y_i(w^Tx_i+b)-1].</script><p>然后考虑它的对偶形式<script type="math/tex">\max\limits_{\alpha\ge 0}\min\limits_{w,b}\mathcal{L}(w,b,\alpha)</script>.先求内部的min，固定$\alpha$，求出$w,b$使得$\mathcal{L}(w,b,\alpha)$极小化，这个过程很简单，就是求$\frac{\partial}{\partial w}\mathcal{L}=0$，$\frac{\partial}{\partial b}\mathcal{L}=0$.</p>
-<script type="math/tex; mode=display">\frac{\partial}{\partial w}\mathcal{L}(w,b,\alpha) = w - \sum\limits_{i=1}^m\alpha_iy_ix_i =0 ~~~\Rightarrow~~~  w = \sum\limits_{i=1}^m\alpha_iy_ix_i</script><script type="math/tex; mode=display">\frac{\partial}{\partial b}\mathcal{L}(w,b,\alpha) = \sum\limits_{i=1}^m\alpha_iy_i=0</script><p>把以上两个关系式带入拉格朗日函数，得到的是$\min\limits_{w,b}\mathcal{L}$的表达式</p>
-<script type="math/tex; mode=display">\begin{array}{ll}
-\min\limits_{w,b}\mathcal{L}(w,b,\alpha) & = \frac{1}{2}(\sum\limits_{i=1}^m\alpha_iy_ix_i)^2 - \sum\limits_{i=1}^m\alpha_iy_ix_i(\sum\limits_{i=1}^m\alpha_iy_ix_i) - b\sum\limits_{i=1}^m\alpha_iy_i + \sum\limits_{i=1}^m\alpha_i\\
-            & = \sum\limits_{i=1}^m\alpha_i - \frac{1}{2}(\sum\limits_{i=1}^m\alpha_iy_ix_i)^2 \\
-            & = \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jx_i^Tx_j
-\end{array}</script><p>现在把得到的<script type="math/tex">\min\limits_{w,b}\mathcal{L}</script>的以上表达式，外面套上$\max\limits_{\alpha\ge 0}$，得到下面的规划：</p>
+        <p>首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。<br>再次放出SVM的对偶形式：</p>
 <script type="math/tex; mode=display">\begin{array}{rl}
 \max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jx_i^Tx_j \\
 s.t.    & \alpha_i\ge 0, i=1,\dots, m \\
         & \sum\limits_{i=1}^m\alpha_iy_i = 0
-\end{array}</script><p>注意，<strong>这个规划的变量只有$\alpha$</strong>。因为SVM的规划符合强对偶性，所以有<script type="math/tex">p^*=d^*</script>，因此我们可以通过求解SVM的对偶问题来解原问题。回忆我们之前讲的，只有支撑向量对应的$\alpha$才可能不为0，其他的全为0。所以对偶问题的解<script type="math/tex">\alpha_i(i=1,\dots,m)</script>，一定满足大多数均为0，只有少数几个不为0. 后面通过SMO算法可以求解此对偶问题。求解出来<script type="math/tex">\alpha_i</script>之后，可以通过$w = \sum\limits_{i=1}^m\alpha_iy_ix_i$ 进而求得$w^*$.再通过</p>
-<script type="math/tex; mode=display">b^* = -\frac{\max\limits_{i:y_i=-1}w^{*T}x_i + \min\limits_{i:y_i=1}w^{*T}x_i }{2}</script><p>求得$b^*$.</p>
-<h1 id="灵魂拷问：为什么要用对偶？"><a href="#灵魂拷问：为什么要用对偶？" class="headerlink" title="灵魂拷问：为什么要用对偶？"></a>灵魂拷问：为什么要用对偶？</h1><ol>
-<li><p>（<strong>第一个核心点</strong>）让我们回头再看看等式$w = \sum\limits_{i=1}^m\alpha_iy_ix_i$，完全用$\alpha$来表示最优的参数$w$。假设我们已经通过训练确定了参数$w$和$b$，现在要预测一个新的样本点$x$，我们要计算的是$w^Tx+b$，并根据结果的正负来决定$y$取值为1还是0.</p>
-<script type="math/tex; mode=display">\begin{array}{ll}
-w^Tx+b & = (\sum\limits_{i=1}^m\alpha_iy_ix_i)^Tx+b \\
-    & = \sum\limits_{i=1}^m\alpha_iy_i(x_i^Tx) +b
-\end{array}</script><p>我们早已发现，除了那些支撑向量外，其余的点对应的$\alpha$均为0。所以上式的求和项中，许多项直接为0，我们只需要计算支撑向量跟$x$的乘积。所以通过对偶的方法，引入了$\alpha$，在做预测时，计算变得非常简便。</p>
+\end{array}</script><p>这里，$x, y$这些值都是已知的，是不同样本的特征和标签，我们要求的是$\alpha$. 对偶的目标函数里，有内积$x_i^Tx_j$，这可用于线性可分的样本集合；如果样本线性不可分，需要对特征$x$进行某些非线性变换$\phi(x)$，然后再求内积。</p>
+<p><strong>一般的这些非线性变换将原来的特征映射到更高维度的空间中，使其更容易分类。</strong></p>
+<h1 id="特征映射-feature-mapping"><a href="#特征映射-feature-mapping" class="headerlink" title="特征映射(feature mapping)"></a>特征映射(feature mapping)</h1><p>先来定义一下两个不同的概念，attribute和feature，这两个词中文翻译过来都叫做特征。例如 <strong>原始</strong> 的特征$x$，比如是一个房屋的面积，它可以进一步生成许多特征，比如$x,x^2,x^3$。这里原始特征$x$定义为attribute，生成的特征$x,x^2,x^3$为features。定义从attri到features这个过程为feature mapping（特征映射），记为$\phi$。在上面这个小例子中，</p>
+<script type="math/tex; mode=display">\phi(x) = \left[
+\begin{array}{c}
+  x\\
+  x^2\\
+  x^3
+\end{array}
+\right]</script><p>对于SVM模型，我们可能不想用attributes $x$，而想用features $\phi(x)$。我们只需要把SVM对偶形式中的$x$替换成$\phi(x)$。<br>因为模型中的特征完全是$x^T_ix_j$的形式，可以写成向量内积的形式<script type="math/tex">\langle x_i, x_j\rangle</script>（最终结果是一个标量），所以我们可以把所有的内积替换成<script type="math/tex">\langle \phi(x_i), \phi(x_j)\rangle</script>。</p>
+<h1 id="核-Kernel"><a href="#核-Kernel" class="headerlink" title="核(Kernel)"></a>核(Kernel)</h1><p>如果有特征映射$\phi$，我们定义相应的核Kenel为</p>
+<script type="math/tex; mode=display">K(x,z) = \phi(x)^T\phi(z)</script><p><strong>所以所有出现内积$\langle x_i, x_j\rangle$的地方，我们把它们替换成核$K(x_i,x_j)$</strong>，然后SVM算法将用features来进行机器学习。<br>如果已知特征映射函数$\phi$，我们可以通过找$\phi(x_i)$和$\phi(x_j)$，计算得到核$K(x_i,x_j)$。</p>
+<p>但更有趣的是，<strong>即使有时特征映射函数$\phi$的计算量很大，甚至可能是无穷维的，核$K(x_i,x_j)$可能计算起来非常简单。这样的话，直接计算$K(x_i,x_j)$反而更加高效，我们可以得到一个高维特征空间的SVM模型，这个特征空间其实是由特征映射函数$\phi$产生的，但是我们却不必显式的计算$\phi(x)$（可能$\phi(x)$维度太高，计算量太大）。</strong></p>
+<p><strong>如何证明$K$是一个核？</strong><br>Kernel matrix: $K_{ij} = K(x_i,x_j)$</p>
+<ul>
+<li>Kernel matrix 是对称的；</li>
+<li>Kernel matrix 是半正定的</li>
+</ul>
+<h1 id="小例子"><a href="#小例子" class="headerlink" title="小例子"></a>小例子</h1><p>我们考虑两个核函数，一个是将低维特征映射到高维的多项式核，另一种是将低维特征映射到无限维的高斯核（RBF）：</p>
+<h2 id="多项式核"><a href="#多项式核" class="headerlink" title="多项式核"></a>多项式核</h2><p>假设$a,b\in\mathcal{R}^n$，考虑</p>
+<script type="math/tex; mode=display">K(a,b)=(a^Tb)^2</script><p>这里我们令$n=3$，即样本点特征的维度为3，多项式核的度数为2. 例如$a=[a_1,a_2,a_3]^T$.<br>将$K(a,b)$用另一种形式表示</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+K(a,b) & = (\sum\limits_{i=1}^3a_ib_i)(\sum\limits_{j=1}^3a_jb_j) \\
+        & = \sum\limits_{i=1}^3\sum\limits_{j=1}^3a_ia_jb_ib_j \\
+        & = \sum\limits_{i,j=1}^3(a_ia_j)(b_ib_j)
+\end{array}</script><p>这样，$K(a,b)=\phi(a)\phi(b)$，其中</p>
+<script type="math/tex; mode=display">\phi(a) = \left[
+\begin{array}{c}
+a_1a_1\\
+a_1a_2\\
+a_1a_3\\
+a_2a_2\\
+a_2a_3\\
+a_3a_3
+\end{array}
+\right]</script><ul>
+<li>计算特征映射函数$\phi$需要$O(n^2)$时间，然而计算核函数$K(a,b)$只需要$O(n)$时间。</li>
+<li><p>函数$\phi$是将$\mathcal{R}^3\to\mathcal{R}^6$，更高维度。</p>
 </li>
-<li><p>（<strong>第二个核心点</strong>）通过对偶，目标函数有$x_i^Tx_j$的形式，可以引入Kenel trick</p>
+<li><p>(参考资料2-1)即使我们知道映射函数张什么样子，我们也很难知道它对应的核会产生什么样的作用。但某些特殊情况我们可以略知一二：比如多项式核$K(a,b)=(a^Tb)^2$，对应的$\phi(a)=(a_1^2,\sqrt{2}a_1a_2,a_2^2)$. 本来特征是二维的，映射后变成三维。可以发现，本来二维的特征在一三象限的样本点被映射到三维中的同一个象限；二维特征在二四象限的样本点被映射到另一个三维象限，所以该三维特征是线性可分的。还说明一个问题，这个核可以用于分类XOR问题~</p>
 </li>
-<li><p>原问题的拉格朗日函数<script type="math/tex">\min\limits_{w,b}\max\limits_{\alpha\ge 0}\mathcal{L}(w,b,\alpha)</script>，内测求<script type="math/tex">\theta = \max\limits_{\alpha\ge 0}\mathcal{L}</script>的部分，因为有约束条件<script type="math/tex">\alpha\ge 0</script>的缘故，求极值点比较困难，因为<script type="math/tex">\frac{\partial\theta}{\partial\alpha_i}=0</script>的<script type="math/tex">\alpha</script>不一定在<script type="math/tex">\alpha\ge 0</script>时达到。<br>但对偶问题先求$\min\limits_{w,b}\mathcal{L}$，$w,b$均没有限制，直接求偏导数等于0，得到一些关系式，带回拉格朗日函数消去$w,b$。然后再通过SMO算法来求解外侧的max部分。</p>
-</li>
+</ul>
+<h2 id="高斯核（RBF）"><a href="#高斯核（RBF）" class="headerlink" title="高斯核（RBF）"></a>高斯核（RBF）</h2><p>高斯核又称为Radial Basis Function (RBF).</p>
+<script type="math/tex; mode=display">K(a,b) = e^{-\frac{||a-b||^2}{2\sigma^2}}</script><p>下面用最最简单的特例来证明RBF是一个核，而且是映射到无穷维的核：<br>考虑样本的原始特征是二维的$\mathcal{R}^2$，并假设$2\sigma^2=1$，核可以写成</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+k(a,b) & = e^{-||a-b||^2} \\
+       & = e^{-(a_1-b_1)^2 - (a_2-b_2)^2} \\
+       & = e^{-a_1^2+2a_1b_1-b_1^2-a_2^2+2a_2b_2-b_2^2} \\
+       & = e^{-||a||^2}e^{||b||^2}e^{2a^Tb} \\
+\text{(taylor series)} & = e^{-||a||^2}e^{||b||^2}\sum\limits_{n=0}^\infty\frac{(2a^Tb)^n}{n!}
+\end{array}</script><ul>
+<li>函数$\phi$是将2维特征映射到无限维，<strong>即RBF将每个样本的特征映射到无限维空间中</strong></li>
+<li>（参考资料2-3）证明RBF确实是一个核函数的方法</li>
+<li>如果$a$和$b$很接近，则核函数$K(a,b)$接近1；如果$a$和$b$差异很大（正交），则$K(a,b)$接近于0.因此RBF核也是一种衡量$a$和$b$(或者$\phi(a)$和$\phi(b)$)相似度的指标。</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="https://www.zhihu.com/question/24627666" target="_blank" rel="noopener">机器学习有很多关于核函数的说法，核函数的定义和作用是什么？</a></li>
+<li>StackExchange<br> <a href="https://stats.stackexchange.com/questions/58585/how-to-understand-effect-of-rbf-svm" target="_blank" rel="noopener">How to understand effect of RBF SVM</a><br> <a href="https://stats.stackexchange.com/questions/43779/non-linear-svm-classification-with-rbf-kernel/43806#43806" target="_blank" rel="noopener">Non-linear SVM classification with RBF kernel</a><br> <a href="https://stats.stackexchange.com/questions/35634/how-to-prove-that-the-radial-basis-function-is-a-kernel" target="_blank" rel="noopener">How to prove that the radial basis function is a kernel?</a></li>
 </ol>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
-<li>重点参考Andrew Ng的<a href="http://cs229.stanford.edu/notes/cs229-notes3.pdf" target="_blank" rel="noopener">Lecture notes</a></li>
-</ul>
-<h1 id="Open问题"><a href="#Open问题" class="headerlink" title="Open问题"></a>Open问题</h1><ul>
-<li>如果从拉格朗日对偶来推导出KKT条件？目前的资料都是建立在强对偶的条件下，得到KKT。但KKT不一定要在强对偶时才能使用。</li>
-</ul>
 
       
     </div>
@@ -526,7 +510,7 @@ w^Tx+b & = (\sum\limits_{i=1}^m\alpha_iy_ix_i)^Tx+b \\
           
             <a href="/tags/SVM/" rel="tag"># SVM</a>
           
-            <a href="/tags/Lagrange-duality/" rel="tag"># Lagrange duality</a>
+            <a href="/tags/Kernel/" rel="tag"># Kernel</a>
           
         </div>
       
@@ -539,8 +523,8 @@ w^Tx+b & = (\sum\limits_{i=1}^m\alpha_iy_ix_i)^Tx+b \\
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/26/KKT/" rel="next" title="KKT条件的通俗理解">
-                <i class="fa fa-chevron-left"></i> KKT条件的通俗理解
+              <a href="/2018/10/11/dual/" rel="next" title="拉格朗日对偶与SVM">
+                <i class="fa fa-chevron-left"></i> 拉格朗日对偶与SVM
               </a>
             
           </div>
@@ -548,10 +532,6 @@ w^Tx+b & = (\sum\limits_{i=1}^m\alpha_iy_ix_i)^Tx+b \\
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/21/kernel/" rel="prev" title="Kenel Trick（核技巧）">
-                Kenel Trick（核技巧） <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -711,7 +691,7 @@ w^Tx+b & = (\sum\limits_{i=1}^m\alpha_iy_ix_i)^Tx+b \\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#拉格朗日对偶"><span class="nav-number">1.</span> <span class="nav-text">拉格朗日对偶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Primal问题"><span class="nav-number">1.1.</span> <span class="nav-text">Primal问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dual问题"><span class="nav-number">1.2.</span> <span class="nav-text">Dual问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对偶在SVM上的应用"><span class="nav-number">2.</span> <span class="nav-text">对偶在SVM上的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#支撑向量"><span class="nav-number">2.1.</span> <span class="nav-text">支撑向量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对偶问题"><span class="nav-number">2.2.</span> <span class="nav-text">对偶问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#灵魂拷问：为什么要用对偶？"><span class="nav-number">3.</span> <span class="nav-text">灵魂拷问：为什么要用对偶？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Open问题"><span class="nav-number">5.</span> <span class="nav-text">Open问题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#特征映射-feature-mapping"><span class="nav-number">1.</span> <span class="nav-text">特征映射(feature mapping)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核-Kernel"><span class="nav-number">2.</span> <span class="nav-text">核(Kernel)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小例子"><span class="nav-number">3.</span> <span class="nav-text">小例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多项式核"><span class="nav-number">3.1.</span> <span class="nav-text">多项式核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高斯核（RBF）"><span class="nav-number">3.2.</span> <span class="nav-text">高斯核（RBF）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
