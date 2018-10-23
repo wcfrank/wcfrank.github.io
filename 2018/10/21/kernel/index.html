@@ -118,15 +118,17 @@
   <meta name="description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
 <meta name="keywords" content="SVM,Kernel">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Kenel Trick（核技巧）">
+<meta property="og:title" content="Kernel Trick（核技巧）">
 <meta property="og:url" content="http://yoursite.com/2018/10/21/kernel/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
 <meta property="og:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-22T14:44:46.059Z">
+<meta property="og:image" content="http://yoursite.com/2018/10/21/kernel/gamma.jpg">
+<meta property="og:updated_time" content="2018-10-23T15:23:48.539Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kenel Trick（核技巧）">
+<meta name="twitter:title" content="Kernel Trick（核技巧）">
 <meta name="twitter:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
+<meta name="twitter:image" content="http://yoursite.com/2018/10/21/kernel/gamma.jpg">
 
 
 
@@ -143,7 +145,7 @@
   };
 </script>
 
-  <title>Kenel Trick（核技巧） | Hardcore Coder</title>
+  <title>Kernel Trick（核技巧） | Hardcore Coder</title>
   
 
 
@@ -331,7 +333,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Kenel Trick（核技巧）
+          <h1 class="post-title" itemprop="name headline">Kernel Trick（核技巧）
               
             
           </h1>
@@ -373,7 +375,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-22 22:44:46" itemprop="dateModified" datetime="2018-10-22T22:44:46+08:00">2018-10-22</time>
+                <time title="修改时间：2018-10-23 23:23:48" itemprop="dateModified" datetime="2018-10-23T23:23:48+08:00">2018-10-23</time>
               
             
           </span>
@@ -447,7 +449,7 @@ s.t.    & \alpha_i\ge 0, i=1,\dots, m \\
 <li>Kernel matrix 是对称的；</li>
 <li>Kernel matrix 是半正定的</li>
 </ul>
-<h1 id="小例子"><a href="#小例子" class="headerlink" title="小例子"></a>小例子</h1><p>我们考虑两个核函数，一个是将低维特征映射到高维的多项式核，另一种是将低维特征映射到无限维的高斯核（RBF）：</p>
+<h1 id="两个常见的核"><a href="#两个常见的核" class="headerlink" title="两个常见的核"></a>两个常见的核</h1><p>我们考虑两个核函数，一个是将低维特征映射到高维的多项式核，另一种是将低维特征映射到无限维的高斯核（RBF）：</p>
 <h2 id="多项式核"><a href="#多项式核" class="headerlink" title="多项式核"></a>多项式核</h2><p>假设$a,b\in\mathcal{R}^n$，考虑</p>
 <script type="math/tex; mode=display">K(a,b)=(a^Tb)^2</script><p>这里我们令$n=3$，即样本点特征的维度为3，多项式核的度数为2. 例如$a=[a_1,a_2,a_3]^T$.<br>将$K(a,b)$用另一种形式表示</p>
 <script type="math/tex; mode=display">\begin{array}{rl}
@@ -472,7 +474,7 @@ a_3a_3
 </li>
 </ul>
 <h2 id="高斯核（RBF）"><a href="#高斯核（RBF）" class="headerlink" title="高斯核（RBF）"></a>高斯核（RBF）</h2><p>高斯核又称为Radial Basis Function (RBF).</p>
-<script type="math/tex; mode=display">K(a,b) = e^{-\frac{||a-b||^2}{2\sigma^2}}</script><p>下面用最最简单的特例来证明RBF是一个核，而且是映射到无穷维的核：<br>考虑样本的原始特征是二维的$\mathcal{R}^2$，并假设$2\sigma^2=1$，核可以写成</p>
+<script type="math/tex; mode=display">K(a,b) = e^{-\frac{||a-b||^2}{2\sigma^2}}</script><p>下面用最最简单的特例来证明RBF是一个核，而且是映射到无穷维的核：<br>考虑样本的原始特征是二维的$\mathcal{R}^2$，并假设$\gamma=\frac{1}{2\sigma^2}=1$，核可以写成</p>
 <script type="math/tex; mode=display">\begin{array}{rl}
 k(a,b) & = e^{-||a-b||^2} \\
        & = e^{-(a_1-b_1)^2 - (a_2-b_2)^2} \\
@@ -484,9 +486,26 @@ k(a,b) & = e^{-||a-b||^2} \\
 <li>（参考资料2-3）证明RBF确实是一个核函数的方法</li>
 <li>如果$a$和$b$很接近，则核函数$K(a,b)$接近1；如果$a$和$b$差异很大（正交），则$K(a,b)$接近于0.因此RBF核也是一种衡量$a$和$b$(或者$\phi(a)$和$\phi(b)$)相似度的指标。</li>
 </ul>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<h2 id="高斯核的进一步讨论"><a href="#高斯核的进一步讨论" class="headerlink" title="高斯核的进一步讨论"></a>高斯核的进一步讨论</h2><ul>
+<li><p>RBF中的gamma参数是用来干嘛的？<br>  $\gamma=\frac{1}{2\sigma^2}$，所以有$K(x,y) = e^{-\gamma||x-y||^2}$.<br>  BRF之所以称为高斯核，因为它的函数形式与高斯分布（正态分布）非常相似。<br>  高斯核里面的$\sigma$对应高斯分布里面的$\sigma$；高斯核里面的$y$对应高斯分布里面的$\mu$.<br>  如果高斯分布里面的$\sigma$变小，则高斯分布会变得又瘦又高。同理，如果$\gamma$很大，则$\sigma$就很小（脑补高斯分布又瘦又高的样子）。这样只有$x$跟$y$很接近时，$K(x,y)$才不会接近于0；否则只要$x$和$y$距离稍远一点点，$K(x,y)\to 0$.<br>  所以当$\gamma$变大，分割超平面会越来越复杂，甚至变成一个个分离的区域，这是因为两个样本点距离稍微远一点，就有$K(x,y)\to 0$，不敢保证中间地带的类别。<br>  <img src="/2018/10/21/kernel/gamma.jpg" alt="gamma"></p>
+</li>
+<li><p>（参考资料4）A small gamma means a Gaussian with a large variance so the influence of x_j is more, i.e. if x_j is a support vector, a small gamma implies the class of this support vector will have influence on deciding the class of the vector x_i even if the distance between them is large. If gamma is large, then variance is small implying the support vector does not have wide-spread influence. Technically speaking, large gamma leads to high bias and low variance models, and vice-versa.</p>
+</li>
+<li><p>（参考资料4）The hyperparameter $\gamma$ controls the tradeoff between error due to bias and variance in your model. If you have a very large value of gamma, then even if your two inputs are quite “similar”, the value of the kernel function will be small - meaning that the support vector $x_n$ does not have much influence on the classification of the training example $x_m$. This allows the SVM to capture more of the complexity and shape of the data, but if the value of gamma is too large, then the model can overfit and be prone to low bias/high variance. On the other hand, a small value for gamma implies that the support vector has larger influence on the classification of $x_m$. This means that the model is less prone to overfitting, but you may risk not learning a decision boundary that captures the shape and complexity of your data. This leads to a high bias, low variance model.</p>
+</li>
+<li><p>（参考文献3）分别对不同的gamma和C取值，通过图来说明各自的作用</p>
+</li>
+<li>Open问题：<strong>为什么$\gamma$变大，支持向量个数减少；$\gamma$变小，支持向量个数变多？</strong><br>  我的理解：首先回忆对偶形式<script type="math/tex; mode=display">\begin{array}{rl}
+  \max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jK(x_i,x_j) \\
+  s.t.    & \alpha_i\ge 0, i=1,\dots, m \\
+          & \sum\limits_{i=1}^m\alpha_iy_i = 0
+  \end{array}</script>  观察目标函数，高斯核的值$K(x_i,x_j)&gt;0$，$\alpha_i\ge 0$，$y_i=\pm 1$，并且要最大化目标函数。只有在$y_iy_j=-1$时，才能对极大化目标函数产生贡献，即两个样本点来自不同类别。但是当$\gamma$太大时，属于不同类的$y_i,y_j$的距离够远，使得$K(x_i,x_j)\to 0$，还是没啥贡献。只有$x_i,x_j$足够接近时，才有$K(x_i,x_j)$不接近0，这种情况往往是$x_i,x_j$属于同一类别，即$y_iy_j=1$，对极大化目标函数有不利的贡献，为了不要产生贡献，只能令$\alpha_i\alpha_j=0$，即很多点都是非支持向量。<br>  相反的，当$\gamma$比较小，$K(x_i,x_j)$会比较容易取值大一些，即使不同类别的样本点$y_iy_j=-1$. 这时就令$\alpha_i\alpha_j&gt;0$，为极大化目标函数做贡献，也成为支持向量。<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1></li>
+</ul>
+<ol>
 <li><a href="https://www.zhihu.com/question/24627666" target="_blank" rel="noopener">机器学习有很多关于核函数的说法，核函数的定义和作用是什么？</a></li>
 <li>StackExchange<br> <a href="https://stats.stackexchange.com/questions/58585/how-to-understand-effect-of-rbf-svm" target="_blank" rel="noopener">How to understand effect of RBF SVM</a><br> <a href="https://stats.stackexchange.com/questions/43779/non-linear-svm-classification-with-rbf-kernel/43806#43806" target="_blank" rel="noopener">Non-linear SVM classification with RBF kernel</a><br> <a href="https://stats.stackexchange.com/questions/35634/how-to-prove-that-the-radial-basis-function-is-a-kernel" target="_blank" rel="noopener">How to prove that the radial basis function is a kernel?</a></li>
+<li><a href="https://chrisalbon.com/machine_learning/support_vector_machines/svc_parameters_using_rbf_kernel/" target="_blank" rel="noopener">SVC Parameters When Using RBF Kernel</a></li>
+<li><a href="https://www.quora.com/What-are-C-and-gamma-with-regards-to-a-support-vector-machine" target="_blank" rel="noopener">What are C and gamma with regards to a support vector machine?</a></li>
 </ol>
 
       
@@ -532,6 +551,10 @@ k(a,b) & = e^{-||a-b||^2} \\
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/23/hinge/" rel="prev" title="软间隔与hinge loss">
+                软间隔与hinge loss <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -601,7 +624,7 @@ k(a,b) & = e^{-||a-b||^2} \\
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -641,7 +664,7 @@ k(a,b) & = e^{-||a-b||^2} \\
                     
                       
                     
-                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -691,7 +714,7 @@ k(a,b) & = e^{-||a-b||^2} \\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#特征映射-feature-mapping"><span class="nav-number">1.</span> <span class="nav-text">特征映射(feature mapping)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核-Kernel"><span class="nav-number">2.</span> <span class="nav-text">核(Kernel)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小例子"><span class="nav-number">3.</span> <span class="nav-text">小例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多项式核"><span class="nav-number">3.1.</span> <span class="nav-text">多项式核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高斯核（RBF）"><span class="nav-number">3.2.</span> <span class="nav-text">高斯核（RBF）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#特征映射-feature-mapping"><span class="nav-number">1.</span> <span class="nav-text">特征映射(feature mapping)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核-Kernel"><span class="nav-number">2.</span> <span class="nav-text">核(Kernel)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#两个常见的核"><span class="nav-number">3.</span> <span class="nav-text">两个常见的核</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多项式核"><span class="nav-number">3.1.</span> <span class="nav-text">多项式核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高斯核（RBF）"><span class="nav-number">3.2.</span> <span class="nav-text">高斯核（RBF）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高斯核的进一步讨论"><span class="nav-number">3.3.</span> <span class="nav-text">高斯核的进一步讨论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -749,7 +772,7 @@ k(a,b) & = e^{-||a-b||^2} \\
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共5.8k字</span>
+  <span class="post-count">博客全站共7k字</span>
 </div>
         
 
