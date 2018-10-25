@@ -115,18 +115,23 @@
 
 
 
-  <meta name="description" content="敬请期待">
-<meta name="keywords" content="SVM,优化函数">
+  <meta name="description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
+<meta name="keywords" content="SVM,Loss函数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="软间隔与hinge loss">
 <meta property="og:url" content="http://yoursite.com/2018/10/23/hinge/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="敬请期待">
+<meta property="og:description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-23T14:29:38.133Z">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/outlier.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation2.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/C.jpg">
+<meta property="og:updated_time" content="2018-10-25T15:32:43.646Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="软间隔与hinge loss">
-<meta name="twitter:description" content="敬请期待">
+<meta name="twitter:description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
+<meta name="twitter:image" content="http://yoursite.com/2018/10/23/hinge/outlier.jpg">
 
 
 
@@ -356,12 +361,24 @@
                 
               
 
-              <time title="创建时间：2018-10-23 00:00:00 / 修改时间：22:29:38" itemprop="dateCreated datePublished" datetime="2018-10-23T00:00:00+08:00">2018-10-23</time>
+              <time title="创建时间：2018-10-23 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-23T00:00:00+08:00">2018-10-23</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-25 23:32:43" itemprop="dateModified" datetime="2018-10-25T23:32:43+08:00">2018-10-25</time>
               
             
           </span>
@@ -412,7 +429,39 @@
       
 
       
-        <p>敬请期待</p>
+        <h1 id="从hard-margin到soft-margin"><a href="#从hard-margin到soft-margin" class="headerlink" title="从hard margin到soft margin"></a>从hard margin到soft margin</h1><p>之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。<br>另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个outlier干扰了分割超平面：<br><img src="/2018/10/23/hinge/outlier.jpg" alt="outlier.jpg"></p>
+<p>为了让算法能够分割线性不可分的数据，并对outlier不那么敏感，我们引入软间隔（soft margin）：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\min\limits_{w,b} & \frac{1}{2}||w||^2 + C\sum\limits_{i=1}^m\xi_i \\
+\text{s.t.}       & y_i(w^Tx_i + b)\ge 1 - \xi_i, ~~~i=1,\dots,m \\
+                  & \xi_i\ge0, ~~~i=1,\dots,m.
+\end{array}</script><p>$\xi_i$的存在使得点的margin可以小于1. 如果某个点的margin是$1-\xi_i$，则在目标函数上要增加$C\xi_i$的代价。<br>注意，margin是区分正负的：</p>
+<ul>
+<li>如果$1-\xi_i\ge 0$，说明这个点分类正确，但是在支持向量与分割超平面之间；<br><img src="/2018/10/23/hinge/violation.jpg" alt="violation.jpg"></li>
+<li>如果$1-\xi_i&lt; 0$，说明这个点已经越过分割超平面，跑到河对岸去了- -!<br><img src="/2018/10/23/hinge/violation2.jpg" alt="violation2.jpg"></li>
+</ul>
+<p>参数$C$用来控制目标函数两项的相对权重：</p>
+<ol>
+<li>$\min ||w||^2$的目标是最大化margin，</li>
+<li>$\min \sum\limits_{i=1}^m\xi_i$的目标是尽可能多的找到margin至少为1的点，即正确分类的非噪声点。</li>
+</ol>
+<p>参考资料1：解释了不同的C对模型的影响。参数C越大，目标函数越不能容忍错误分类的点，因为这些点对应的$\xi_i$会比较大，所以分割超平面会容易过拟合。<br>参考资料2：大C：我们宁愿边界小一点也要尽量不犯错误（$\xi$小一点）。小C：我们宁愿犯一点错误（$\xi$大一点）也要边界胖一点。<br><img src="/2018/10/23/hinge/C.jpg" alt="C.jpg"></p>
+<h1 id="软间隔的拉格朗日对偶问题"><a href="#软间隔的拉格朗日对偶问题" class="headerlink" title="软间隔的拉格朗日对偶问题"></a>软间隔的拉格朗日对偶问题</h1><p>使用拉格朗日乘子法将约束条件放到目标函数上</p>
+<script type="math/tex; mode=display">\mathcal{L}(w,b,\xi,\alpha,r) = \frac{1}{2}||w||^2 + C\sum\limits_{i=1}^m\xi_i - \sum\limits_{i=1}^m\alpha_i[y_i(w^Tx_i+b)-1+\xi_i] - \sum\limits_{i=1}^mr_i\xi_i</script><p>这里<script type="math/tex">\alpha_i</script>和<script type="math/tex">r_i</script>是拉格朗日乘子，然后原问题等价于<script type="math/tex">\min\max\mathcal{L}</script>，其拉格朗日对偶是<script type="math/tex">\max\limits_{\alpha\ge 0,r\ge 0}\min\limits_{w,b,\xi}\mathcal{L}</script>.<br>分别求解关于$w,b,\xi$导数为0的条件：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\frac{\partial\mathcal{L}}{\partial w} = 0, \\
+\frac{\partial\mathcal{L}}{\partial b} = 0, \\
+\frac{\partial\mathcal{L}}{\partial \xi_i} = 0
+\end{array}</script><p>得到<script type="math/tex">w = \sum\limits_{i=1}^m\alpha_i y_ix_i,~~~ \sum\limits_{i=1}^m\alpha_i y_i=0, ~~~C-\alpha_i-r_i=0</script>. 最终得到</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_j\langle x_i,x_j\rangle \\
+s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
+        & \sum\limits_{i=1}^m\alpha_iy_i = 0
+\end{array}</script><p>与hard margin的情况一样，$w = \sum\limits_{i=1}^m\alpha_i y_ix_i$，所以通过对偶形式求得$\alpha$之后，可以求出$w$来做预测。有趣的是，软间隔加入的$\mathcal{l}_1$正则项$C\sum\xi_i$在对偶问题上只是改变了约束条件，从$0\le\alpha_i$变成$0\le\alpha_i\le C$.</p>
+<h1 id="软间隔的KKT条件"><a href="#软间隔的KKT条件" class="headerlink" title="软间隔的KKT条件"></a>软间隔的KKT条件</h1><h1 id="hinge-loss"><a href="#hinge-loss" class="headerlink" title="hinge loss"></a>hinge loss</h1><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="https://chrisalbon.com/machine_learning/support_vector_machines/svc_parameters_using_rbf_kernel/" target="_blank" rel="noopener">SVC Parameters When Using RBF Kernel</a></li>
+<li><a href="https://blog.csdn.net/qq_34993631/article/details/79340747" target="_blank" rel="noopener">机器学习之软间隔支持向量机（机器学习技法）</a></li>
+</ol>
 
       
     </div>
@@ -435,7 +484,7 @@
           
             <a href="/tags/SVM/" rel="tag"># SVM</a>
           
-            <a href="/tags/优化函数/" rel="tag"># 优化函数</a>
+            <a href="/tags/Loss函数/" rel="tag"># Loss函数</a>
           
         </div>
       
@@ -448,8 +497,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/21/kernel/" rel="next" title="Kernel Trick（核技巧）">
-                <i class="fa fa-chevron-left"></i> Kernel Trick（核技巧）
+              <a href="/2018/10/23/use_svm/" rel="next" title="SVM的使用">
+                <i class="fa fa-chevron-left"></i> SVM的使用
               </a>
             
           </div>
@@ -457,10 +506,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/23/use_svm/" rel="prev" title="SVM的使用">
-                SVM的使用 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -505,8 +550,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -561,6 +615,8 @@
                     
                       
                     
+                      
+                    
                     <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
@@ -601,6 +657,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从hard-margin到soft-margin"><span class="nav-number">1.</span> <span class="nav-text">从hard margin到soft margin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软间隔的拉格朗日对偶问题"><span class="nav-number">2.</span> <span class="nav-text">软间隔的拉格朗日对偶问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软间隔的KKT条件"><span class="nav-number">3.</span> <span class="nav-text">软间隔的KKT条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hinge-loss"><span class="nav-number">4.</span> <span class="nav-text">hinge loss</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -653,7 +725,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共7k字</span>
+  <span class="post-count">博客全站共7.8k字</span>
 </div>
         
 

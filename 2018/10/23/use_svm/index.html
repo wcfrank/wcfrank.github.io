@@ -123,7 +123,7 @@
 <meta property="og:site_name" content="Hardcore Coder">
 <meta property="og:description" content="正如Andrew Ng所说，使用svm进行训练，相比神经网络来说，确实训练速度要快很多。不过只有当特征数量 n 很小，训练集数据量$m$中等的时候，才建议使用高斯核函数来训练SVM，例如$n$的范围是$( 1,1000 )$，$m$的范围是$( 10,10000 )$。如果特征数量$n$远远大于训练样本集$m$，或者特征数量$n$很小，而训练样本集$m$很大，都不宜使用高斯核函数。 连接：http">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-23T14:04:54.787Z">
+<meta property="og:updated_time" content="2018-10-25T14:57:39.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SVM的使用">
 <meta name="twitter:description" content="正如Andrew Ng所说，使用svm进行训练，相比神经网络来说，确实训练速度要快很多。不过只有当特征数量 n 很小，训练集数据量$m$中等的时候，才建议使用高斯核函数来训练SVM，例如$n$的范围是$( 1,1000 )$，$m$的范围是$( 10,10000 )$。如果特征数量$n$远远大于训练样本集$m$，或者特征数量$n$很小，而训练样本集$m$很大，都不宜使用高斯核函数。 连接：http">
@@ -356,12 +356,24 @@
                 
               
 
-              <time title="创建时间：2018-10-23 00:00:00 / 修改时间：22:04:54" itemprop="dateCreated datePublished" datetime="2018-10-23T00:00:00+08:00">2018-10-23</time>
+              <time title="创建时间：2018-10-23 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-23T00:00:00+08:00">2018-10-23</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-10-25 22:57:39" itemprop="dateModified" datetime="2018-10-25T22:57:39+08:00">2018-10-25</time>
               
             
           </span>
@@ -416,6 +428,11 @@
 <p>连接：<a href="https://zhuanlan.zhihu.com/p/30073946" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30073946</a></p>
 <p>一般用线性核和高斯核，也就是Linear核与RBF核需要注意的是需要对数据归一化处理，很多使用者忘了这个小细节然后一般情况下RBF效果是不会差于Linear但是时间上RBF会耗费更多，其他同学也解释过了下面是吴恩达的见解：1. 如果Feature的数量很大，跟样本数量差不多，这时候选用LR或者是Linear Kernel的SVM2. 如果Feature的数量比较小，样本数量一般，不算大也不算小，选用SVM+Gaussian Kernel3. 如果Feature的数量比较小，而样本数量很多，需要手工添加一些feature变成第一种情况</p>
 <p>链接：<a href="https://www.zhihu.com/question/21883548/answer/112128499" target="_blank" rel="noopener">https://www.zhihu.com/question/21883548/answer/112128499</a></p>
+<p><strong>SVM如何防止过拟合？</strong></p>
+<ul>
+<li>减小参数C</li>
+<li>增加软间隔</li>
+</ul>
 
       
     </div>
@@ -449,8 +466,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/23/hinge/" rel="next" title="软间隔与hinge loss">
-                <i class="fa fa-chevron-left"></i> 软间隔与hinge loss
+              <a href="/2018/10/21/kernel/" rel="next" title="Kernel Trick（核技巧）">
+                <i class="fa fa-chevron-left"></i> Kernel Trick（核技巧）
               </a>
             
           </div>
@@ -458,6 +475,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/23/hinge/" rel="prev" title="软间隔与hinge loss">
+                软间隔与hinge loss <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -547,6 +568,8 @@
                 <div class="site-state-item site-state-tags">
                   <a href="/tags/index.html">
                     
+                    
+                      
                     
                       
                     
@@ -650,7 +673,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共7k字</span>
+  <span class="post-count">博客全站共7.8k字</span>
 </div>
         
 
