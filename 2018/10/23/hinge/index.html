@@ -127,7 +127,8 @@
 <meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation2.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/C.jpg">
-<meta property="og:updated_time" content="2018-10-25T15:32:43.646Z">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/KKT.jpg">
+<meta property="og:updated_time" content="2018-10-28T14:52:47.844Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="软间隔与hinge loss">
 <meta name="twitter:description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
@@ -378,7 +379,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-10-25 23:32:43" itemprop="dateModified" datetime="2018-10-25T23:32:43+08:00">2018-10-25</time>
+                <time title="修改时间：2018-10-28 22:52:47" itemprop="dateModified" datetime="2018-10-28T22:52:47+08:00">2018-10-28</time>
               
             
           </span>
@@ -458,9 +459,39 @@
 s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
         & \sum\limits_{i=1}^m\alpha_iy_i = 0
 \end{array}</script><p>与hard margin的情况一样，$w = \sum\limits_{i=1}^m\alpha_i y_ix_i$，所以通过对偶形式求得$\alpha$之后，可以求出$w$来做预测。有趣的是，软间隔加入的$\mathcal{l}_1$正则项$C\sum\xi_i$在对偶问题上只是改变了约束条件，从$0\le\alpha_i$变成$0\le\alpha_i\le C$.</p>
-<h1 id="软间隔的KKT条件"><a href="#软间隔的KKT条件" class="headerlink" title="软间隔的KKT条件"></a>软间隔的KKT条件</h1><h1 id="hinge-loss"><a href="#hinge-loss" class="headerlink" title="hinge loss"></a>hinge loss</h1><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<h1 id="软间隔的KKT条件"><a href="#软间隔的KKT条件" class="headerlink" title="软间隔的KKT条件"></a>软间隔的KKT条件</h1><p>软间隔情形，KKT条件中的松弛互补条件为</p>
+<script type="math/tex; mode=display">\begin{array}{c}
+\alpha_i(y_i(w^Tx_i+b)-1+\xi_i)=0 \\
+r_i\xi_i = 0
+\end{array}</script><ol>
+<li>如果$\alpha_i=0$，由$\frac{\partial\mathcal{L}}{\partial \xi_i} = 0$得到$C-\alpha_i-r_i=0$，从而$r_i=C&gt;0$，所以$\xi_i=0$. 因为$\alpha_i=0, \xi_i=0$，所以$y_i(w^Tx_i+b)\ge 1$，即样本要么是支持向量，要么样本被正确分类。</li>
+<li>如果$0&lt;\alpha_i&lt;C$，所以$r_i\neq 0$，所以有$\xi_i=0$.因此$y_i(w^Tx_i+b) = 1$，即该样本点为支持向量。</li>
+<li>如果$\alpha_i=C$, 则$y_i(w^Tx_i+b)=1-\xi_i\le 1$，说明这个样本点要么是噪声点，要么是误分类点：<ul>
+<li>如果$0&lt;\xi_i&lt;1$，该点被正确分类，但在超平面与自己类别的支持向量之间（噪声点）</li>
+<li>如果$\xi_i=1$， 该点在分割超平面上，无法被正确分类</li>
+<li>如果$\xi_i&gt;1$，该点是误分类点。</li>
+</ul>
+</li>
+</ol>
+<p>在证明SMO算法收敛性时会用到软间隔的KKT条件。<br><img src="/2018/10/23/hinge/KKT.jpg" alt="KKT"><br>图片来自于参考资料3.1.</p>
+<h1 id="hinge-loss"><a href="#hinge-loss" class="headerlink" title="hinge loss"></a>hinge loss</h1><p>Hinge loss: $L(t) = \max(0, 1-t)$.</p>
+<ol>
+<li>应用到SVM上，损失函数可以写成<script type="math/tex; mode=display">\min \frac{1}{m}\sum\limits_{i=1}^m\max(0, 1 - y_i(w^Tx_i+b)) + \frac{\lambda}{2}||w||_2^2</script></li>
+<li>之前硬间隔的SVM可写成：<script type="math/tex; mode=display">\begin{array}{rl}
+\min & \frac{1}{2}||w||_2^2 \\
+\text{s.t.} & y_i(w^Tx_i +b) \ge 1, ~~~i=1,\dots,m
+\end{array}</script></li>
+<li>软间隔的SVM可写成：<script type="math/tex; mode=display">\begin{array}{rl}
+\min & \frac{1}{2}||w||_2^2 + \frac{C}{m}\sum\limits_{i=1}^m\xi_i \\
+\text{s.t.} & y_i(w^Tx_i +b) \ge 1-\xi_i, ~~~i=1,\dots,m \\
+& \xi_i\ge 0, ~~~i=1,\dots,m
+\end{array}</script></li>
+</ol>
+<p><strong>硬间隔SVM和软间隔SVM形式都可以写成损失函数为Hinge loss的形式。</strong> 推导过程见参考资料3.1.</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
 <li><a href="https://chrisalbon.com/machine_learning/support_vector_machines/svc_parameters_using_rbf_kernel/" target="_blank" rel="noopener">SVC Parameters When Using RBF Kernel</a></li>
 <li><a href="https://blog.csdn.net/qq_34993631/article/details/79340747" target="_blank" rel="noopener">机器学习之软间隔支持向量机（机器学习技法）</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/36379394" target="_blank" rel="noopener">攀登传统机器学习的珠峰-SVM (中)</a><br> <a href="https://zhuanlan.zhihu.com/p/36535299" target="_blank" rel="noopener">攀登传统机器学习的珠峰-SVM (下)</a></li>
 </ol>
 
       
@@ -497,8 +528,8 @@ s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/23/use_svm/" rel="next" title="SVM的使用">
-                <i class="fa fa-chevron-left"></i> SVM的使用
+              <a href="/2018/10/21/kernel/" rel="next" title="Kernel Trick（核技巧）">
+                <i class="fa fa-chevron-left"></i> Kernel Trick（核技巧）
               </a>
             
           </div>
@@ -506,6 +537,10 @@ s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/23/use_svm/" rel="prev" title="SVM的使用">
+                SVM的使用 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -604,8 +639,6 @@ s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
                 <div class="site-state-item site-state-tags">
                   <a href="/tags/index.html">
                     
-                    
-                      
                     
                       
                     
@@ -725,7 +758,7 @@ s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共7.8k字</span>
+  <span class="post-count">博客全站共8.3k字</span>
 </div>
         
 
