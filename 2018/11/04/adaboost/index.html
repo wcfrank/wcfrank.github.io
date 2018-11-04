@@ -115,31 +115,25 @@
 
 
 
-  <meta name="description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
-<meta name="keywords" content="SVM,Loss函数">
+  <meta name="description" content="讲到Ensemble Learning的boosting，肯定会讲Adaboost，它是boosting思想最重要的算法之一，另外一个是GBDT。本文主要内容是参考《李书》和一篇博客（见参考资料1，2）. Adaboost算法二分类问题，训练数据集{$(x_1,y_1), (x_2,y_2),\dots,(x_N,y_N)$}，样本的label为$y_i=1$或者-1. Adaboost  输入：">
+<meta name="keywords" content="Boosting">
 <meta property="og:type" content="article">
-<meta property="og:title" content="软间隔与hinge loss">
-<meta property="og:url" content="http://yoursite.com/2018/10/23/hinge/index.html">
+<meta property="og:title" content="Adaboost">
+<meta property="og:url" content="http://yoursite.com/2018/11/04/adaboost/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
+<meta property="og:description" content="讲到Ensemble Learning的boosting，肯定会讲Adaboost，它是boosting思想最重要的算法之一，另外一个是GBDT。本文主要内容是参考《李书》和一篇博客（见参考资料1，2）. Adaboost算法二分类问题，训练数据集{$(x_1,y_1), (x_2,y_2),\dots,(x_N,y_N)$}，样本的label为$y_i=1$或者-1. Adaboost  输入：">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/outlier.jpg">
-<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation.jpg">
-<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation2.jpg">
-<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/C.jpg">
-<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/KKT.jpg">
-<meta property="og:updated_time" content="2018-10-28T14:52:47.844Z">
+<meta property="og:updated_time" content="2018-11-04T14:32:57.355Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="软间隔与hinge loss">
-<meta name="twitter:description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
-<meta name="twitter:image" content="http://yoursite.com/2018/10/23/hinge/outlier.jpg">
+<meta name="twitter:title" content="Adaboost">
+<meta name="twitter:description" content="讲到Ensemble Learning的boosting，肯定会讲Adaboost，它是boosting思想最重要的算法之一，另外一个是GBDT。本文主要内容是参考《李书》和一篇博客（见参考资料1，2）. Adaboost算法二分类问题，训练数据集{$(x_1,y_1), (x_2,y_2),\dots,(x_N,y_N)$}，样本的label为$y_i=1$或者-1. Adaboost  输入：">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/10/23/hinge/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/11/04/adaboost/"/>
 
 
 
@@ -149,7 +143,7 @@
   };
 </script>
 
-  <title>软间隔与hinge loss | Hardcore Coder</title>
+  <title>Adaboost | Hardcore Coder</title>
   
 
 
@@ -320,7 +314,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/23/hinge/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/04/adaboost/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="骚炼">
@@ -337,7 +331,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">软间隔与hinge loss
+          <h1 class="post-title" itemprop="name headline">Adaboost
               
             
           </h1>
@@ -362,24 +356,12 @@
                 
               
 
-              <time title="创建时间：2018-10-23 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-23T00:00:00+08:00">2018-10-23</time>
+              <time title="创建时间：2018-11-04 00:00:00 / 修改时间：22:32:57" itemprop="dateCreated datePublished" datetime="2018-11-04T00:00:00+08:00">2018-11-04</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-28 22:52:47" itemprop="dateModified" datetime="2018-10-28T22:52:47+08:00">2018-10-28</time>
               
             
           </span>
@@ -396,7 +378,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/优化/" itemprop="url" rel="index"><span itemprop="name">优化</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Ensemble-Learning/" itemprop="url" rel="index"><span itemprop="name">Ensemble Learning</span></a></span>
 
                 
                 
@@ -430,68 +412,51 @@
       
 
       
-        <h1 id="从hard-margin到soft-margin"><a href="#从hard-margin到soft-margin" class="headerlink" title="从hard margin到soft margin"></a>从hard margin到soft margin</h1><p>之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。<br>另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个outlier干扰了分割超平面：<br><img src="/2018/10/23/hinge/outlier.jpg" alt="outlier.jpg"></p>
-<p>为了让算法能够分割线性不可分的数据，并对outlier不那么敏感，我们引入软间隔（soft margin）：</p>
-<script type="math/tex; mode=display">\begin{array}{rl}
-\min\limits_{w,b} & \frac{1}{2}||w||^2 + C\sum\limits_{i=1}^m\xi_i \\
-\text{s.t.}       & y_i(w^Tx_i + b)\ge 1 - \xi_i, ~~~i=1,\dots,m \\
-                  & \xi_i\ge0, ~~~i=1,\dots,m.
-\end{array}</script><p>$\xi_i$的存在使得点的margin可以小于1. 如果某个点的margin是$1-\xi_i$，则在目标函数上要增加$C\xi_i$的代价。<br>注意，margin是区分正负的：</p>
-<ul>
-<li>如果$1-\xi_i\ge 0$，说明这个点分类正确，但是在支持向量与分割超平面之间；<br><img src="/2018/10/23/hinge/violation.jpg" alt="violation.jpg"></li>
-<li>如果$1-\xi_i&lt; 0$，说明这个点已经越过分割超平面，跑到河对岸去了- -!<br><img src="/2018/10/23/hinge/violation2.jpg" alt="violation2.jpg"></li>
-</ul>
-<p>参数$C$用来控制目标函数两项的相对权重：</p>
+        <p>讲到Ensemble Learning的boosting，肯定会讲Adaboost，它是boosting思想最重要的算法之一，另外一个是GBDT。本文主要内容是参考《李书》和一篇博客（见参考资料1，2）.</p>
+<h1 id="Adaboost算法"><a href="#Adaboost算法" class="headerlink" title="Adaboost算法"></a>Adaboost算法</h1><p>二分类问题，训练数据集{$(x_1,y_1), (x_2,y_2),\dots,(x_N,y_N)$}，样本的label为$y_i=1$或者-1.</p>
+<p><strong>Adaboost</strong></p>
+<blockquote>
+<p>输入：训练数据集{$T = (x_1,y_1), (x_2,y_2),\dots,(x_N,y_N)$}；和某个弱学习算法（又称学习器、分类器）<br>输出：最终分类器$G(x)$</p>
+</blockquote>
 <ol>
-<li>$\min ||w||^2$的目标是最大化margin，</li>
-<li>$\min \sum\limits_{i=1}^m\xi_i$的目标是尽可能多的找到margin至少为1的点，即正确分类的非噪声点。</li>
+<li>初始化训练样本的权重分布：$D<em>1 = (w</em>{11},w<em>{12},\dots,w</em>{1N}), w_{1i}=\frac{1}{N}$</li>
+<li>对每个学习器$m=1,2,\dots,m$:<ol>
+<li>将训练数据集$T$和训练数据的权重$D_m$，带入分类器学习，得到$G_m(x)$</li>
+<li>计算<script type="math/tex">G_m(x)</script>在训练集上的误分类比率：<script type="math/tex; mode=display">e_m = P(G_m(x_i)\neq y_i) = \sum\limits_{i=1}^N w_{mi}I(G_m(x_i)\neq y_i)</script></li>
+<li>计算分类器$G_m(x)$的系数：<script type="math/tex; mode=display">\alpha_m = \frac{1}{2}\log\frac{1-e_m}{e_m}</script></li>
+<li>更新训练数据集的权重分布：<script type="math/tex; mode=display">D_{m+1} = (w_{m+1,1},w_{m+1,2},\dots,w_{m+1,N})</script><script type="math/tex; mode=display">w_{m+1,i} = \frac{w_{mi}}{Z_m}e^{-\alpha_m y_i G_m(x_i)}, ~~~i = 1,2,\dots,N</script>其中<script type="math/tex">Z_m = \sum\limits_{i=1}^Nw_{mi}e^{-\alpha_m y_i G_m(x_i)}</script></li>
 </ol>
-<p>参考资料1：解释了不同的C对模型的影响。参数C越大，目标函数越不能容忍错误分类的点，因为这些点对应的$\xi_i$会比较大，所以分割超平面会容易过拟合。<br>参考资料2：大C：我们宁愿边界小一点也要尽量不犯错误（$\xi$小一点）。小C：我们宁愿犯一点错误（$\xi$大一点）也要边界胖一点。<br><img src="/2018/10/23/hinge/C.jpg" alt="C.jpg"></p>
-<h1 id="软间隔的拉格朗日对偶问题"><a href="#软间隔的拉格朗日对偶问题" class="headerlink" title="软间隔的拉格朗日对偶问题"></a>软间隔的拉格朗日对偶问题</h1><p>使用拉格朗日乘子法将约束条件放到目标函数上</p>
-<script type="math/tex; mode=display">\mathcal{L}(w,b,\xi,\alpha,r) = \frac{1}{2}||w||^2 + C\sum\limits_{i=1}^m\xi_i - \sum\limits_{i=1}^m\alpha_i[y_i(w^Tx_i+b)-1+\xi_i] - \sum\limits_{i=1}^mr_i\xi_i</script><p>这里<script type="math/tex">\alpha_i</script>和<script type="math/tex">r_i</script>是拉格朗日乘子，然后原问题等价于<script type="math/tex">\min\max\mathcal{L}</script>，其拉格朗日对偶是<script type="math/tex">\max\limits_{\alpha\ge 0,r\ge 0}\min\limits_{w,b,\xi}\mathcal{L}</script>.<br>分别求解关于$w,b,\xi$导数为0的条件：</p>
-<script type="math/tex; mode=display">\begin{array}{rl}
-\frac{\partial\mathcal{L}}{\partial w} = 0, \\
-\frac{\partial\mathcal{L}}{\partial b} = 0, \\
-\frac{\partial\mathcal{L}}{\partial \xi_i} = 0
-\end{array}</script><p>得到<script type="math/tex">w = \sum\limits_{i=1}^m\alpha_i y_ix_i,~~~ \sum\limits_{i=1}^m\alpha_i y_i=0, ~~~C-\alpha_i-r_i=0</script>. 最终得到</p>
-<script type="math/tex; mode=display">\begin{array}{rl}
-\max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_j\langle x_i,x_j\rangle \\
-s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
-        & \sum\limits_{i=1}^m\alpha_iy_i = 0
-\end{array}</script><p>与hard margin的情况一样，$w = \sum\limits_{i=1}^m\alpha_i y_ix_i$，所以通过对偶形式求得$\alpha$之后，可以求出$w$来做预测。有趣的是，软间隔加入的$\mathcal{l}_1$正则项$C\sum\xi_i$在对偶问题上只是改变了约束条件，从$0\le\alpha_i$变成$0\le\alpha_i\le C$.</p>
-<h1 id="软间隔的KKT条件"><a href="#软间隔的KKT条件" class="headerlink" title="软间隔的KKT条件"></a>软间隔的KKT条件</h1><p>软间隔情形，KKT条件中的松弛互补条件为</p>
-<script type="math/tex; mode=display">\begin{array}{c}
-\alpha_i(y_i(w^Tx_i+b)-1+\xi_i)=0 \\
-r_i\xi_i = 0
-\end{array}</script><ol>
-<li>如果$\alpha_i=0$，由$\frac{\partial\mathcal{L}}{\partial \xi_i} = 0$得到$C-\alpha_i-r_i=0$，从而$r_i=C&gt;0$，所以$\xi_i=0$. 因为$\alpha_i=0, \xi_i=0$，所以$y_i(w^Tx_i+b)\ge 1$，即样本要么是支持向量，要么样本被正确分类。</li>
-<li>如果$0&lt;\alpha_i&lt;C$，所以$r_i\neq 0$，所以有$\xi_i=0$.因此$y_i(w^Tx_i+b) = 1$，即该样本点为支持向量。</li>
-<li>如果$\alpha_i=C$, 则$y_i(w^Tx_i+b)=1-\xi_i\le 1$，说明这个样本点要么是噪声点，要么是误分类点：<ul>
-<li>如果$0&lt;\xi_i&lt;1$，该点被正确分类，但在超平面与自己类别的支持向量之间（噪声点）</li>
-<li>如果$\xi_i=1$， 该点在分割超平面上，无法被正确分类</li>
-<li>如果$\xi_i&gt;1$，该点是误分类点。</li>
-</ul>
 </li>
+<li>构建基本分类器的线性组合<script type="math/tex; mode=display">f(x) = \sum\limits_{m=1}^M\alpha_mG_m(x)</script>并得到最终的分类器：<script type="math/tex; mode=display">G(x) = sign(f(x)) = sign(\sum\limits_{m=1}^M\alpha_mG_m(x))</script></li>
 </ol>
-<p>在证明SMO算法收敛性时会用到软间隔的KKT条件。<br><img src="/2018/10/23/hinge/KKT.jpg" alt="KKT"><br>图片来自于参考资料3.1.</p>
-<h1 id="hinge-loss"><a href="#hinge-loss" class="headerlink" title="hinge loss"></a>hinge loss</h1><p>Hinge loss: $L(t) = \max(0, 1-t)$.</p>
-<ol>
-<li>应用到SVM上，损失函数可以写成<script type="math/tex; mode=display">\min \frac{1}{m}\sum\limits_{i=1}^m\max(0, 1 - y_i(w^Tx_i+b)) + \frac{\lambda}{2}||w||_2^2</script></li>
-<li>之前硬间隔的SVM可写成：<script type="math/tex; mode=display">\begin{array}{rl}
-\min & \frac{1}{2}||w||_2^2 \\
-\text{s.t.} & y_i(w^Tx_i +b) \ge 1, ~~~i=1,\dots,m
-\end{array}</script></li>
-<li>软间隔的SVM可写成：<script type="math/tex; mode=display">\begin{array}{rl}
-\min & \frac{1}{2}||w||_2^2 + \frac{C}{m}\sum\limits_{i=1}^m\xi_i \\
-\text{s.t.} & y_i(w^Tx_i +b) \ge 1-\xi_i, ~~~i=1,\dots,m \\
-& \xi_i\ge 0, ~~~i=1,\dots,m
-\end{array}</script></li>
-</ol>
-<p><strong>硬间隔SVM和软间隔SVM形式都可以写成损失函数为Hinge loss的形式。</strong> 推导过程见参考资料3.1.</p>
+<h1 id="算法的解释"><a href="#算法的解释" class="headerlink" title="算法的解释"></a>算法的解释</h1><ul>
+<li>初始化样本的权重为均匀分布，对于第一个学习器，样本的权重相同。即第一个学习器是对原始数据集合上训练。</li>
+<li>第2.4步，权重更新的时候除以<script type="math/tex">Z_m</script>，这样权重分布<script type="math/tex">D_{m+1}</script>之和为1，称为一个概率分布。</li>
+<li>每一轮的样本权重之和均为1：<script type="math/tex">\sum\limits_{i=1}^Nw_{mi}=1</script>. 所以第2.2步，误分类比率<script type="math/tex">e_m</script>是被<script type="math/tex">G_m(x)</script>误分类的样本的权重之和。在第$m$个学习器上的误分类比率：<script type="math/tex">e_m = P(G_m(x_i)\neq y_i) = \sum\limits_{G_m(x_i)\neq y_i}w_{mi}</script></li>
+<li>第2.1步，分类器训练的目标就是最小化误分类率$e_m$<blockquote>
+<p>Adaboost算法的最基本性质是它能在学习过程中不断减小训练误差，即误分类比率。（参考资料1-P142-定理8.1，8.2）</p>
+</blockquote>
+</li>
+<li>第2.3步，学习器的系数<script type="math/tex">\alpha_m</script>代表这个学习器的重要性。当$e_m\leq\frac{1}{2}$（即误分类比率低）的时候，有$\alpha_m\geq 0$，并且$e_m$越小$\alpha_m$越大。所以误分类比率越小的分类器，在最终分类器中作用越大。</li>
+<li>第2.4步，权重的更新可以写成下面的式子<script type="math/tex; mode=display">w_{m+1,i} = 
+\begin{cases}
+\frac{w_{mi}}{Z_m}e^{-\alpha_m},  & G_m(x_i)=y_i \\
+\frac{w_{mi}}{Z_m}e^{\alpha_m},  & G_m(x_i)\neq y_i
+\end{cases}</script>如果$\alpha_m&gt;0$是一个正面作用的分类器，先忽略$Z_m$，对那些分类正确的样本，权重值减小；分类错误的样本呢，权重值变大。这样误分类样本点在下一轮学习器会更加重要。<blockquote>
+<p>不改变所给的训练数据，只不断改变训练数据的权重分布，使得训练数据在基本分类器的训练中起不同作用，这是Adaboost的特点</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="Adaboost算法的数学解释"><a href="#Adaboost算法的数学解释" class="headerlink" title="Adaboost算法的数学解释"></a>Adaboost算法的数学解释</h1><p>Adaboost算法是<strong>模型为加法模型的</strong>、<strong>损失函数为指数函数的</strong>、<strong>学习方法为前向分布算法</strong>的二分类问题。</p>
+<ul>
+<li>加法模型：$f(x) = \sum\limits_{m=1}^M \alpha_m g(x,w_m)$. 其中$g$是基函数，$w_m$是基函数的参数，$\alpha_m$是基函数的系数</li>
+<li>指数损失函数：$L(y, f(x)) = e^{-yf(x)}$<br>  (回忆SVM中的hinge损失函数$L(y,f(x)) = \max(0, 1-yf(x))$)</li>
+<li>前向分布算法的思想：对于加法模型，从前往后，每一轮只学习一个基函数及其系数，逐步逼近优化损失函数。<br>  即每一轮$m$的目标就是极小化损失函数<script type="math/tex; mode=display">(\alpha_m,w_m) = \arg\min\limits_{\alpha,w}\sum\limits_{i=1}^NL(y_i,f_{m-1}(x_i)+\alpha_m g(x_i,w_m))</script></li>
+</ul>
+<p><strong>问题：</strong> 每一轮的目标极小化损失函数和极小化误分类率是等价的么？<br>后面的推到，可以发掘一下alpha，w以及e的关系。。。</p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
-<li><a href="https://chrisalbon.com/machine_learning/support_vector_machines/svc_parameters_using_rbf_kernel/" target="_blank" rel="noopener">SVC Parameters When Using RBF Kernel</a></li>
-<li><a href="https://blog.csdn.net/qq_34993631/article/details/79340747" target="_blank" rel="noopener">机器学习之软间隔支持向量机（机器学习技法）</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/36379394" target="_blank" rel="noopener">攀登传统机器学习的珠峰-SVM (中)</a><br> <a href="https://zhuanlan.zhihu.com/p/36535299" target="_blank" rel="noopener">攀登传统机器学习的珠峰-SVM (下)</a></li>
+<li>《统计学习方法》李航，P137-146.</li>
+<li><a href="https://www.cnblogs.com/ScorpioLu/p/8295990.html" target="_blank" rel="noopener">AdaBoost原理详解</a></li>
 </ol>
 
       
@@ -513,9 +478,7 @@ r_i\xi_i = 0
       
         <div class="post-tags">
           
-            <a href="/tags/SVM/" rel="tag"># SVM</a>
-          
-            <a href="/tags/Loss函数/" rel="tag"># Loss函数</a>
+            <a href="/tags/Boosting/" rel="tag"># Boosting</a>
           
         </div>
       
@@ -528,8 +491,8 @@ r_i\xi_i = 0
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/23/use_svm/" rel="next" title="SVM的使用">
-                <i class="fa fa-chevron-left"></i> SVM的使用
+              <a href="/2018/10/23/hinge/" rel="next" title="软间隔与hinge loss">
+                <i class="fa fa-chevron-left"></i> 软间隔与hinge loss
               </a>
             
           </div>
@@ -537,10 +500,6 @@ r_i\xi_i = 0
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/11/04/adaboost/" rel="prev" title="Adaboost">
-                Adaboost <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -704,7 +663,7 @@ r_i\xi_i = 0
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从hard-margin到soft-margin"><span class="nav-number">1.</span> <span class="nav-text">从hard margin到soft margin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软间隔的拉格朗日对偶问题"><span class="nav-number">2.</span> <span class="nav-text">软间隔的拉格朗日对偶问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软间隔的KKT条件"><span class="nav-number">3.</span> <span class="nav-text">软间隔的KKT条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hinge-loss"><span class="nav-number">4.</span> <span class="nav-text">hinge loss</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Adaboost算法"><span class="nav-number">1.</span> <span class="nav-text">Adaboost算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法的解释"><span class="nav-number">2.</span> <span class="nav-text">算法的解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Adaboost算法的数学解释"><span class="nav-number">3.</span> <span class="nav-text">Adaboost算法的数学解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
