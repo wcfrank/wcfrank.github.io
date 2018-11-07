@@ -123,7 +123,7 @@
 <meta property="og:site_name" content="Hardcore Coder">
 <meta property="og:description" content="讲到Ensemble Learning的boosting，肯定会讲Adaboost，它是boosting思想最重要的算法之一，另外一个是GBDT。本文主要内容是参考《李书》和一篇博客（见参考资料1，2）. Adaboost算法二分类问题，训练数据集{$(x_1,y_1), (x_2,y_2),\dots,(x_N,y_N)$}，样本的label为$y_i=1$或者-1. Adaboost  输入：">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-11-06T14:41:51.906Z">
+<meta property="og:updated_time" content="2018-11-07T15:05:59.070Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Adaboost">
 <meta name="twitter:description" content="讲到Ensemble Learning的boosting，肯定会讲Adaboost，它是boosting思想最重要的算法之一，另外一个是GBDT。本文主要内容是参考《李书》和一篇博客（见参考资料1，2）. Adaboost算法二分类问题，训练数据集{$(x_1,y_1), (x_2,y_2),\dots,(x_N,y_N)$}，样本的label为$y_i=1$或者-1. Adaboost  输入：">
@@ -373,7 +373,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-06 22:41:51" itemprop="dateModified" datetime="2018-11-06T22:41:51+08:00">2018-11-06</time>
+                <time title="修改时间：2018-11-07 23:05:59" itemprop="dateModified" datetime="2018-11-07T23:05:59+08:00">2018-11-07</time>
               
             
           </span>
@@ -432,7 +432,7 @@
 </blockquote>
 <ol>
 <li>初始化训练样本的权重分布：<script type="math/tex">D_1 = (w_{11},w_{12},\dots,w_{1N}), w_{1i}=\frac{1}{N}</script></li>
-<li>对每个学习器$m=1,2,\dots,m$:<ol>
+<li>对每个学习器$m=1,2,\dots,M$:<ol>
 <li>将训练数据集$T$和训练数据的权重$D_m$，带入分类器学习，得到$G_m(x)$</li>
 <li>计算<script type="math/tex">G_m(x)</script>在训练集上的误分类比率：<script type="math/tex; mode=display">e_m = P(G_m(x_i)\neq y_i) = \sum\limits_{i=1}^N w_{mi}I(G_m(x_i)\neq y_i)</script></li>
 <li>计算分类器$G_m(x)$的系数：<script type="math/tex; mode=display">\alpha_m = \frac{1}{2}\log\frac{1-e_m}{e_m}</script></li>
@@ -442,14 +442,16 @@
 <li>构建基本分类器的线性组合<script type="math/tex; mode=display">f(x) = \sum\limits_{m=1}^M\alpha_mG_m(x)</script>并得到最终的分类器：<script type="math/tex; mode=display">G(x) = sign(f(x)) = sign(\sum\limits_{m=1}^M\alpha_mG_m(x))</script></li>
 </ol>
 <h1 id="算法的解释"><a href="#算法的解释" class="headerlink" title="算法的解释"></a>算法的解释</h1><ul>
-<li>初始化样本的权重为均匀分布，对于第一个学习器，样本的权重相同。即第一个学习器是对原始数据集合上训练。</li>
-<li>第2.4步，权重更新的时候除以<script type="math/tex">Z_m</script>，这样权重分布<script type="math/tex">D_{m+1}</script>之和为1，称为一个概率分布。</li>
-<li>每一轮的样本权重之和均为1：<script type="math/tex">\sum\limits_{i=1}^Nw_{mi}=1</script>. 所以第2.2步，误分类比率<script type="math/tex">e_m</script>是被<script type="math/tex">G_m(x)</script>误分类的样本的权重之和。在第$m$个学习器上的误分类比率：<script type="math/tex">e_m = P(G_m(x_i)\neq y_i) = \sum\limits_{G_m(x_i)\neq y_i}w_{mi}</script></li>
-<li>第2.1步，分类器训练的目标就是最小化误分类率$e_m$<blockquote>
+<li>第1步，初始化样本的权重为均匀分布，对于第一个学习器，样本的权重相同。即第一个学习器是对原始数据集合上训练。</li>
+<li>第2.1步，分类器训练的目标就是最小化误分类率$e_m$，<br>  所以，第2.1步和第2.2步是同时进行的。<blockquote>
 <p>Adaboost算法的最基本性质是它能在学习过程中不断减小训练误差，即误分类比率。（参考资料1-P142-定理8.1，8.2）</p>
 </blockquote>
 </li>
+<li>第2.2步，误分类比率<script type="math/tex">e_m</script>是被<script type="math/tex">G_m(x)</script>误分类的样本的权重之和。在第$m$个学习器上的误分类比率：<script type="math/tex">e_m = P(G_m(x_i)\neq y_i) = \sum\limits_{G_m(x_i)\neq y_i}w_{mi}</script>。（用概率表示是因为第2.4步，每一轮的样本权重之和均为1：<script type="math/tex">\sum\limits_{i=1}^Nw_{mi}=1</script>. ）</li>
+<li>第2.2步，默认的弱学习器叫做Decision stump，即只有一层的决策树，只考虑一个特征（一个维度）。选择$e_m$的方式：<strong>遍历每个特征的每个分割方式</strong>，得到的误分类样本权重和最小的为$e_m$。</li>
 <li>第2.3步，学习器的系数<script type="math/tex">\alpha_m</script>代表这个学习器的重要性。当$e_m\leq\frac{1}{2}$（即误分类比率低）的时候，有$\alpha_m\geq 0$，并且$e_m$越小$\alpha_m$越大。所以误分类比率越小的分类器，在最终分类器中作用越大。</li>
+<li>第2.3步，在《西瓜书》里这一步之前，会加一个判断：如果得到$e_m&gt;0.5$，即遍历了每个特征的每种分割方式都找不到合适的弱学习器，跳出迭代，算法终止。</li>
+<li>第2.4步，权重更新的时候除以<script type="math/tex">Z_m</script>，这样权重分布<script type="math/tex">D_{m+1}</script>之和为1，称为一个概率分布。</li>
 <li>第2.4步，权重的更新可以写成下面的式子<script type="math/tex; mode=display">w_{m+1,i} = 
 \begin{cases}
 \frac{w_{mi}}{Z_m}e^{-\alpha_m},  & G_m(x_i)=y_i \\
@@ -474,7 +476,7 @@
 <li>然后求$\alpha_m$：<script type="math/tex; mode=display">\begin{array}{rl}
 \sum\limits_{i=1}^N\bar{w}_{mi}e^{-y_i\alpha G_m(x_i)} & = \sum\limits_{y_i=G_m(x_i)}\bar{w}_{mi}e^{-\alpha} + \sum\limits_{y_i\neq G_m(x_i)}\bar{w}_{mi}e^{\alpha} \\
 & = \sum\limits_{i=1}^N\bar{w}_{mi}(\frac{\sum\limits_{y_i=G_m(x_i)}\bar{w}_{mi}}{\sum\limits_{i=1}^N\bar{w}_{mi}}e^{-\alpha} + \frac{\sum\limits_{y_i\neq G_m(x_i)}\bar{w}_{mi}}{\sum\limits_{i=1}^N\bar{w}_{mi}}e^{\alpha}) \tag{3}\label{eq3}
-\end{array}</script>这里如果令<script type="math/tex">e_m = \frac{\sum\limits_{y_i\neq G_m(x_i)}\bar{w}_{mi}}{\sum\limits_{i=1}^N\bar{w}_{mi}} = \frac{\sum\limits_{i=1}^N\bar{w}_{mi}I(y_i\neq G_m(x_i))}{\sum\limits_{i=1}^N\bar{w}_{mi}} = \sum\limits_{i=1}^nw_{mi}I(y_i\neq G_m(x_i))</script>，恰好就是误分类率；对\eqref{eq3}式关于$\alpha$求导并使导数为0，得到<script type="math/tex; mode=display">\alpha_m = \frac{1}{2}\log\frac{1-e_m}{e_m}</script></li>
+\end{array}</script>这里如果令<script type="math/tex">e_m = \frac{\sum\limits_{y_i\neq G_m(x_i)}\bar{w}_{mi}}{\sum\limits_{i=1}^N\bar{w}_{mi}} = \frac{\sum\limits_{i=1}^N\bar{w}_{mi}I(y_i\neq G_m(x_i))}{\sum\limits_{i=1}^N\bar{w}_{mi}} = \sum\limits_{i=1}^nw_{mi}I(y_i\neq G_m(x_i))</script>，恰好就是误分类率；对\eqref{eq3}式关于$\alpha$求导并使导数为0，得到<script type="math/tex; mode=display">\alpha_m = \frac{1}{2}\log\frac{1-e_m}{e_m}</script>因为损失函数\eqref{eq3}的二次导数&gt;0，所以极值点是极小值点。</li>
 </ol>
 <p>最后再看权重的更新：由<script type="math/tex">f_m(x_i) = f_{m-1}(x_i)+\alpha_m G_m(x_i)</script>以及<script type="math/tex">\bar{w}_{mi} = e^{-y_if_{m-1}(x_i)}</script>可得，</p>
 <script type="math/tex; mode=display">\bar{w}_{m+1,i} = \bar{w}_{m,i}e^{-y_i\alpha_m G_m(x_i)}</script><p><strong>注意：</strong> </p>
@@ -482,19 +484,18 @@
 <li>一般而言$\alpha&gt;0$，因为我们总是找一个弱分类器，即误分类率略小于0.5即可。 </li>
 <li>$w$是样本的权重&gt;0，不是分类器的参数。前向分布算法的每一次迭代，\eqref{eq1}要找使得损失函数最小的分类器参数（也就是确定分类器），这里完全<strong>不是</strong>求样本的权重。</li>
 <li>每一轮迭代$m$，通过极小化指数损失函数\eqref{eq1}而得到的分类器\eqref{eq2}，是使第$m$轮加权的样本数据误分类之和最小的分类器。</li>
-<li>在第$m$轮，最先确定的就是权重$w_{mi}$，因为权重只与前一轮的参数有关系，然后再确定的$G_m$和$\alpha_m$</li>
+<li>在第$m-1$轮就已经确定了样本的权重<script type="math/tex">w_{mi}</script>，在第$m$轮时<script type="math/tex">w_{mi}</script>作为常数来考虑，权重只与前一轮的参数有关系，然后在第$m$轮再确定的$G_m$和$\alpha_m$</li>
 </ul>
 <h1 id="Adaboost的优缺点"><a href="#Adaboost的优缺点" class="headerlink" title="Adaboost的优缺点"></a>Adaboost的优缺点</h1><p>来自参考资料3：</p>
 <ul>
 <li>优点：<ul>
 <li>快, 简单</li>
-<li>需要调参的参数很少，除了弱学习器数量</li>
+<li>需要调参的参数很少，除了弱学习器数量$M$</li>
+<li>Adaboost不容易过拟合</li>
 </ul>
 </li>
 <li>缺点：<ul>
 <li>对异常样本敏感，异常样本在迭代中可能会获得较高的权重，影响最终的强学习器的预测准确性；</li>
-<li>如果学习器太复杂，会导致最终模型过拟合；</li>
-<li>如果学习器太弱，也可能导致最终模型过拟合</li>
 </ul>
 </li>
 </ul>
@@ -766,7 +767,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共10.2k字</span>
+  <span class="post-count">博客全站共10.4k字</span>
 </div>
         
 
