@@ -115,23 +115,25 @@
 
 
 
-  <meta name="description" content="我爱七月">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hardcore Coder">
-<meta property="og:url" content="http://yoursite.com/categories/Ensemble-Learning/index.html">
+  <meta name="description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的? square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：对square">
+<meta name="keywords" content="Ensemble Learning,Boosting">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GBDT">
+<meta property="og:url" content="http://yoursite.com/2018/11/18/GBDT/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="我爱七月">
+<meta property="og:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的? square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：对square">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-11-18T14:06:56.465Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hardcore Coder">
-<meta name="twitter:description" content="我爱七月">
+<meta name="twitter:title" content="GBDT">
+<meta name="twitter:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的? square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：对square">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/categories/Ensemble-Learning/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/11/18/GBDT/"/>
 
 
 
@@ -141,7 +143,7 @@
   };
 </script>
 
-  <title>分类: Ensemble Learning | Hardcore Coder</title>
+  <title>GBDT | Hardcore Coder</title>
   
 
 
@@ -188,7 +190,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
@@ -251,7 +253,7 @@
         
         
           
-          <li class="menu-item menu-item-categories menu-item-active">
+          <li class="menu-item menu-item-categories">
     <a href="/categories/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
   </li>
@@ -271,28 +273,6 @@
 
   
     
-
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
 
   
 
@@ -318,59 +298,204 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Ensemble Learning<small>分类</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
+
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/18/GBDT/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/11/04/adaboost/" itemprop="url">
-              
-                <span itemprop="name">Adaboost</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">GBDT
+              
+            
+          </h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-11-04T00:00:00+08:00"
-              content="2018-11-04" >
-          11-04
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
 
-    </header>
-  </article>
+            
+            
+            
 
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-18 00:00:00 / 修改时间：22:06:56" itemprop="dateCreated datePublished" datetime="2018-11-18T00:00:00+08:00">2018-11-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。</p>
+<p>提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的?</p>
+<p>square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：<br>对square loss，</p>
+<script type="math/tex; mode=display">\begin{array}{ll}
+Obj^{(t)} & = \sum\limits_{i=1}^n [y_i - (\hat{y}_i^{(t-1)}+f_t(x_i))]^2 + \Omega(f_t) + const \\
+          & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2] + \Omega(f_t) + const 
+\end{array}</script><p>回忆泰勒展开式$f(x+\Delta x) \simeq f(x) + f’(x)\Delta x + \frac{1}{2}f”(x)\Delta x^2$。<br>令<script type="math/tex">g_i = \partial_{\hat{y}^{(t-1)}}l(y_i, \hat{y}^{(t-1)}), h_i = \partial_{\hat{y}^{(t-1)}}^2l(y_i, \hat{y}^{(t-1)})</script><br>所以损失函数近似为</p>
+<script type="math/tex; mode=display">Obj^{(t)}\simeq\sum\limits_{i=1}^n [l(y_i,\hat{y}_i^{(t-1)}) + g_if_t(x_i) + \frac{1}{2}h_if_t^2(x_i)] + \Omega(f_t) + const</script><p>对于square loss，它的三次以上的导数均为0，<script type="math/tex">g_i = \partial_{\hat{y}^{(t-1)}}(y_i - \hat{y}^{(t-1)})^2 = 2(\hat{y}^{(t-1)} - y_i)</script>，<script type="math/tex">h_i = \partial_{\hat{y}^{(t-1)}}^2 (\hat{y}^{(t-1)} - y_i)^2 = 2</script>，所以它的二次展开式完全等于$f(x+\Delta x)$，不仅仅是近似。当损失函数为square loss时：</p>
+<script type="math/tex; mode=display">\begin{array}{ll}
+Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2] + \Omega(f_t) + const \\
+            & = \sum\limits_{i=1}^n [g_i f_t(x_i) + \frac{1}{2}h_i f_t(x_2)^2] + \Omega(f_t) + const \\
+            & = Obj^{(t)}
+\end{array}</script><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="https://homes.cs.washington.edu/~tqchen/pdf/BoostedTree.pdf" target="_blank" rel="noopener">Introduction to Boosted Trees (Chen Tianqi)</a></li>
+<li><a href="https://www.cnblogs.com/ScorpioLu/p/8296994.html" target="_blank" rel="noopener">GBDT原理详解</a></li>
+</ol>
 
       
     </div>
 
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Ensemble-Learning/" rel="tag"># Ensemble Learning</a>
+          
+            <a href="/tags/Boosting/" rel="tag"># Boosting</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/04/adaboost/" rel="next" title="Adaboost">
+                <i class="fa fa-chevron-left"></i> Adaboost
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -391,8 +516,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -407,7 +541,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -426,7 +560,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -451,7 +587,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">6</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -491,6 +631,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -543,7 +699,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共10.4k字</span>
+  <span class="post-count">博客全站共10.8k字</span>
 </div>
         
 
@@ -634,6 +790,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
 
   
 
@@ -675,6 +835,30 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
   
 
 
