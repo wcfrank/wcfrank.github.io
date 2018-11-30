@@ -115,18 +115,18 @@
 
 
 
-  <meta name="description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的? square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：对square">
+  <meta name="description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma) for $m=1$ to M: a. 计算负梯度：\widetilde{y_i} = -\frac{\partia">
 <meta name="keywords" content="Ensemble Learning,Boosting">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GBDT">
 <meta property="og:url" content="http://yoursite.com/2018/11/18/GBDT/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的? square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：对square">
+<meta property="og:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma) for $m=1$ to M: a. 计算负梯度：\widetilde{y_i} = -\frac{\partia">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-11-18T14:06:56.465Z">
+<meta property="og:updated_time" content="2018-11-30T14:24:54.452Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GBDT">
-<meta name="twitter:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的? square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：对square">
+<meta name="twitter:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma) for $m=1$ to M: a. 计算负梯度：\widetilde{y_i} = -\frac{\partia">
 
 
 
@@ -356,12 +356,24 @@
                 
               
 
-              <time title="创建时间：2018-11-18 00:00:00 / 修改时间：22:06:56" itemprop="dateCreated datePublished" datetime="2018-11-18T00:00:00+08:00">2018-11-18</time>
+              <time title="创建时间：2018-11-18 00:00:00" itemprop="dateCreated datePublished" datetime="2018-11-18T00:00:00+08:00">2018-11-18</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-30 22:24:54" itemprop="dateModified" datetime="2018-11-30T22:24:54+08:00">2018-11-30</time>
               
             
           </span>
@@ -413,8 +425,13 @@
 
       
         <p>提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。</p>
-<p>提升树的基学习器是什么，加法模型和前向分步算法又是怎么用的?</p>
-<p>square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：<br>对square loss，</p>
+<h1 id="Gradient-Boosting-算法"><a href="#Gradient-Boosting-算法" class="headerlink" title="Gradient Boosting 算法"></a>Gradient Boosting 算法</h1><ol>
+<li>初始化：<script type="math/tex">f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma)</script></li>
+<li>for $m=1$ to M:<br> a. 计算负梯度：<script type="math/tex">\widetilde{y_i} = -\frac{\partial L(y_i, f_{m-1}(x_i))}{\partial f_{m-1}(x_i)}</script>, <script type="math/tex">i=1,2,\dots,N</script><br> b. 通过最小化平方误差，用基学习器<script type="math/tex">h_m(x)</script>拟合<script type="math/tex">\widetilde{y_i}</script>，<script type="math/tex; mode=display">w_m = \arg\min\limits_{w}\sum\limits_{i=1}^N[\widetilde{y_i} - h_m(x_i, w)]^2</script> c. 使用line search确定步长$\rho_m$，使得$L$最小，<script type="math/tex; mode=display">\rho_m = \arg\min\limits_{\rho}\sum\limits_{i=1}^NL(y_i, f_{m-1}(x_i) + \rho h_m(x_i, w_m))</script> d. <script type="math/tex">f_m(x) = f_{m-1}(x) + \rho_m h_m(x, w_m)</script></li>
+<li>输出<script type="math/tex">f_M(x)</script></li>
+</ol>
+<p>如果基学习器<script type="math/tex">h_m(x)</script>是决策树模型，则称为GBDT。再次概括一下Gradient Boosting里面迭代的思路：<br>a. 求梯度<br>b. 用基学习器来拟合梯度：通过极小化mean squared error，确定基学习器的参数，得到基学习器<script type="math/tex">tree_m(x,w)</script><br>c. （疑问：是极小化损失函数 or 极小化mean squared error？）对每个tree的leaf：极小化损失函数，求leaf的权重，即<script type="math/tex">v = tree_m(x)</script><br>d. <script type="math/tex">f_m(x) = f_{m-1}(x) + \rho_m tree_m(x)</script></p>
+<h1 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h1><p>损失函数为square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：<br>对square loss，</p>
 <script type="math/tex; mode=display">\begin{array}{ll}
 Obj^{(t)} & = \sum\limits_{i=1}^n [y_i - (\hat{y}_i^{(t-1)}+f_t(x_i))]^2 + \Omega(f_t) + const \\
           & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2] + \Omega(f_t) + const 
@@ -427,6 +444,8 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
 \end{array}</script><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
 <li><a href="https://homes.cs.washington.edu/~tqchen/pdf/BoostedTree.pdf" target="_blank" rel="noopener">Introduction to Boosted Trees (Chen Tianqi)</a></li>
 <li><a href="https://www.cnblogs.com/ScorpioLu/p/8296994.html" target="_blank" rel="noopener">GBDT原理详解</a></li>
+<li><a href="https://www.youtube.com/watch?v=ErDgauqnTHk" target="_blank" rel="noopener">Introduction To Gradient Boosting algorithm (simplistic n graphical) - Machine Learning</a></li>
+<li><a href="https://explained.ai/gradient-boosting/index.html" target="_blank" rel="noopener">How to explain gradient boosting</a></li>
 </ol>
 
       
@@ -558,11 +577,7 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
                     
                       
                     
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -641,7 +656,7 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradient-Boosting-算法"><span class="nav-number">1.</span> <span class="nav-text">Gradient Boosting 算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解释"><span class="nav-number">2.</span> <span class="nav-text">解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -699,7 +714,7 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共10.8k字</span>
+  <span class="post-count">博客全站共11k字</span>
 </div>
         
 
