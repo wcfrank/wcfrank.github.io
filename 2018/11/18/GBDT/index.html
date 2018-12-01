@@ -115,18 +115,18 @@
 
 
 
-  <meta name="description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma) for $m=1$ to M: a. 计算负梯度：\widetilde{y_i} = -\frac{\partia">
+  <meta name="description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！ Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha) for $m=1$ to M: a.">
 <meta name="keywords" content="Ensemble Learning,Boosting">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GBDT">
 <meta property="og:url" content="http://yoursite.com/2018/11/18/GBDT/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma) for $m=1$ to M: a. 计算负梯度：\widetilde{y_i} = -\frac{\partia">
+<meta property="og:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！ Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha) for $m=1$ to M: a.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-11-30T14:24:54.452Z">
+<meta property="og:updated_time" content="2018-12-01T07:57:28.589Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GBDT">
-<meta name="twitter:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。 Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma) for $m=1$ to M: a. 计算负梯度：\widetilde{y_i} = -\frac{\partia">
+<meta name="twitter:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！ Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha) for $m=1$ to M: a.">
 
 
 
@@ -373,7 +373,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-30 22:24:54" itemprop="dateModified" datetime="2018-11-30T22:24:54+08:00">2018-11-30</time>
+                <time title="修改时间：2018-12-01 15:57:28" itemprop="dateModified" datetime="2018-12-01T15:57:28+08:00">2018-12-01</time>
               
             
           </span>
@@ -424,13 +424,13 @@
       
 
       
-        <p>提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。</p>
+        <p>提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。<br>参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！</p>
 <h1 id="Gradient-Boosting-算法"><a href="#Gradient-Boosting-算法" class="headerlink" title="Gradient Boosting 算法"></a>Gradient Boosting 算法</h1><ol>
-<li>初始化：<script type="math/tex">f_0(x) = \arg\min\limits_{\gamma}\sum\limits_{i=1}^NL(y_i, \gamma)</script></li>
+<li>初始化：<script type="math/tex">f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha)</script></li>
 <li>for $m=1$ to M:<br> a. 计算负梯度：<script type="math/tex">\widetilde{y_i} = -\frac{\partial L(y_i, f_{m-1}(x_i))}{\partial f_{m-1}(x_i)}</script>, <script type="math/tex">i=1,2,\dots,N</script><br> b. 通过最小化平方误差，用基学习器<script type="math/tex">h_m(x)</script>拟合<script type="math/tex">\widetilde{y_i}</script>，<script type="math/tex; mode=display">w_m = \arg\min\limits_{w}\sum\limits_{i=1}^N[\widetilde{y_i} - h_m(x_i, w)]^2</script> c. 使用line search确定步长$\rho_m$，使得$L$最小，<script type="math/tex; mode=display">\rho_m = \arg\min\limits_{\rho}\sum\limits_{i=1}^NL(y_i, f_{m-1}(x_i) + \rho h_m(x_i, w_m))</script> d. <script type="math/tex">f_m(x) = f_{m-1}(x) + \rho_m h_m(x, w_m)</script></li>
 <li>输出<script type="math/tex">f_M(x)</script></li>
 </ol>
-<p>如果基学习器<script type="math/tex">h_m(x)</script>是决策树模型，则称为GBDT。再次概括一下Gradient Boosting里面迭代的思路：<br>a. 求梯度<br>b. 用基学习器来拟合梯度：通过极小化mean squared error，确定基学习器的参数，得到基学习器<script type="math/tex">tree_m(x,w)</script><br>c. （疑问：是极小化损失函数 or 极小化mean squared error？）对每个tree的leaf：极小化损失函数，求leaf的权重，即<script type="math/tex">v = tree_m(x)</script><br>d. <script type="math/tex">f_m(x) = f_{m-1}(x) + \rho_m tree_m(x)</script></p>
+<p>如果基学习器<script type="math/tex">h_m(x)</script>是决策树模型，则称为GBDT。再次概括一下Gradient Boosting里面迭代的思路：（参考资料5）<br>a. 求梯度<br>b. 用基学习器来拟合梯度：通过极小化mean squared error，确定基学习器的参数，得到基学习器<script type="math/tex">tree_m(x,w)</script>。对于决策树，寻找一个最优的树的过程其实依靠的就是启发式的分裂准则，拟合的是<script type="math/tex">\{\widetilde{y_i}, x_i\}</script>，最终将N个样本划分为J个区域：<script type="math/tex">\{R_{jm}\}, j=1,\dots,J</script><br>c. 上一步得到了叶子节点对应的区域，那么叶子节点的取值是多少？也就是这棵树到底输出多少？对于不同的损失函数，叶子节点的值也不一样。<br>首先，记第m颗树的第j个叶子节点的值为<script type="math/tex">\gamma_{jm}</script>。<br>当损失函数是MSE时，<script type="math/tex">\gamma_{jm} = average_{x_i\in R_{jm}}\widetilde{y_i}</script>;<br>当损失函数是MAE时，<script type="math/tex">\gamma_{jm} = median_{x_i\in R_{jm}} (y_i - F_{m-1}(x_i))</script>;<br>当损失函数是对数函数时（指数函数），见参考资料5.<br><!-- 对每个tree的leaf：极小化损失函数，求leaf的权重，即$$v = tree_m(x)$$ --><br>c. 在GBDT里，通常将这个过程作为Shrinkage，也就是把<script type="math/tex">\rho_m</script>做为学习率。<br>d. <script type="math/tex">f_m(x) = f_{m-1}(x) + \sum\limits_{j=1}^J\gamma_{jm}I(x\in R_{jm})</script></p>
 <h1 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h1><p>损失函数为square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：<br>对square loss，</p>
 <script type="math/tex; mode=display">\begin{array}{ll}
 Obj^{(t)} & = \sum\limits_{i=1}^n [y_i - (\hat{y}_i^{(t-1)}+f_t(x_i))]^2 + \Omega(f_t) + const \\
@@ -442,10 +442,11 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
             & = \sum\limits_{i=1}^n [g_i f_t(x_i) + \frac{1}{2}h_i f_t(x_2)^2] + \Omega(f_t) + const \\
             & = Obj^{(t)}
 \end{array}</script><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
-<li><a href="https://homes.cs.washington.edu/~tqchen/pdf/BoostedTree.pdf" target="_blank" rel="noopener">Introduction to Boosted Trees (Chen Tianqi)</a></li>
+<li>(<strong>重点推荐</strong>)<a href="https://homes.cs.washington.edu/~tqchen/pdf/BoostedTree.pdf" target="_blank" rel="noopener">Introduction to Boosted Trees (Chen Tianqi)</a></li>
 <li><a href="https://www.cnblogs.com/ScorpioLu/p/8296994.html" target="_blank" rel="noopener">GBDT原理详解</a></li>
 <li><a href="https://www.youtube.com/watch?v=ErDgauqnTHk" target="_blank" rel="noopener">Introduction To Gradient Boosting algorithm (simplistic n graphical) - Machine Learning</a></li>
 <li><a href="https://explained.ai/gradient-boosting/index.html" target="_blank" rel="noopener">How to explain gradient boosting</a></li>
+<li>(<strong>重点推荐</strong>)<a href="https://blog.csdn.net/qq_22238533/article/details/79185969" target="_blank" rel="noopener">GBDT原理与Sklearn源码分析-回归篇</a></li>
 </ol>
 
       
@@ -714,7 +715,7 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共11k字</span>
+  <span class="post-count">博客全站共11.3k字</span>
 </div>
         
 
