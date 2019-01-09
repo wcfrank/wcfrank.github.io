@@ -123,7 +123,7 @@
 <meta property="og:site_name" content="Hardcore Coder">
 <meta property="og:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！ Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha) for $m=1$ to M: a.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-12-01T07:57:28.589Z">
+<meta property="og:updated_time" content="2019-01-09T15:30:24.974Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GBDT">
 <meta name="twitter:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！ Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha) for $m=1$ to M: a.">
@@ -373,7 +373,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-12-01 15:57:28" itemprop="dateModified" datetime="2018-12-01T15:57:28+08:00">2018-12-01</time>
+                <time title="修改时间：2019-01-09 23:30:24" itemprop="dateModified" datetime="2019-01-09T23:30:24+08:00">2019-01-09</time>
               
             
           </span>
@@ -431,17 +431,26 @@
 <li>输出<script type="math/tex">f_M(x)</script></li>
 </ol>
 <p>如果基学习器<script type="math/tex">h_m(x)</script>是决策树模型，则称为GBDT。再次概括一下Gradient Boosting里面迭代的思路：（参考资料5）<br>a. 求梯度<br>b. 用基学习器来拟合梯度：通过极小化mean squared error，确定基学习器的参数，得到基学习器<script type="math/tex">tree_m(x,w)</script>。对于决策树，寻找一个最优的树的过程其实依靠的就是启发式的分裂准则，拟合的是<script type="math/tex">\{\widetilde{y_i}, x_i\}</script>，最终将N个样本划分为J个区域：<script type="math/tex">\{R_{jm}\}, j=1,\dots,J</script><br>c. 上一步得到了叶子节点对应的区域，那么叶子节点的取值是多少？也就是这棵树到底输出多少？对于不同的损失函数，叶子节点的值也不一样。<br>首先，记第m颗树的第j个叶子节点的值为<script type="math/tex">\gamma_{jm}</script>。<br>当损失函数是MSE时，<script type="math/tex">\gamma_{jm} = average_{x_i\in R_{jm}}\widetilde{y_i}</script>;<br>当损失函数是MAE时，<script type="math/tex">\gamma_{jm} = median_{x_i\in R_{jm}} (y_i - F_{m-1}(x_i))</script>;<br>当损失函数是对数函数时（指数函数），见参考资料5.<br><!-- 对每个tree的leaf：极小化损失函数，求leaf的权重，即$$v = tree_m(x)$$ --><br>c. 在GBDT里，通常将这个过程作为Shrinkage，也就是把<script type="math/tex">\rho_m</script>做为学习率。<br>d. <script type="math/tex">f_m(x) = f_{m-1}(x) + \sum\limits_{j=1}^J\gamma_{jm}I(x\in R_{jm})</script></p>
-<h1 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h1><p>损失函数为square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：<br>对square loss，</p>
+<h1 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h1><p>对于加法模型，经过迭代，在每一步$m$得到$f_m(x)$，与真实值的差即为残差：$r=y-f_m(x)$.</p>
+<p>每一步迭代的目的，是缩小残差。因为是加法模型，每一步$m$迭代拟合的是残差，然后与之前的<script type="math/tex">f_{m-1}</script>相加<script type="math/tex">f_m=f_{m-1}+ Fitted Residual</script>，最终拟合真实值y.</p>
+<p><strong>问题：</strong>这个残差怎么拟合呢？<br>回想泰勒展开，函数的变化量可以展开为各阶导数之和。也就是残差可以表示为各阶导数的线性组合，我们这里只考虑一阶导数，即用一阶导数（负梯度）来拟合残差。</p>
+<h2 id="1-square-loss"><a href="#1-square-loss" class="headerlink" title="1.square loss"></a>1.square loss</h2><p>损失函数为square loss $l(y_i,\hat{y}_i)=(y_i-\hat{y}_i)^2$可以非常好的解释gradient boosting，拟合的就是残差，这是因为拟合的损失函数与泰勒展开近似之后的形式完全一样：<br>对square loss，</p>
 <script type="math/tex; mode=display">\begin{array}{ll}
 Obj^{(t)} & = \sum\limits_{i=1}^n [y_i - (\hat{y}_i^{(t-1)}+f_t(x_i))]^2 + \Omega(f_t) + const \\
-          & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2] + \Omega(f_t) + const 
+          & = \sum\limits_{i=1}^n [(y_i-\hat{y}_i^{(t-1)})^2 + 2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2] + \Omega(f_t) + const 
 \end{array}</script><p>回忆泰勒展开式$f(x+\Delta x) \simeq f(x) + f’(x)\Delta x + \frac{1}{2}f”(x)\Delta x^2$。<br>令<script type="math/tex">g_i = \partial_{\hat{y}^{(t-1)}}l(y_i, \hat{y}^{(t-1)}), h_i = \partial_{\hat{y}^{(t-1)}}^2l(y_i, \hat{y}^{(t-1)})</script><br>所以损失函数近似为</p>
 <script type="math/tex; mode=display">Obj^{(t)}\simeq\sum\limits_{i=1}^n [l(y_i,\hat{y}_i^{(t-1)}) + g_if_t(x_i) + \frac{1}{2}h_if_t^2(x_i)] + \Omega(f_t) + const</script><p>对于square loss，它的三次以上的导数均为0，<script type="math/tex">g_i = \partial_{\hat{y}^{(t-1)}}(y_i - \hat{y}^{(t-1)})^2 = 2(\hat{y}^{(t-1)} - y_i)</script>，<script type="math/tex">h_i = \partial_{\hat{y}^{(t-1)}}^2 (\hat{y}^{(t-1)} - y_i)^2 = 2</script>，所以它的二次展开式完全等于$f(x+\Delta x)$，不仅仅是近似。当损失函数为square loss时：</p>
 <script type="math/tex; mode=display">\begin{array}{ll}
-Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2] + \Omega(f_t) + const \\
-            & = \sum\limits_{i=1}^n [g_i f_t(x_i) + \frac{1}{2}h_i f_t(x_2)^2] + \Omega(f_t) + const \\
+Obj^{(t)} & = \sum\limits_{i=1}^n l(y_i, \hat{y}_i^{(t-1)}+f_t(x_i)) + \Omega(f_t) + const\\  
+        & = \sum\limits_{i=1}^n [(y_i-\hat{y}_i^{(t-1)})^2 + 2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2] + \Omega(f_t) + const \\
+            & = \sum\limits_{i=1}^n [l(y_i,\hat{y}_i^{(t-1)}) + g_i f_t(x_i) + \frac{1}{2}h_i f_t(x_2)^2] + \Omega(f_t) + const \\
             & = Obj^{(t)}
-\end{array}</script><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+\end{array}</script><h2 id="2-用Decision-Tree来拟合残差"><a href="#2-用Decision-Tree来拟合残差" class="headerlink" title="2.用Decision Tree来拟合残差"></a>2.用Decision Tree来拟合残差</h2><ul>
+<li>无论是回归问题还是分类问题，都是用回归决策树来拟合</li>
+<li>决策树可以把样本划分为多个区域，每个区域为上的样本点都是相同的输出值：<br>  单颗决策树可表示为<script type="math/tex">h(x,(R_j,b_j)^J_1)=\sum\limits_{j=1}^J b_jI(x\in R_j)</script><br>  其中，<script type="math/tex">R_j</script>为<script type="math/tex">J</script>个独立区域（即各个叶子结点），<script type="math/tex">b_j</script>为各区域上的输出值<br>  于是，2.b可写成<script type="math/tex">(R_{jm})_1^J=\arg\min\limits_{R_{jm}}\sum\limits_{i=1}^N[\widetilde{y_i} - h_m(x_i,(R_{jm},b_{jm})^J_1)]^2</script></li>
+<li>回归问题的值为该区域样本点的均值，分类问题是众数</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
 <li>(<strong>重点推荐</strong>)<a href="https://homes.cs.washington.edu/~tqchen/pdf/BoostedTree.pdf" target="_blank" rel="noopener">Introduction to Boosted Trees (Chen Tianqi)</a></li>
 <li><a href="https://www.cnblogs.com/ScorpioLu/p/8296994.html" target="_blank" rel="noopener">GBDT原理详解</a></li>
 <li><a href="https://www.youtube.com/watch?v=ErDgauqnTHk" target="_blank" rel="noopener">Introduction To Gradient Boosting algorithm (simplistic n graphical) - Machine Learning</a></li>
@@ -657,7 +666,7 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradient-Boosting-算法"><span class="nav-number">1.</span> <span class="nav-text">Gradient Boosting 算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解释"><span class="nav-number">2.</span> <span class="nav-text">解释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradient-Boosting-算法"><span class="nav-number">1.</span> <span class="nav-text">Gradient Boosting 算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解释"><span class="nav-number">2.</span> <span class="nav-text">解释</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-square-loss"><span class="nav-number">2.1.</span> <span class="nav-text">1.square loss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-用Decision-Tree来拟合残差"><span class="nav-number">2.2.</span> <span class="nav-text">2.用Decision Tree来拟合残差</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -679,7 +688,7 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
       <div class="footer-inner">
         <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -715,7 +724,7 @@ Obj^{(t)} & = \sum\limits_{i=1}^n [2(\hat{y}_i^{(t-1)}-y_i)f_t(x_i) + f_t(x_i)^2
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共11.3k字</span>
+  <span class="post-count">博客全站共11.6k字</span>
 </div>
         
 
