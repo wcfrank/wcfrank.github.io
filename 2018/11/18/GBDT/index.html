@@ -123,7 +123,7 @@
 <meta property="og:site_name" content="Hardcore Coder">
 <meta property="og:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！ Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha) for $m=1$ to M: a.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-09T15:30:24.974Z">
+<meta property="og:updated_time" content="2019-01-11T13:02:07.060Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GBDT">
 <meta name="twitter:description" content="提升树也是boosting家族的成员，意味着提升树也采用加法模型（基学习器线性组合）和前向分步算法。参考资料里面把Gradient Boosting，以及GBDT都解释的很透彻！ Gradient Boosting 算法 初始化：f_0(x) = \arg\min\limits_{\alpha}\sum\limits_{i=1}^NL(y_i, \alpha) for $m=1$ to M: a.">
@@ -373,7 +373,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-01-09 23:30:24" itemprop="dateModified" datetime="2019-01-09T23:30:24+08:00">2019-01-09</time>
+                <time title="修改时间：2019-01-11 21:02:07" itemprop="dateModified" datetime="2019-01-11T21:02:07+08:00">2019-01-11</time>
               
             
           </span>
@@ -447,8 +447,8 @@ Obj^{(t)} & = \sum\limits_{i=1}^n l(y_i, \hat{y}_i^{(t-1)}+f_t(x_i)) + \Omega(f_
             & = Obj^{(t)}
 \end{array}</script><h2 id="2-用Decision-Tree来拟合残差"><a href="#2-用Decision-Tree来拟合残差" class="headerlink" title="2.用Decision Tree来拟合残差"></a>2.用Decision Tree来拟合残差</h2><ul>
 <li>无论是回归问题还是分类问题，都是用回归决策树来拟合</li>
-<li>决策树可以把样本划分为多个区域，每个区域为上的样本点都是相同的输出值：<br>  单颗决策树可表示为<script type="math/tex">h(x,(R_j,b_j)^J_1)=\sum\limits_{j=1}^J b_jI(x\in R_j)</script><br>  其中，<script type="math/tex">R_j</script>为<script type="math/tex">J</script>个独立区域（即各个叶子结点），<script type="math/tex">b_j</script>为各区域上的输出值<br>  于是，2.b可写成<script type="math/tex">(R_{jm})_1^J=\arg\min\limits_{R_{jm}}\sum\limits_{i=1}^N[\widetilde{y_i} - h_m(x_i,(R_{jm},b_{jm})^J_1)]^2</script></li>
-<li>回归问题的值为该区域样本点的均值，分类问题是众数</li>
+<li>决策树可以把样本划分为多个区域，每个区域为上的样本点都是相同的输出值：<br>  单颗决策树可表示为<script type="math/tex">h(x,(R_j,b_j)^J_1)=\sum\limits_{j=1}^J b_jI(x\in R_j)</script><br>  其中，<script type="math/tex">R_j</script>为<script type="math/tex">J</script>个独立区域（即各个叶子结点），<script type="math/tex">b_j</script>为各区域上的输出值<br>  于是，2.b可写成<script type="math/tex">(R_{jm})_1^J=\arg\min\limits_{R_{jm}}\sum\limits_{i=1}^N[\widetilde{y_i} - h_m(x_i,(R_{jm},b_{jm})^J_1)]^2</script><!-- - 回归问题的值为该区域样本点的均值，分类问题是众数 --></li>
+<li>无论是回归问题还是分类问题，都是用回归树来拟合</li>
 </ul>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
 <li>(<strong>重点推荐</strong>)<a href="https://homes.cs.washington.edu/~tqchen/pdf/BoostedTree.pdf" target="_blank" rel="noopener">Introduction to Boosted Trees (Chen Tianqi)</a></li>
