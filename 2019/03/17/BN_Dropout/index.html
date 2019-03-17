@@ -115,25 +115,25 @@
 
 
 
-  <meta name="description" content="使用了Hexo和nexT来搭建博客，嗯嗯很好！参考 https://blog.csdn.net/Hoshea_chx/article/details/78826689 的过程一步步搭建  下载git（已有）和nodejs， 然后在cmd中安装Hexo： npm install -g hexo-cli  创建：  1234hexo i blog //init的缩写 blog是项目名cd blog /">
-<meta name="keywords" content="建站">
+  <meta name="description" content="Batch Normalization &amp;amp; Dropoutfrom [1]  Batch Normalization Batch Normalization layer can be used in between two convolution layers, or between two dense layers, or even between a convolution and a">
+<meta name="keywords" content="过拟合">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用Hexo和nexT主题来搭建博客">
-<meta property="og:url" content="http://yoursite.com/2018/09/15/搭建博客的过程/index.html">
+<meta property="og:title" content="Batch Normalization &amp; Dropout">
+<meta property="og:url" content="http://yoursite.com/2019/03/17/BN_Dropout/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="使用了Hexo和nexT来搭建博客，嗯嗯很好！参考 https://blog.csdn.net/Hoshea_chx/article/details/78826689 的过程一步步搭建  下载git（已有）和nodejs， 然后在cmd中安装Hexo： npm install -g hexo-cli  创建：  1234hexo i blog //init的缩写 blog是项目名cd blog /">
+<meta property="og:description" content="Batch Normalization &amp;amp; Dropoutfrom [1]  Batch Normalization Batch Normalization layer can be used in between two convolution layers, or between two dense layers, or even between a convolution and a">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-11T13:47:57.994Z">
+<meta property="og:updated_time" content="2019-03-17T14:06:50.004Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用Hexo和nexT主题来搭建博客">
-<meta name="twitter:description" content="使用了Hexo和nexT来搭建博客，嗯嗯很好！参考 https://blog.csdn.net/Hoshea_chx/article/details/78826689 的过程一步步搭建  下载git（已有）和nodejs， 然后在cmd中安装Hexo： npm install -g hexo-cli  创建：  1234hexo i blog //init的缩写 blog是项目名cd blog /">
+<meta name="twitter:title" content="Batch Normalization &amp; Dropout">
+<meta name="twitter:description" content="Batch Normalization &amp;amp; Dropoutfrom [1]  Batch Normalization Batch Normalization layer can be used in between two convolution layers, or between two dense layers, or even between a convolution and a">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/15/搭建博客的过程/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/03/17/BN_Dropout/"/>
 
 
 
@@ -143,7 +143,7 @@
   };
 </script>
 
-  <title>使用Hexo和nexT主题来搭建博客 | Hardcore Coder</title>
+  <title>Batch Normalization & Dropout | Hardcore Coder</title>
   
 
 
@@ -314,7 +314,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/搭建博客的过程/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/17/BN_Dropout/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="骚炼">
@@ -331,7 +331,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">使用Hexo和nexT主题来搭建博客
+          <h1 class="post-title" itemprop="name headline">Batch Normalization & Dropout
               
             
           </h1>
@@ -356,24 +356,12 @@
                 
               
 
-              <time title="创建时间：2018-09-15 21:19:13" itemprop="dateCreated datePublished" datetime="2018-09-15T21:19:13+08:00">2018-09-15</time>
+              <time title="创建时间：2019-03-17 00:00:00 / 修改时间：22:06:50" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00+08:00">2019-03-17</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-11 21:47:57" itemprop="dateModified" datetime="2018-10-11T21:47:57+08:00">2018-10-11</time>
               
             
           </span>
@@ -390,7 +378,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
 
                 
                 
@@ -424,79 +412,38 @@
       
 
       
-        <h1 id="使用了Hexo和nexT来搭建博客，嗯嗯很好！"><a href="#使用了Hexo和nexT来搭建博客，嗯嗯很好！" class="headerlink" title="使用了Hexo和nexT来搭建博客，嗯嗯很好！"></a>使用了Hexo和nexT来搭建博客，嗯嗯很好！</h1><p>参考 <a href="https://blog.csdn.net/Hoshea_chx/article/details/78826689" target="_blank" rel="noopener">https://blog.csdn.net/Hoshea_chx/article/details/78826689</a> 的过程一步步搭建</p>
-<ol>
-<li><p>下载git（已有）和nodejs， 然后在cmd中安装Hexo： <code>npm install -g hexo-cli</code></p>
-</li>
-<li><p>创建：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo i blog //init的缩写 blog是项目名</span><br><span class="line">cd blog //切换到站点根目录</span><br><span class="line">hexo g //generetor的缩写</span><br><span class="line">hexo s //server的缩写</span><br></pre></td></tr></table></figure>
+        <h1 id="Batch-Normalization-amp-Dropout"><a href="#Batch-Normalization-amp-Dropout" class="headerlink" title="Batch Normalization &amp; Dropout"></a>Batch Normalization &amp; Dropout</h1><p>from [1]</p>
 <ul>
-<li><p>打开浏览器输入localhost:4000查看一个默认的版本</p>
-</li>
-<li><p>在github上有很多主题可选择，这里选择nexT。在站点根目录输入：<br><code>git clone https://github.com/iissnan/hexo-theme-next themes/next</code>.<br>完成后，打开站点配置文件(根目录下_config.yml)， 找到<code>theme</code>字段，并将其值更改为<code>next</code>。</p>
-</li>
-<li><p>nexT可选择三种主题：Muse, Mist, Pisces。在站点根目录<code>/themes/next/_congig.yml</code>文件中修改<code>scheme</code>。然后重新clean，generator，查看效果。</p>
-</li>
-<li><p>在cmd中输入：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo clean  //清除缓存</span><br><span class="line">hexo g  //重新生成代码</span><br><span class="line">hexo s  //部署到本地</span><br><span class="line">//然后打开浏览器访问 localhost:4000 查看效果</span><br></pre></td></tr></table></figure>
-</li>
+<li><strong>Batch Normalization</strong> Batch Normalization layer can be used in between two convolution layers, or between two dense layers, or even between a convolution and a dense layer. The important question is <code>Does it help?</code> Well, it is recommended to use BN layer as it shows improvement generally but the amount of improvement you will get is more problem dependent.</li>
+<li><strong>Dropout:</strong> Convolution layers, in general, are not prone to overfitting but it doesn’t mean that you shouldn’t use dropout. You can, but again this is problem dependent. For example, I was trying to build a network where I used <code>Dropout</code> in between conv blocks and my model got better with it. It is better if you apply dropout after pooling layer.</li>
 </ul>
-</li>
-<li><p>将本地博客上传到github：</p>
+<p>from [2]</p>
+<p>Dropout works because the process creates multiple implicit ensembles that share weights. The idea is that for each training set, you randomly remove over 50% of the neurons. So effectively, you momentary have a subset of the original neural net that runs inference and gets its weights update. So effective you have many more neural nets working as ensemble to eventually perform the classification.</p>
+<p>Batch Normalization is different in that you dynamically normalize the inputs on a per mini-batch basis. The research indicates that when removing Dropout while using Batch Normalization, the effect is much faster learning without a loss in generalization. The research appears to be have been done in Google’s inception architecture.</p>
+<p>So to answer the question, use Batch Normalization on Inception architectures instead of DropOut. My intuition is that Inception already has a lot of weight sharing going on as a consequence of its optimal structure. Therefore, the generalization benefits of DropOut has diminishing returns.</p>
+<p>from [3]</p>
+<p>I suggest understanding batch normalization (BN) and dropout separately, though sometime they achieve the same effect/result, which in most case is speeding up training process and prevent from overfitting.</p>
+<p>BN mainly focus on lessening the covariate shift. A quick example would be: For a certain pixel position, <strong>layer #1</strong> increase the weight on it by times ten, and then the following layer, <strong>layer #2</strong>, reduce the weight also by ten times (W1 x 10 ==&gt; W2 X 1/10). In the end ,basically these two layers changes covariately thus learns less information. BN helps get rid of above issue and enable each layer learn meaningful information itself by doing mini-batch normalization, while during test, they compute global mean and variance.</p>
+<p>Dropout strategy focus on randomly discarding neurons to prevent over-fitting. For example, a dead neuron (the one can not pass activation function thus block information flow) or a over-active neuron (the one split the data space too much) might be removed. A convenient way to look at this: it is a stochastically cross validation strategy. Each time we drop off, a slight different and new architectures come out. In the end, it averages different combinations of the same neural network structure, to get better result. Drop off usually helps when neural network goes quite deep.</p>
+<p>In nature, BN and drop-off serves different purpose while in the meantime, they may lead to similar effects. So from this perspective, whether or not use them should depends on your task and network structure. Once formulating your problem properly, you can try them both, either or neither.</p>
+<p><strong>from [4]</strong></p>
+<p>BN跟在activation函数的前面和后面都可以，放在前面比较符合逻辑，但keras是在后面。</p>
+<p>Batch size要够大，如果太小的话BN的效果会变差。</p>
+<p>好处：</p>
 <ul>
-<li>在GitHub上创建新项目，名字为用户名.github.io</li>
-<li><p>修改hexo站点的配置文件：<strong>注意：缩进必须按照如下格式，<code>type</code>, <code>repository</code>和<code>branch</code>为同一级缩进</strong> </p>
-  <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">git</span></span><br><span class="line"><span class="attr">repository:</span> <span class="attr">https://github.com/wcfrank/wcfrank.github.io.git</span></span><br><span class="line"><span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+<li><p>BN减少了训练时间，可以训练更深的网络，learning rate可以设的大一点</p>
 </li>
-<li><p>部署：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save  //先装个插件压压惊</span><br><span class="line">hexo d  //  部署的命令</span><br><span class="line">//等一会就好了</span><br></pre></td></tr></table></figure>
-<p>  <strong>注意：请先设置好git的用户名密码，或者ssh.</strong><br>  但是设置之后依然报错，显示<code>fatal: could not read Username for &#39;https://github.com&#39;: No error</code>。通过修改yml文件里repository节点为：<code>https://{username}:{password}@github.com/wcfrank/wcfrank.github.io.git</code> 问题最终解决good！</p>
+<li><p>减小gradient vanishing和exploding， 适合sigmoid、tanh等激活函数</p>
 </li>
+<li>受参数初始化的影响小</li>
+<li>减少过拟合</li>
 </ul>
-</li>
-<li><p>发布新的博客：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;postName&quot; </span><br><span class="line"> //hexo n 也可以 </span><br><span class="line">//你自己的博客名称，名为postName.md的文件会建在目</span><br><span class="line">//录/blog/source/_posts下。</span><br></pre></td></tr></table></figure>
-<p> <em>也可以把写好的markdown文件直接放到这个路径下！</em><br> 文章编辑完成后，终端在根目录文件夹下，执行如下命令来发布:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g //生成静态页面</span><br><span class="line">hexo d //发布</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>现在文章都是整篇显示，能否折叠呢？</p>
-<p>答曰：可以。</p>
-<ul>
-<li>在文章中使用 <code>&lt;!-- more --&gt;</code> 手动进行截断，Hexo 提供的方式</li>
-<li>在文章的 <code>front-matter</code> 中添加 <code>description</code>，并提供文章摘录</li>
-<li>自动形成摘要, 在nexT的配置文件添加：<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">auto_excerpt:</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  length:</span> <span class="number">150</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>添加本站访客数、网站底部字数统计，见参考资料4.</p>
-</li>
-<li><p>为文章添加背景色和阴影框：<br> 在目录<code>blog\themes\next\source\css\_custom\custom.styl</code>文件中添加：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 主页文章添加阴影效果</span><br><span class="line">.post &#123;</span><br><span class="line">margin-top: 60px;</span><br><span class="line">margin-bottom: 60px;</span><br><span class="line">padding: 25px;</span><br><span class="line">-webkit-box-shadow: 0 0 5px rgba(202, 203, 203, .9); //阴影效果</span><br><span class="line">-moz-box-shadow: 0 0 5px rgba(202, 203, 203, .9); //阴影效果</span><br><span class="line">background-color: rgba(248, 248, 248, .5); //背景色</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p> 该方法在本地可以改变背景颜色，但上传GitHub之后无效，索性在<code>blog\themes\next\source\css\main.styl</code>最后添加相同的内容！</p>
-</li>
-<li><p><strong>重要：</strong> 博客中会用到一些数学公式，markdown中用的是Mathjax来代替Latex。参考5.为官方文档，照做即可。备用资料1和2基本没啥用，搞的我绕了很多弯路，里面唯一有用的是：在每个markdown文件的开头，加入 mathjax: true，如果不加这个，公式出不来（奇怪）。这样某些不需要mathjax渲染的文件就不用设置，加快渲染速度。</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: hello</span><br><span class="line">category: Uncategorized</span><br><span class="line">date: 2017/05/03</span><br><span class="line">mathjax: true</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在Hexo中添加本地图片：</p>
+<p>References:</p>
 <ol>
-<li>把主页配置文件_config.yml 里的post_asset_folder:这个选项设置为true</li>
-<li>在你的hexo目录下执行这样一句话npm install hexo-asset-image —save，这是下载安装一个可以上传本地图片的插件</li>
-<li>等待一小段时间后，再运行hexo n “xxxx”来生成md博文时，/source/_posts文件夹内除了xxxx.md文件还有一个同名的文件夹</li>
-<li>最后在xxxx.md中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：<br>! [你想输入的替代文字] (xxxx/图片名.jpg)</li>
-</ol>
-</li>
-</ol>
-<p>其他参考资料：</p>
-<ol>
-<li><a href="https://www.jianshu.com/p/8cb998a18272" target="_blank" rel="noopener">https://www.jianshu.com/p/8cb998a18272</a></li>
-<li><a href="https://segmentfault.com/q/1010000003734223" target="_blank" rel="noopener">https://segmentfault.com/q/1010000003734223</a></li>
-<li><a href="https://www.jianshu.com/p/1f8107a8778c" target="_blank" rel="noopener">主题个性化1</a></li>
-<li><a href="http://shenzekun.cn/hexo%E7%9A%84next%E4%B8%BB%E9%A2%98%E4%B8%AA%E6%80%A7%E5%8C%96%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B.html" target="_blank" rel="noopener">主题个性化2</a></li>
-<li><a href="https://github.com/theme-next/hexo-theme-next/blob/master/docs/MATH.md" target="_blank" rel="noopener">添加数学公式</a><ul>
-<li>备用资料1：<a href="https://www.jianshu.com/p/7ab21c7f0674" target="_blank" rel="noopener">https://www.jianshu.com/p/7ab21c7f0674</a></li>
-<li>备用2： <a href="https://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="noopener">https://blog.csdn.net/u014630987/article/details/78670258</a></li>
-</ul>
-</li>
+<li><a href="https://datascience.stackexchange.com/questions/25722/can-dropout-and-batch-normalization-be-applied-to-convolution-layers" target="_blank" rel="noopener">Can dropout and batch normalization be applied to convolution layers</a></li>
+<li><a href="https://www.quora.com/What-is-the-difference-between-dropout-and-batch-normalization" target="_blank" rel="noopener">What is the difference between dropout and batch normalization?</a></li>
+<li><a href="https://www.quora.com/Should-I-use-a-dropout-layer-if-I-am-using-batch-normalization-in-neural-network-training" target="_blank" rel="noopener">Should I use a dropout layer if I am using batch normalization in neural network training?</a></li>
+<li>深度学习李宏毅视频-Batch Normalization</li>
 </ol>
 
       
@@ -518,7 +465,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/建站/" rel="tag"># 建站</a>
+            <a href="/tags/过拟合/" rel="tag"># 过拟合</a>
           
         </div>
       
@@ -531,8 +478,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/15/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2019/03/17/unbalanced label samples/" rel="next" title="Unbalanced Label">
+                <i class="fa fa-chevron-left"></i> Unbalanced Label
               </a>
             
           </div>
@@ -540,10 +487,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/09/26/KKT/" rel="prev" title="KKT条件的通俗理解">
-                KKT条件的通俗理解 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -717,7 +660,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用了Hexo和nexT来搭建博客，嗯嗯很好！"><span class="nav-number">1.</span> <span class="nav-text">使用了Hexo和nexT来搭建博客，嗯嗯很好！</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Batch-Normalization-amp-Dropout"><span class="nav-number">1.</span> <span class="nav-text">Batch Normalization &amp; Dropout</span></a></li></ol></div>
             
 
           </div>
@@ -911,6 +854,30 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
   
 
 

@@ -115,25 +115,30 @@
 
 
 
-  <meta name="description" content="使用了Hexo和nexT来搭建博客，嗯嗯很好！参考 https://blog.csdn.net/Hoshea_chx/article/details/78826689 的过程一步步搭建  下载git（已有）和nodejs， 然后在cmd中安装Hexo： npm install -g hexo-cli  创建：  1234hexo i blog //init的缩写 blog是项目名cd blog /">
-<meta name="keywords" content="建站">
+  <meta name="description" content="梯度爆炸&amp;amp;梯度弥散梯度爆炸和梯度弥散都是由训练时的反向传播引起的。  上图是做预测时，前向传播梯度的影响；训练时是反向传播，从后向前，前面层的梯度越来越小。 靠近输出层的hidden layer 梯度大，参数更新快，所以很快就会收敛；而靠近输入层的hidden layer 梯度小，参数更新慢，几乎就和初始状态一样，随机分布。这种现象就是梯度弥散。而在另一种情况中，前面layer的梯度通过训">
+<meta name="keywords" content="梯度">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用Hexo和nexT主题来搭建博客">
-<meta property="og:url" content="http://yoursite.com/2018/09/15/搭建博客的过程/index.html">
+<meta property="og:title" content="梯度爆炸&amp;梯度弥散">
+<meta property="og:url" content="http://yoursite.com/2019/03/17/gradient exploding and vanishing/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="使用了Hexo和nexT来搭建博客，嗯嗯很好！参考 https://blog.csdn.net/Hoshea_chx/article/details/78826689 的过程一步步搭建  下载git（已有）和nodejs， 然后在cmd中安装Hexo： npm install -g hexo-cli  创建：  1234hexo i blog //init的缩写 blog是项目名cd blog /">
+<meta property="og:description" content="梯度爆炸&amp;amp;梯度弥散梯度爆炸和梯度弥散都是由训练时的反向传播引起的。  上图是做预测时，前向传播梯度的影响；训练时是反向传播，从后向前，前面层的梯度越来越小。 靠近输出层的hidden layer 梯度大，参数更新快，所以很快就会收敛；而靠近输入层的hidden layer 梯度小，参数更新慢，几乎就和初始状态一样，随机分布。这种现象就是梯度弥散。而在另一种情况中，前面layer的梯度通过训">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-11T13:47:57.994Z">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/1081032/201709/1081032-20170905102905460-307678090.png">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/1081032/201709/1081032-20170905103102663-500891744.png">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/1081032/201709/1081032-20170905103703554-551903486.png">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-f52ca25ffd6829ee2dfd849c256119b3_hd.jpg">
+<meta property="og:updated_time" content="2019-03-17T14:08:23.950Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用Hexo和nexT主题来搭建博客">
-<meta name="twitter:description" content="使用了Hexo和nexT来搭建博客，嗯嗯很好！参考 https://blog.csdn.net/Hoshea_chx/article/details/78826689 的过程一步步搭建  下载git（已有）和nodejs， 然后在cmd中安装Hexo： npm install -g hexo-cli  创建：  1234hexo i blog //init的缩写 blog是项目名cd blog /">
+<meta name="twitter:title" content="梯度爆炸&amp;梯度弥散">
+<meta name="twitter:description" content="梯度爆炸&amp;amp;梯度弥散梯度爆炸和梯度弥散都是由训练时的反向传播引起的。  上图是做预测时，前向传播梯度的影响；训练时是反向传播，从后向前，前面层的梯度越来越小。 靠近输出层的hidden layer 梯度大，参数更新快，所以很快就会收敛；而靠近输入层的hidden layer 梯度小，参数更新慢，几乎就和初始状态一样，随机分布。这种现象就是梯度弥散。而在另一种情况中，前面layer的梯度通过训">
+<meta name="twitter:image" content="https://images2017.cnblogs.com/blog/1081032/201709/1081032-20170905102905460-307678090.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/15/搭建博客的过程/"/>
+  <link rel="canonical" href="http://yoursite.com/2019/03/17/gradient exploding and vanishing/"/>
 
 
 
@@ -143,7 +148,7 @@
   };
 </script>
 
-  <title>使用Hexo和nexT主题来搭建博客 | Hardcore Coder</title>
+  <title>梯度爆炸&梯度弥散 | Hardcore Coder</title>
   
 
 
@@ -314,7 +319,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/搭建博客的过程/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/17/gradient exploding and vanishing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="骚炼">
@@ -331,7 +336,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">使用Hexo和nexT主题来搭建博客
+          <h1 class="post-title" itemprop="name headline">梯度爆炸&梯度弥散
               
             
           </h1>
@@ -356,24 +361,12 @@
                 
               
 
-              <time title="创建时间：2018-09-15 21:19:13" itemprop="dateCreated datePublished" datetime="2018-09-15T21:19:13+08:00">2018-09-15</time>
+              <time title="创建时间：2019-03-17 00:00:00 / 修改时间：22:08:23" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00+08:00">2019-03-17</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-10-11 21:47:57" itemprop="dateModified" datetime="2018-10-11T21:47:57+08:00">2018-10-11</time>
               
             
           </span>
@@ -390,7 +383,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/深度学习/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a></span>
 
                 
                 
@@ -424,79 +417,33 @@
       
 
       
-        <h1 id="使用了Hexo和nexT来搭建博客，嗯嗯很好！"><a href="#使用了Hexo和nexT来搭建博客，嗯嗯很好！" class="headerlink" title="使用了Hexo和nexT来搭建博客，嗯嗯很好！"></a>使用了Hexo和nexT来搭建博客，嗯嗯很好！</h1><p>参考 <a href="https://blog.csdn.net/Hoshea_chx/article/details/78826689" target="_blank" rel="noopener">https://blog.csdn.net/Hoshea_chx/article/details/78826689</a> 的过程一步步搭建</p>
+        <h1 id="梯度爆炸-amp-梯度弥散"><a href="#梯度爆炸-amp-梯度弥散" class="headerlink" title="梯度爆炸&amp;梯度弥散"></a>梯度爆炸&amp;梯度弥散</h1><p>梯度爆炸和梯度弥散都是由训练时的反向传播引起的。</p>
+<p><img src="https://images2017.cnblogs.com/blog/1081032/201709/1081032-20170905102905460-307678090.png" alt="Graident Vanishing"></p>
+<p>上图是做预测时，前向传播梯度的影响；训练时是反向传播，从后向前，前面层的梯度越来越小。</p>
+<p>靠近输出层的hidden layer 梯度大，参数更新快，所以很快就会收敛；而靠近输入层的hidden layer 梯度小，参数更新慢，几乎就和初始状态一样，随机分布。这种现象就是梯度弥散。而在另一种情况中，前面layer的梯度通过训练变大，而后面layer的梯度指数级增大，这种现象又叫做梯度爆炸。总的来说，就是在这个深度网络中，梯度相当不稳定(unstable)。[2]</p>
+<p><img src="https://images2017.cnblogs.com/blog/1081032/201709/1081032-20170905103102663-500891744.png" alt="Gradient Vanishing"></p>
+<p>根据sigmoid的特点，它会将-∞～+∞之间的输入压缩到0～1之间。当input的值更新时，output会有很小的更新。又因为上一层的输出将作为后一层的输入，而输出经过sigmoid后更新速率会逐步衰减，直到输出层只会有微乎其微的更新。[2]</p>
+<h3 id="梯度解释"><a href="#梯度解释" class="headerlink" title="梯度解释"></a>梯度解释</h3><p><img src="https://images2017.cnblogs.com/blog/1081032/201709/1081032-20170905103703554-551903486.png" alt="gradient"></p>
+<p>每一层只有一个神经元，我们分析参数bias的变化。</p>
+<p>符号：第一层为输入，中间三个隐藏层，然后输出，C为损失函数。输入为<script type="math/tex">a_0​</script>，输出为<script type="math/tex">a_4​</script>，每一层有 <script type="math/tex">z=w*a+b​</script>. 上一层的输出为下一层的输入，需要经过线性组合+激活函数<script type="math/tex">\sigma​</script>，变成下一层的输出：例如<script type="math/tex">a_1=\sigma(z_1)=\sigma(w_1a_0+b_1)​</script></p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\frac{\partial C}{\partial b_1}= & \frac{\partial C}{\partial a_4} \frac{\partial a_4}{\partial z_4}\frac{\partial z_4}{\partial a_3}\frac{\partial a_3}{\partial z_3}\frac{\partial z_3}{\partial a_2}\frac{\partial a_2}{\partial z_2}\frac{\partial z_2}{\partial a_1}\frac{\partial a_1}{\partial z_1}\frac{\partial z_1}{\partial b_1}\\
+= & \frac{\partial C}{\partial a_4}\sigma'(z_4) w_4 \sigma'(z_3) w_3 \sigma'(z_2) w_2 \sigma'(z_1) * 1
+\end{array}​</script><p>sigmoid导数在0取得最大值1/4；如果我们使用均值为0，方差为1的高斯分布初始化参数w，有|w| &lt; 1，可以看出随着网络层数的加深<script type="math/tex">|w_j\sigma'(z_j)|<\frac{1}{4}</script>的term也会变多，最后的乘积会指数级衰减，这就是梯度弥散的根本原因。如果w取值很大，这里四个w的乘积就很大，梯度爆炸。</p>
+<p>梯度爆炸相对容易解决，通过裁剪后的优化算法即可解决，如gradient clipping（如果梯度的范围大于某给定值，将梯度同比例收缩，或者将大于threshold的梯度设为threshold值）</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><h3 id="使用relu、leakrelu、elu等激活函数"><a href="#使用relu、leakrelu、elu等激活函数" class="headerlink" title="使用relu、leakrelu、elu等激活函数"></a>使用relu、leakrelu、elu等激活函数</h3><p><img src="https://pic4.zhimg.com/80/v2-f52ca25ffd6829ee2dfd849c256119b3_hd.jpg" alt="relu"></p>
+<p>Relu激活函数在x&gt;0的时候，导数恒为1，不存在梯度爆炸、梯度弥散的问题了，每层的网络都可以得到相同的更新速度。</p>
+<p>Relu的优点：解决了梯度爆炸、梯度弥散的问题；计算方便，速度快；加速网络训练</p>
+<p>Relu的缺点：复数部分恒为0，会导致一些神经元无法激活（可通过设置小学习率部分解决）；输出不是以0为中心的</p>
+<h3 id="Batch-Normalization："><a href="#Batch-Normalization：" class="headerlink" title="Batch Normalization："></a>Batch Normalization：</h3><p>目前已经被广泛的应用到了各大网络中，具有加速网络收敛速度，提升训练稳定性的效果，Batchnorm本质上是解决反向传播过程中的梯度问题。通过规范化操作将输出信号x规范化到均值为0，方差为1保证网络的稳定性。</p>
+<p>batchnorm解决梯度的问题上。具体来说就是反向传播中，经过每一层的梯度会乘以该层的权重，<script type="math/tex">f_3 = f_2(w^T*x+b)</script>，那么反向传播中，<script type="math/tex">\frac{\partial f_2}{\partial x} = \frac{\partial f_2}{\partial f_1}w</script>. 反向传播式子中有w的存在，所以w 的大小影响了梯度的消失和爆炸，batchnorm就是通过对每一层的输出做scale和shift的方法，通过一定的规范化手段，把每层神经网络任意神经元这个输入值的分布强行拉回到接近均值为0方差为1的标准正太分布，即严重偏离的分布强制拉回比较标准的分布，这样使得激活输入值落在非线性函数对输入比较敏感的区域，这样输入的小变化就会导致损失函数较大的变化，使得让梯度变大，避免梯度消失问题产生，而且梯度变大意味着学习收敛速度快，能大大加快训练速度。</p>
+<h3 id="残差结构："><a href="#残差结构：" class="headerlink" title="残差结构："></a>残差结构：</h3><p>CNN模型的梯度弥散，用残差模型ResNet改进 </p>
+<h3 id="LSTM："><a href="#LSTM：" class="headerlink" title="LSTM："></a>LSTM：</h3><p>RNN模型的梯度弥散，用LSTM或者GRU来改进</p>
+<p>参考资料</p>
 <ol>
-<li><p>下载git（已有）和nodejs， 然后在cmd中安装Hexo： <code>npm install -g hexo-cli</code></p>
-</li>
-<li><p>创建：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo i blog //init的缩写 blog是项目名</span><br><span class="line">cd blog //切换到站点根目录</span><br><span class="line">hexo g //generetor的缩写</span><br><span class="line">hexo s //server的缩写</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>打开浏览器输入localhost:4000查看一个默认的版本</p>
-</li>
-<li><p>在github上有很多主题可选择，这里选择nexT。在站点根目录输入：<br><code>git clone https://github.com/iissnan/hexo-theme-next themes/next</code>.<br>完成后，打开站点配置文件(根目录下_config.yml)， 找到<code>theme</code>字段，并将其值更改为<code>next</code>。</p>
-</li>
-<li><p>nexT可选择三种主题：Muse, Mist, Pisces。在站点根目录<code>/themes/next/_congig.yml</code>文件中修改<code>scheme</code>。然后重新clean，generator，查看效果。</p>
-</li>
-<li><p>在cmd中输入：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo clean  //清除缓存</span><br><span class="line">hexo g  //重新生成代码</span><br><span class="line">hexo s  //部署到本地</span><br><span class="line">//然后打开浏览器访问 localhost:4000 查看效果</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>将本地博客上传到github：</p>
-<ul>
-<li>在GitHub上创建新项目，名字为用户名.github.io</li>
-<li><p>修改hexo站点的配置文件：<strong>注意：缩进必须按照如下格式，<code>type</code>, <code>repository</code>和<code>branch</code>为同一级缩进</strong> </p>
-  <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">git</span></span><br><span class="line"><span class="attr">repository:</span> <span class="attr">https://github.com/wcfrank/wcfrank.github.io.git</span></span><br><span class="line"><span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>部署：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save  //先装个插件压压惊</span><br><span class="line">hexo d  //  部署的命令</span><br><span class="line">//等一会就好了</span><br></pre></td></tr></table></figure>
-<p>  <strong>注意：请先设置好git的用户名密码，或者ssh.</strong><br>  但是设置之后依然报错，显示<code>fatal: could not read Username for &#39;https://github.com&#39;: No error</code>。通过修改yml文件里repository节点为：<code>https://{username}:{password}@github.com/wcfrank/wcfrank.github.io.git</code> 问题最终解决good！</p>
-</li>
-</ul>
-</li>
-<li><p>发布新的博客：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;postName&quot; </span><br><span class="line"> //hexo n 也可以 </span><br><span class="line">//你自己的博客名称，名为postName.md的文件会建在目</span><br><span class="line">//录/blog/source/_posts下。</span><br></pre></td></tr></table></figure>
-<p> <em>也可以把写好的markdown文件直接放到这个路径下！</em><br> 文章编辑完成后，终端在根目录文件夹下，执行如下命令来发布:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g //生成静态页面</span><br><span class="line">hexo d //发布</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>现在文章都是整篇显示，能否折叠呢？</p>
-<p>答曰：可以。</p>
-<ul>
-<li>在文章中使用 <code>&lt;!-- more --&gt;</code> 手动进行截断，Hexo 提供的方式</li>
-<li>在文章的 <code>front-matter</code> 中添加 <code>description</code>，并提供文章摘录</li>
-<li>自动形成摘要, 在nexT的配置文件添加：<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">auto_excerpt:</span></span><br><span class="line"><span class="attr">  enable:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  length:</span> <span class="number">150</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>添加本站访客数、网站底部字数统计，见参考资料4.</p>
-</li>
-<li><p>为文章添加背景色和阴影框：<br> 在目录<code>blog\themes\next\source\css\_custom\custom.styl</code>文件中添加：</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 主页文章添加阴影效果</span><br><span class="line">.post &#123;</span><br><span class="line">margin-top: 60px;</span><br><span class="line">margin-bottom: 60px;</span><br><span class="line">padding: 25px;</span><br><span class="line">-webkit-box-shadow: 0 0 5px rgba(202, 203, 203, .9); //阴影效果</span><br><span class="line">-moz-box-shadow: 0 0 5px rgba(202, 203, 203, .9); //阴影效果</span><br><span class="line">background-color: rgba(248, 248, 248, .5); //背景色</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p> 该方法在本地可以改变背景颜色，但上传GitHub之后无效，索性在<code>blog\themes\next\source\css\main.styl</code>最后添加相同的内容！</p>
-</li>
-<li><p><strong>重要：</strong> 博客中会用到一些数学公式，markdown中用的是Mathjax来代替Latex。参考5.为官方文档，照做即可。备用资料1和2基本没啥用，搞的我绕了很多弯路，里面唯一有用的是：在每个markdown文件的开头，加入 mathjax: true，如果不加这个，公式出不来（奇怪）。这样某些不需要mathjax渲染的文件就不用设置，加快渲染速度。</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: hello</span><br><span class="line">category: Uncategorized</span><br><span class="line">date: 2017/05/03</span><br><span class="line">mathjax: true</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在Hexo中添加本地图片：</p>
-<ol>
-<li>把主页配置文件_config.yml 里的post_asset_folder:这个选项设置为true</li>
-<li>在你的hexo目录下执行这样一句话npm install hexo-asset-image —save，这是下载安装一个可以上传本地图片的插件</li>
-<li>等待一小段时间后，再运行hexo n “xxxx”来生成md博文时，/source/_posts文件夹内除了xxxx.md文件还有一个同名的文件夹</li>
-<li>最后在xxxx.md中想引入图片时，先把图片复制到xxxx这个文件夹中，然后只需要在xxxx.md中按照markdown的格式引入图片：<br>! [你想输入的替代文字] (xxxx/图片名.jpg)</li>
-</ol>
-</li>
-</ol>
-<p>其他参考资料：</p>
-<ol>
-<li><a href="https://www.jianshu.com/p/8cb998a18272" target="_blank" rel="noopener">https://www.jianshu.com/p/8cb998a18272</a></li>
-<li><a href="https://segmentfault.com/q/1010000003734223" target="_blank" rel="noopener">https://segmentfault.com/q/1010000003734223</a></li>
-<li><a href="https://www.jianshu.com/p/1f8107a8778c" target="_blank" rel="noopener">主题个性化1</a></li>
-<li><a href="http://shenzekun.cn/hexo%E7%9A%84next%E4%B8%BB%E9%A2%98%E4%B8%AA%E6%80%A7%E5%8C%96%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B.html" target="_blank" rel="noopener">主题个性化2</a></li>
-<li><a href="https://github.com/theme-next/hexo-theme-next/blob/master/docs/MATH.md" target="_blank" rel="noopener">添加数学公式</a><ul>
-<li>备用资料1：<a href="https://www.jianshu.com/p/7ab21c7f0674" target="_blank" rel="noopener">https://www.jianshu.com/p/7ab21c7f0674</a></li>
-<li>备用2： <a href="https://blog.csdn.net/u014630987/article/details/78670258" target="_blank" rel="noopener">https://blog.csdn.net/u014630987/article/details/78670258</a></li>
-</ul>
-</li>
+<li><a href="https://zhuanlan.zhihu.com/p/33006526" target="_blank" rel="noopener">详解深度学习中的梯度消失、爆炸原因及其解决方法</a></li>
+<li><a href="https://www.cnblogs.com/yangmang/p/7477802.html" target="_blank" rel="noopener">梯度弥散与梯度爆炸</a></li>
+<li><a href="https://www.zhihu.com/question/34878706" target="_blank" rel="noopener">LSTM如何来避免梯度弥散和梯度爆炸？</a></li>
 </ol>
 
       
@@ -518,7 +465,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/建站/" rel="tag"># 建站</a>
+            <a href="/tags/梯度/" rel="tag"># 梯度</a>
           
         </div>
       
@@ -531,8 +478,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/15/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2019/03/06/decision_tree/" rel="next" title="决策树">
+                <i class="fa fa-chevron-left"></i> 决策树
               </a>
             
           </div>
@@ -541,8 +488,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/09/26/KKT/" rel="prev" title="KKT条件的通俗理解">
-                KKT条件的通俗理解 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/17/unbalanced label samples/" rel="prev" title="Unbalanced Label">
+                Unbalanced Label <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -717,7 +664,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用了Hexo和nexT来搭建博客，嗯嗯很好！"><span class="nav-number">1.</span> <span class="nav-text">使用了Hexo和nexT来搭建博客，嗯嗯很好！</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#梯度爆炸-amp-梯度弥散"><span class="nav-number">1.</span> <span class="nav-text">梯度爆炸&amp;梯度弥散</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#梯度解释"><span class="nav-number">1.0.1.</span> <span class="nav-text">梯度解释</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方案"><span class="nav-number">2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用relu、leakrelu、elu等激活函数"><span class="nav-number">2.0.1.</span> <span class="nav-text">使用relu、leakrelu、elu等激活函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Batch-Normalization："><span class="nav-number">2.0.2.</span> <span class="nav-text">Batch Normalization：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#残差结构："><span class="nav-number">2.0.3.</span> <span class="nav-text">残差结构：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LSTM："><span class="nav-number">2.0.4.</span> <span class="nav-text">LSTM：</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -911,6 +858,30 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
   
 
 
