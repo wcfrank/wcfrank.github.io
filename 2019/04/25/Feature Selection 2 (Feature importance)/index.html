@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Feature importanceRF feature importanceAll tree-based models have feature_importances_, like RandomForestClassifier (xgboost, lightgbm). For classification, it is typically either Gini impurity or inf">
+<meta name="keywords" content="Feature Selection,Feature Importances">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Feature Selection 2">
+<meta property="og:url" content="http://yoursite.com/2019/04/25/Feature Selection 2 (Feature importance)/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="Feature importanceRF feature importanceAll tree-based models have feature_importances_, like RandomForestClassifier (xgboost, lightgbm). For classification, it is typically either Gini impurity or inf">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.kaggleusercontent.com/kf/4065111/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..1rxhm_IaEkkmRrXju0mIUA.eLWISm6ZTaq6XGscOq4aX9YtYP8LWXb0AUeb9oJJckKKYBuPZL-epkXonVD6V78abGSwYW0XOXzsgb70ns_nwR-gGyT1Jfek77FhoHkq4wCNF39aezzYX-QFsJhd4AWlA_X_6zazpJjLXJS3OKo_kixQzt-1VeDw6n7G8xcAtFs.5FPxMnhW2ZwP6LCHjf8bNg/__results___files/__results___15_0.png">
+<meta property="og:image" content="https://www.kaggleusercontent.com/kf/4065111/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..1rxhm_IaEkkmRrXju0mIUA.eLWISm6ZTaq6XGscOq4aX9YtYP8LWXb0AUeb9oJJckKKYBuPZL-epkXonVD6V78abGSwYW0XOXzsgb70ns_nwR-gGyT1Jfek77FhoHkq4wCNF39aezzYX-QFsJhd4AWlA_X_6zazpJjLXJS3OKo_kixQzt-1VeDw6n7G8xcAtFs.5FPxMnhW2ZwP6LCHjf8bNg/__results___files/__results___16_0.png">
+<meta property="og:updated_time" content="2019-04-25T12:54:49.770Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Feature Selection 2">
+<meta name="twitter:description" content="Feature importanceRF feature importanceAll tree-based models have feature_importances_, like RandomForestClassifier (xgboost, lightgbm). For classification, it is typically either Gini impurity or inf">
+<meta name="twitter:image" content="https://www.kaggleusercontent.com/kf/4065111/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..1rxhm_IaEkkmRrXju0mIUA.eLWISm6ZTaq6XGscOq4aX9YtYP8LWXb0AUeb9oJJckKKYBuPZL-epkXonVD6V78abGSwYW0XOXzsgb70ns_nwR-gGyT1Jfek77FhoHkq4wCNF39aezzYX-QFsJhd4AWlA_X_6zazpJjLXJS3OKo_kixQzt-1VeDw6n7G8xcAtFs.5FPxMnhW2ZwP6LCHjf8bNg/__results___files/__results___15_0.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/25/Feature Selection 2 (Feature importance)/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Feature Selection 2 | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/25/Feature Selection 2 (Feature importance)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Feature Selection 2
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-25 00:00:00 / 修改时间：20:54:49" itemprop="dateCreated datePublished" datetime="2019-04-25T00:00:00+08:00">2019-04-25</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/特征工程/" itemprop="url" rel="index"><span itemprop="name">特征工程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Feature-importance"><a href="#Feature-importance" class="headerlink" title="Feature importance"></a>Feature importance</h1><h2 id="RF-feature-importance"><a href="#RF-feature-importance" class="headerlink" title="RF feature importance"></a>RF feature importance</h2><p>All tree-based models have <code>feature_importances_</code>, like RandomForestClassifier (xgboost, lightgbm). For classification, it is typically either <a href="http://en.wikipedia.org/wiki/Decision_tree_learning#Gini_impurity" target="_blank" rel="noopener">Gini impurity</a> or <a href="http://en.wikipedia.org/wiki/Information_gain_in_decision_trees" target="_blank" rel="noopener">information gain/entropy</a> and for regression trees it is <a href="http://en.wikipedia.org/wiki/Variance" target="_blank" rel="noopener">variance</a>. Thus when training a tree, it can be computed how much each feature decreases the weighted impurity in a tree. For a forest, the impurity decrease from each feature can be averaged and the features are ranked according to this measure. [2]</p>
+<p>There are a few things to keep in mind when using the impurity based ranking:  [2]</p>
+<ol>
+<li><p><strong>feature selection based on impurity reduction is biased towards preferring variables with more categories</strong> (see <a href="http://link.springer.com/article/10.1186%2F1471-2105-8-25" target="_blank" rel="noopener">Bias in random forest variable importance measures</a>). </p>
+</li>
+<li><p>when the dataset has two (or more) correlated features, then from the point of view of the model, any of these correlated features can be used as the predictor, with no concrete preference of one over the others. But once one of them is used, the importance of others is significantly reduced since effectively the impurity they can remove is already removed by the first feature. As a consequence, they will have a lower reported importance. </p>
+</li>
+</ol>
+<h2 id="Boruta"><a href="#Boruta" class="headerlink" title="Boruta"></a>Boruta</h2><p>[3]  shadow feature</p>
+<h2 id="Permutation-Importance-Mean-decrease-accuracy"><a href="#Permutation-Importance-Mean-decrease-accuracy" class="headerlink" title="Permutation Importance (Mean decrease accuracy)"></a>Permutation Importance (Mean decrease accuracy)</h2><p>The general idea is to permute the values of each feature and measure how much the permutation decreases the accuracy of the model.</p>
+<ol>
+<li>Get a <strong>trained</strong> model</li>
+<li>Shuffle the values in a <strong>single</strong> column, make predictions using the resulting dataset. Use these predictions and the true target values to calculate how much the loss function suffered from shuffling. That performance deterioration measures the importance of the variable you just shuffled.</li>
+<li>Return the data to the original order (undoing the shuffle from step 2.) Now repeat step 2 with the next column in the dataset, until you have calculated the importance of each column.</li>
+</ol>
+<p><strong>Permutation importance is calculated after a model has been fitted.</strong> So we won’t change the model or change what predictions we’d get for a given value of height, sock-count, etc. [1]</p>
+<h4 id="Code-example-1"><a href="#Code-example-1" class="headerlink" title="Code example [1]"></a>Code example [1]</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier</span><br><span class="line"></span><br><span class="line">data = pd.read_csv(<span class="string">'../input/fifa-2018-match-statistics/FIFA 2018 Statistics.csv'</span>)</span><br><span class="line">y = (data[<span class="string">'Man of the Match'</span>] == <span class="string">"Yes"</span>)  <span class="comment"># Convert from string "Yes"/"No" to binary</span></span><br><span class="line">feature_names = [i <span class="keyword">for</span> i <span class="keyword">in</span> data.columns <span class="keyword">if</span> data[i].dtype <span class="keyword">in</span> [np.int64]]</span><br><span class="line">X = data[feature_names]</span><br><span class="line">train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=<span class="number">1</span>)</span><br><span class="line">my_model = RandomForestClassifier(random_state=<span class="number">0</span>).fit(train_X, train_y)</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> eli5</span><br><span class="line"><span class="keyword">from</span> eli5.sklearn <span class="keyword">import</span> PermutationImportance</span><br><span class="line"></span><br><span class="line">perm = PermutationImportance(my_model, random_state=<span class="number">1</span>).fit(val_X, val_y)</span><br><span class="line">eli5.show_weights(perm, feature_names = val_X.columns.tolist())</span><br></pre></td></tr></table></figure>
+<p>The values towards the top are the most important features, and those towards the bottom matter least.</p>
+<h4 id="Code-example-2"><a href="#Code-example-2" class="headerlink" title="Code example [2]"></a>Code example [2]</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.cross_validation <span class="keyword">import</span> ShuffleSplit</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> r2_score</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> defaultdict</span><br><span class="line">X = boston[<span class="string">"data"</span>]</span><br><span class="line">Y = boston[<span class="string">"target"</span>]</span><br><span class="line">rf = RandomForestRegressor()</span><br><span class="line">scores = defaultdict(list)</span><br><span class="line"></span><br><span class="line"><span class="comment">#crossvalidate the scores on a number of different random splits of the data</span></span><br><span class="line"><span class="keyword">for</span> train_idx, test_idx <span class="keyword">in</span> ShuffleSplit(len(X), <span class="number">100</span>, <span class="number">.3</span>):</span><br><span class="line">    X_train, X_test = X[train_idx], X[test_idx]</span><br><span class="line">    Y_train, Y_test = Y[train_idx], Y[test_idx]</span><br><span class="line">    r = rf.fit(X_train, Y_train)</span><br><span class="line">    acc = r2_score(Y_test, rf.predict(X_test))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(X.shape[<span class="number">1</span>]):</span><br><span class="line">        X_t = X_test.copy()</span><br><span class="line">        np.random.shuffle(X_t[:, i])</span><br><span class="line">        shuff_acc = r2_score(Y_test, rf.predict(X_t))</span><br><span class="line">        scores[names[i]].append((acc-shuff_acc)/acc)</span><br><span class="line"><span class="keyword">print</span> <span class="string">"Features sorted by their score:"</span></span><br><span class="line"><span class="keyword">print</span> sorted([(round(np.mean(score), <span class="number">4</span>), feat) <span class="keyword">for</span> feat, score <span class="keyword">in</span> scores.items()], reverse=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+<p>Outputs: Features sorted by their score<br>[(0.7276, ‘LSTAT’), (0.5675, ‘RM’), (0.0867, ‘DIS’), (0.0407, ‘NOX’), (0.0351, ‘CRIM’), (0.0233, ‘PTRATIO’), (0.0168, ‘TAX’), (0.0122, ‘AGE’), (0.005, ‘B’), (0.0048, ‘INDUS’), (0.0043, ‘RAD’), (0.0004, ‘ZN’), (0.0001, ‘CHAS’)]</p>
+<p><code>LSTAT</code> and <code>RM</code> are two features that strongly impact model performance: permuting them decreases model performance by ~73% and ~57% respectively. Keep in mind that these measurements are made only after the model has been trained (and is depending) on all of these features. </p>
+<h2 id="Null-Importance-target-permutation-4"><a href="#Null-Importance-target-permutation-4" class="headerlink" title="Null Importance (target permutation) [4]"></a>Null Importance (target permutation) [4]</h2><p>The <a href="https://academic.oup.com/bioinformatics/article/26/10/1340/193348" target="_blank" rel="noopener">original paper</a>. 较Boruta的优势：Boruta只适合用sklearn的RandomForest、需要填充缺失值、特征数量扩大一倍也会更加消耗资源。</p>
+<ol>
+<li><p>将label的数据顺序打乱，使用树模型训练，得到每个特征对于label顺序打乱之后的feature importance；</p>
+</li>
+<li><p>重复以上操作多次（e.g. 80次），每个特征都有80个label随机打乱顺序后得到的feature importance，这80个feature importance构成一个分布；</p>
+</li>
+<li>对于每个特征，不打乱顺序的actual feature importance在这个分布下的显著性水平</li>
+</ol>
+<p>为什么叫Null importance呢？考虑原假设（Null hypothesis）：特征与label不相关。随机打乱label顺序，特征的feature importance的分布称之为Null importance distribution。</p>
+<p>examples: [4]</p>
+<p><img src="https://www.kaggleusercontent.com/kf/4065111/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..1rxhm_IaEkkmRrXju0mIUA.eLWISm6ZTaq6XGscOq4aX9YtYP8LWXb0AUeb9oJJckKKYBuPZL-epkXonVD6V78abGSwYW0XOXzsgb70ns_nwR-gGyT1Jfek77FhoHkq4wCNF39aezzYX-QFsJhd4AWlA_X_6zazpJjLXJS3OKo_kixQzt-1VeDw6n7G8xcAtFs.5FPxMnhW2ZwP6LCHjf8bNg/__results___files/__results___15_0.png" alt="1"></p>
+<p><img src="https://www.kaggleusercontent.com/kf/4065111/eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0..1rxhm_IaEkkmRrXju0mIUA.eLWISm6ZTaq6XGscOq4aX9YtYP8LWXb0AUeb9oJJckKKYBuPZL-epkXonVD6V78abGSwYW0XOXzsgb70ns_nwR-gGyT1Jfek77FhoHkq4wCNF39aezzYX-QFsJhd4AWlA_X_6zazpJjLXJS3OKo_kixQzt-1VeDw6n7G8xcAtFs.5FPxMnhW2ZwP6LCHjf8bNg/__results___files/__results___16_0.png" alt="2"></p>
+<p>蓝色hist为label顺序打乱之后的feature impotance distribution，红色线为实际的feature importance值。</p>
+<blockquote>
+<p>Under the null hypothesis and normal distribution if for a feature the red actual importance is within the blue distribution then chances are the feature is not correlated with the target. If it’s within the 5% right part of the blue distribution or outside then it’s correlated.</p>
+</blockquote>
+<p>第一个特征的Gain importance落在了分布之内，显著性水平肯定&gt;0.05，所以可以认为这个特征与实际的label不相关。第二个特征的actual feature importance与null feature importance distribution相距甚远，所以认为这个特征与actual label有相关性。</p>
+<p>Score features：<script type="math/tex">score = \log(10^{-10} + \frac{actual~imp}{1+percentile(null~imp,75)})</script>，加入1e-10是因为<code>np.log(0)</code>会报错，同理分母+1也是防止报错。</p>
+<p>Assess correlation to the target：<script type="math/tex">corr\_score = \frac{|null<act|}{null}*100\%</script>. Build this metric to show hwo far the actual importance is from the noise (null importance) distribution. 通过设定不同的阈值做feature selection，得到不同的feature集合，再用这些feature训练lgb模型，通过cv的结果来比较不同的feature集合：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">score_feature_selection</span><span class="params">(df=None, train_features=None, cat_feats=None, target=None)</span>:</span></span><br><span class="line">    dtrain = lgb.Dataset(df[train_features], target, free_raw_data=<span class="keyword">False</span>, silent=<span class="keyword">True</span>)</span><br><span class="line">    lgb_params = &#123;</span><br><span class="line">        <span class="string">'objective'</span>: <span class="string">'binary'</span>,</span><br><span class="line">        <span class="string">'boosting_type'</span>: <span class="string">'gbdt'</span>,</span><br><span class="line">        <span class="string">'learning_rate'</span>: <span class="number">.1</span>,</span><br><span class="line">        <span class="string">'subsample'</span>: <span class="number">0.8</span>,</span><br><span class="line">        <span class="string">'colsample_bytree'</span>: <span class="number">0.8</span>,</span><br><span class="line">        <span class="string">'num_leaves'</span>: <span class="number">31</span>,</span><br><span class="line">        <span class="string">'max_depth'</span>: <span class="number">-1</span>,</span><br><span class="line">        <span class="string">'seed'</span>: <span class="number">13</span>,</span><br><span class="line">        <span class="string">'n_jobs'</span>: <span class="number">4</span>,</span><br><span class="line">        <span class="string">'min_split_gain'</span>: <span class="number">.00001</span>,</span><br><span class="line">        <span class="string">'reg_alpha'</span>: <span class="number">.00001</span>,</span><br><span class="line">        <span class="string">'reg_lambda'</span>: <span class="number">.00001</span>,</span><br><span class="line">        <span class="string">'metric'</span>: <span class="string">'auc'</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># Fit the model</span></span><br><span class="line">    hist = lgb.cv(</span><br><span class="line">        params=lgb_params, </span><br><span class="line">        train_set=dtrain, </span><br><span class="line">        num_boost_round=<span class="number">2000</span>,</span><br><span class="line">        categorical_feature=cat_feats,</span><br><span class="line">        nfold=<span class="number">5</span>,</span><br><span class="line">        stratified=<span class="keyword">True</span>,</span><br><span class="line">        shuffle=<span class="keyword">True</span>,</span><br><span class="line">        early_stopping_rounds=<span class="number">50</span>,</span><br><span class="line">        verbose_eval=<span class="number">0</span>,</span><br><span class="line">        seed=<span class="number">17</span></span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Return the last mean / std values </span></span><br><span class="line">    <span class="keyword">return</span> hist[<span class="string">'auc-mean'</span>][<span class="number">-1</span>], hist[<span class="string">'auc-stdv'</span>][<span class="number">-1</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> threshold <span class="keyword">in</span> [<span class="number">0</span>, <span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span> , <span class="number">40</span>, <span class="number">50</span> ,<span class="number">60</span> , <span class="number">70</span>, <span class="number">80</span> , <span class="number">90</span>, <span class="number">95</span>, <span class="number">99</span>]:</span><br><span class="line">    split_feats = [_f <span class="keyword">for</span> _f, _score, _ <span class="keyword">in</span> corr_scores <span class="keyword">if</span> _score &gt;= threshold]</span><br><span class="line">    split_cat_feats = [_f <span class="keyword">for</span> _f, _score, _ <span class="keyword">in</span> corr_scores <span class="keyword">if</span> (_score &gt;= threshold) &amp; (_f <span class="keyword">in</span> categorical_feats)]</span><br><span class="line">    gain_feats = [_f <span class="keyword">for</span> _f, _, _score <span class="keyword">in</span> corr_scores <span class="keyword">if</span> _score &gt;= threshold]</span><br><span class="line">    gain_cat_feats = [_f <span class="keyword">for</span> _f, _, _score <span class="keyword">in</span> corr_scores <span class="keyword">if</span> (_score &gt;= threshold) &amp; (_f <span class="keyword">in</span> categorical_feats)]</span><br><span class="line">                                                                                             </span><br><span class="line">    print(<span class="string">'Results for threshold %3d'</span> % threshold)</span><br><span class="line">    split_results = score_feature_selection(df=data, train_features=split_feats, cat_feats=split_cat_feats, target=data[<span class="string">'TARGET'</span>])</span><br><span class="line">    print(<span class="string">'\t SPLIT : %.6f +/- %.6f'</span> % (split_results[<span class="number">0</span>], split_results[<span class="number">1</span>]))</span><br><span class="line">    gain_results = score_feature_selection(df=data, train_features=gain_feats, cat_feats=gain_cat_feats, target=data[<span class="string">'TARGET'</span>])</span><br><span class="line">    print(<span class="string">'\t GAIN  : %.6f +/- %.6f'</span> % (gain_results[<span class="number">0</span>], gain_results[<span class="number">1</span>]))</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference:"></a>Reference:</h2><ol>
+<li><p><a href="https://www.kaggle.com/dansbecker/permutation-importance" target="_blank" rel="noopener">https://www.kaggle.com/dansbecker/permutation-importance</a></p>
+</li>
+<li><p><a href="https://blog.datadive.net/selecting-good-features-part-iii-random-forests/" target="_blank" rel="noopener">Selecting good features – Part III: random forests</a></p>
+</li>
+<li><p><a href="https://medium.com/the-artificial-impostor/feature-importance-measures-for-tree-models-part-i-47f187c1a2c3" target="_blank" rel="noopener">Feature Importance Measures for Tree Models — Part I</a></p>
+<ul>
+<li><p><a href="https://www.kaggle.com/ogrellier/noise-analysis-of-porto-seguro-s-features" target="_blank" rel="noopener">https://www.kaggle.com/ogrellier/noise-analysis-of-porto-seguro-s-features</a></p>
+</li>
+<li><p><a href="https://www.kaggle.com/ogrellier/feature-selection-target-permutations" target="_blank" rel="noopener">https://www.kaggle.com/ogrellier/feature-selection-target-permutations</a> (use target permutation instead of feature permutation)</p>
+</li>
+<li><p><a href="http://danielhomola.com/2015/05/08/borutapy-an-all-relevant-feature-selection-method/" target="_blank" rel="noopener">http://danielhomola.com/2015/05/08/borutapy-an-all-relevant-feature-selection-method/</a></p>
+</li>
+</ul>
+</li>
+</ol>
+<ol>
+<li><p><a href="https://www.kaggle.com/ogrellier/feature-selection-with-null-importances" target="_blank" rel="noopener">Feature Selection with Null Importances</a></p>
+<p>Note: convert all category features to <code>.astype(&#39;category&#39;)</code>, not using <code>pd.factorize</code>. Because the latter will convert all unknown or NaN values to -1, but lgb uses <code>LabelEncoder</code> which cannot handle negative values.</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Feature-Selection/" rel="tag"># Feature Selection</a>
+          
+            <a href="/tags/Feature-Importances/" rel="tag"># Feature Importances</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/17/BN_Dropout/" rel="next" title="Batch Normalization & Dropout">
+                <i class="fa fa-chevron-left"></i> Batch Normalization & Dropout
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/25/Feature Selection 1/" rel="prev" title="Feature Selection 1">
+                Feature Selection 1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Feature-importance"><span class="nav-number">1.</span> <span class="nav-text">Feature importance</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RF-feature-importance"><span class="nav-number">1.1.</span> <span class="nav-text">RF feature importance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Boruta"><span class="nav-number">1.2.</span> <span class="nav-text">Boruta</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Permutation-Importance-Mean-decrease-accuracy"><span class="nav-number">1.3.</span> <span class="nav-text">Permutation Importance (Mean decrease accuracy)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Code-example-1"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">Code example [1]</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Code-example-2"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">Code example [2]</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Null-Importance-target-permutation-4"><span class="nav-number">1.4.</span> <span class="nav-text">Null Importance (target permutation) [4]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">1.5.</span> <span class="nav-text">Reference:</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共22.3k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
