@@ -124,7 +124,7 @@
 <meta property="og:description" content="特征选择是特征工程里的一个重要问题，目的是找到最优特征子集。减少特征个数，减少运行时间，提高模型精确度；更好的理解特征，及其与label之间的相关性。  Filter（过滤法）：按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。注意，过滤法不能减弱特征间的共线性。 Wrapper（包装法）：根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。 Em">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://danielhomola.com/wp-content/uploads/2015/05/boruta2.png">
-<meta property="og:updated_time" content="2019-04-25T13:24:47.168Z">
+<meta property="og:updated_time" content="2019-04-25T13:39:31.603Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Feature Selection 1">
 <meta name="twitter:description" content="特征选择是特征工程里的一个重要问题，目的是找到最优特征子集。减少特征个数，减少运行时间，提高模型精确度；更好的理解特征，及其与label之间的相关性。  Filter（过滤法）：按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。注意，过滤法不能减弱特征间的共线性。 Wrapper（包装法）：根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。 Em">
@@ -358,7 +358,7 @@
                 
               
 
-              <time title="创建时间：2019-04-25 00:00:00 / 修改时间：21:24:47" itemprop="dateCreated datePublished" datetime="2019-04-25T00:00:00+08:00">2019-04-25</time>
+              <time title="创建时间：2019-04-25 00:00:00 / 修改时间：21:39:31" itemprop="dateCreated datePublished" datetime="2019-04-25T00:00:00+08:00">2019-04-25</time>
             
 
             
@@ -473,23 +473,21 @@
 <p><script type="math/tex">\lambda</script>：模型正则化参数，a grid of values；</p>
 <p>k：第k个特征；</p>
 <p><script type="math/tex">\hat{\Pi}^{\lambda}_k</script>：当正则化参数为<script type="math/tex">\lambda</script>时，特征k被选择的概率；</p>
-<p><script type="math/tex">\hat{S}^{\lambda}_i</script>：第<script type="math/tex">i</script>次采样，模型正则化参数为<script type="math/tex">\lambda</script>时选出来的特征子集；</p>
-<p><script type="math/tex">\hat{S}^{stable}\subset\{1,\dots,p\}</script>：最终输出的特征选择子集，其中<script type="math/tex">p</script>为总特征个数.</p>
-<p><strong>step1:采样</strong>， 对于每个正则化参数<script type="math/tex">\lambda</script>:</p>
-<ul>
+<p><script type="math/tex">\hat{S}^{\lambda}_i​</script>：第<script type="math/tex">i​</script>次采样，模型正则化参数为<script type="math/tex">\lambda​</script>时选出来的特征子集；</p>
+<p><script type="math/tex">\hat{S}^{stable}\subset\{1,\dots,p\}​</script>：最终输出的特征选择子集，其中<script type="math/tex">p​</script>为总特征个数.</p>
+</li>
+</ul>
+<p>  <strong>step1:采样</strong>， 对于每个正则化参数<script type="math/tex">\lambda</script>:</p>
+<ol>
 <li><p>for i=1,…,N:</p>
 <p>对原样本<script type="math/tex">X^{n*p}</script>进行有放回采样，采样的大小为<script type="math/tex">\frac{n}{2}</script>;</p>
+<p>在采样的样本上训练模型（如lasso）选择出特征的子集<script type="math/tex">\hat{S}^{\lambda}_i</script>,</p>
 </li>
-</ul>
-</li>
-</ul>
-<pre><code>在采样的样本上训练模型（如lasso），选择出特征的子集$$\hat{S}^{\lambda}_i$$,
-</code></pre><ul>
 <li><p>计算在<script type="math/tex">\lambda</script>固定时，不同的采样样本选出特征k的概率<script type="math/tex">\hat{\Pi}^\lambda_k=\mathbb{P}[k\in\hat{S}^\lambda]=\frac{1}{N}\sum_{i = 1}^N\mathbb{I}(k\in\hat{S}_i^\lambda)</script></p>
 <p><strong>step2:评分</strong>， <script type="math/tex">\hat{S}^{stable} = \{k: \max\limits_{\lambda}\hat{\Pi}_k^{\lambda}\ge\pi_{thres}\}</script>，其中<script type="math/tex">\pi_{thres}</script>为一个预设的阈值</p>
 <p>使用[10]的stability-selction库，只要模型中带有<code>coef_</code>或者<code>feature_importances</code>属性均可。</p>
 </li>
-</ul>
+</ol>
 <h2 id="Embedded特征选择"><a href="#Embedded特征选择" class="headerlink" title="Embedded特征选择"></a>Embedded特征选择</h2><ul>
 <li><p>Linear Model + 正则化：[7]</p>
 <p>该方法只适用于所有的特征都经过同样的scale，这样重要的特征对应的系数大，不重要的特征系数接近于0.这个方法适合简单的线性问题，并且数据的噪声不大。但如果问题的特征有multicollinearity：有多个线性相关的特征，将导致线性模型不稳定，即数据有微小的变化会导致模型的系数有较大的改变。例如有一个模型理论上为<script type="math/tex">Y=X_1+X_2</script>，但观测上有误差<script type="math/tex">\hat{Y}=X_1+X_2+\epsilon</script>，假设X1和X2是线性相关的<script type="math/tex">X_1\approx X_2</script>，误差会导致模型训练之后可能为<script type="math/tex">Y=2X_1</script>（只与X1有关）或者<script type="math/tex">Y=-X_1+3X_2</script>（X2是强正相关，X1是负相关），但事实上X1和X2都是等价值的正相关。</p>
@@ -497,7 +495,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">lr = LinearRegression(normalize=<span class="keyword">True</span>)</span><br><span class="line">lr.fit(X,Y)</span><br><span class="line">print(np.abs(lr.coef_)) <span class="comment"># 模型不稳定，数据的噪声对模型的系数影响较大</span></span><br><span class="line"></span><br><span class="line">ridge = Ridge(alpha = <span class="number">7</span>)</span><br><span class="line">ridge.fit(X,Y)</span><br><span class="line">print(np.abs(ridge.coef_) <span class="comment"># 模型同样不稳定，但可以得到稀疏解；无法确定选出来的特征是否重要</span></span><br><span class="line"></span><br><span class="line">lasso = Lasso(alpha=<span class="number">.05</span>)</span><br><span class="line">lasso.fit(X, Y)</span><br><span class="line">print(lasso.coef_) <span class="comment"># 验证Lasso选择的特征，检验是否其他共线性的特征表现更好；模型稳定</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Random Forest: [8]</p>
-<p>Mean decrease impurity: 分类问题使用Gini impurity 或者 information gain/entropy，回归问题用variance。在sklearn中使用rf.feature<em>importances</em>直接得到。<strong>Mean decrease impurity的缺点</strong>：1.存在bias，倾向于选择取值多的特征。2.如果存在多个correlated特征，从模型角度上出发，其中任何一个都可以用来做预测，没有明显偏好；但是一旦其中一个被使用，其他的correlated特征的重要性将大大降低。如果我们的目的是降低过拟合，那这个问题不重要；但如果我们想要解释模型，这个问题会误导我们，只有一个特征是重要的，其他与之correlated的特征都不重要，然而事实上他们与label的关系是相似的。</p>
+<p>Mean decrease impurity: 分类问题使用Gini impurity 或者 information gain/entropy，回归问题用variance。在sklearn中使用<code>rf.feature_importances_</code>直接得到。<strong>Mean decrease impurity的缺点</strong>：1.存在bias，倾向于选择取值多的特征。2.如果存在多个correlated特征，从模型角度上出发，其中任何一个都可以用来做预测，没有明显偏好；但是一旦其中一个被使用，其他的correlated特征的重要性将大大降低。如果我们的目的是降低过拟合，那这个问题不重要；但如果我们想要解释模型，这个问题会误导我们，只有一个特征是重要的，其他与之correlated的特征都不重要，然而事实上他们与label的关系是相似的。</p>
 <p>Mean decrease accuracy: 直接衡量每个特征对模型accuracy的影响，将每个特征的顺序打乱permutate然后查看模型accuracy下降了多少。如果特征不重要，accuracy下降少；特征重要accuracy下降多。<strong>此方法是在模型训练完之后，比较测试数据在某特征permutate前后metrics的变化程度。（模型只需要训练一次）</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.cross_validation <span class="keyword">import</span> ShuffleSplit</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> r2_score</span><br><span class="line"> </span><br><span class="line">X = boston[<span class="string">"data"</span>]</span><br><span class="line">Y = boston[<span class="string">"target"</span>]</span><br><span class="line"> </span><br><span class="line">rf = RandomForestRegressor()</span><br><span class="line">scores = &#123;&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">#crossvalidate the scores on a number of different random splits of the data</span></span><br><span class="line"><span class="keyword">for</span> train_idx, test_idx <span class="keyword">in</span> ShuffleSplit(len(X), <span class="number">100</span>, <span class="number">.3</span>):</span><br><span class="line">    X_train, X_test = X[train_idx], X[test_idx]</span><br><span class="line">    Y_train, Y_test = Y[train_idx], Y[test_idx]</span><br><span class="line">    rf.fit(X_train, Y_train)</span><br><span class="line">    acc = r2_score(Y_test, rf.predict(X_test))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(X.shape[<span class="number">1</span>]):</span><br><span class="line">        X_t = X_test.copy()</span><br><span class="line">        np.random.shuffle(X_t[:, i])</span><br><span class="line">        shuff_acc = r2_score(Y_test, rf.predict(X_t))</span><br><span class="line">        scores[names[i]].append((acc-shuff_acc)/acc)</span><br><span class="line"><span class="keyword">print</span> sorted([(round(np.mean(score), <span class="number">4</span>), feat) <span class="keyword">for</span> feat, score <span class="keyword">in</span> scores.items()], reverse=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># output: [(0.7276, 'LSTAT'), (0.5675, 'RM'), (0.0867, 'DIS'), (0.0407, 'NOX'), (0.0351, 'CRIM'), (0.0233, 'PTRATIO'), (0.0168, 'TAX'), (0.0122, 'AGE'), (0.005, 'B'), (0.0048, 'INDUS'), (0.0043, 'RAD'), (0.0004, 'ZN'), (0.0001, 'CHAS')]</span></span><br><span class="line"><span class="comment"># LSAT and RM are 2 features that strongly impact model performance.</span></span><br></pre></td></tr></table></figure>
 </li>
