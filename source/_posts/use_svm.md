@@ -1,6 +1,7 @@
 ---
 title: SVM的使用
 date: 2018-10-23
+updated: 2018-11-18
 categories:
     - 机器学习
 tags:

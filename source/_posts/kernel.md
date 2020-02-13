@@ -1,6 +1,7 @@
 ---
 title: Kernel Trick（核技巧）
 date: 2018-10-21
+updated: 2018-11-18
 categories:
     - 机器学习
 tags:

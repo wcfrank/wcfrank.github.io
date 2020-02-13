@@ -1,6 +1,7 @@
 ---
 title: Feature Selection 1
 date: 2019-04-25
+updated: 2019-04-25
 categories:
     - 特征工程
 tags:
@@ -172,9 +173,9 @@ mathjax: true
 
   $$\hat{\Pi}^{\lambda}_k$$：当正则化参数为$$\lambda$$时，特征k被选择的概率；
 
-  $$\hat{S}^{\lambda}_i​$$：第$$i​$$次采样，模型正则化参数为$$\lambda​$$时选出来的特征子集；
+  $$\hat{S}^{\lambda}_i$$：第$$i$$次采样，模型正则化参数为$$\lambda$$时选出来的特征子集；
 
-  $$\hat{S}^{stable}\subset\{1,\dots,p\}​$$：最终输出的特征选择子集，其中$$p​$$为总特征个数.
+  $$\hat{S}^{stable}\subset\{1,\dots,p\}$$：最终输出的特征选择子集，其中$$p$$为总特征个数.
 
   
 

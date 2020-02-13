@@ -7,6 +7,7 @@ tags:
 categories:
     - 机器学习
 date: 2018/09/26
+updated: 2018-11-18
 ---
 
 在学习SVM模型时，看到了拉格朗日乘子，顺便回顾一下KKT条件。

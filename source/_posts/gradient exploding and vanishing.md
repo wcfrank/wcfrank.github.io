@@ -1,6 +1,7 @@
 ---
 title: 梯度爆炸&梯度弥散
 date: 2019-03-17
+updated: 2019-03-17
 categories:
     - 深度学习
 tags:
@@ -32,12 +33,12 @@ mathjax: true
 
 每一层只有一个神经元，我们分析参数bias的变化。
 
-符号：第一层为输入，中间三个隐藏层，然后输出，C为损失函数。输入为$$a_0​$$，输出为$$a_4​$$，每一层有 $$z=w*a+b​$$. 上一层的输出为下一层的输入，需要经过线性组合+激活函数$$\sigma​$$，变成下一层的输出：例如$$a_1=\sigma(z_1)=\sigma(w_1a_0+b_1)​$$
+符号：第一层为输入，中间三个隐藏层，然后输出，C为损失函数。输入为$$a_0$$，输出为$$a_4$$，每一层有 $$z=w*a+b$$. 上一层的输出为下一层的输入，需要经过线性组合+激活函数$$\sigma$$，变成下一层的输出：例如$$a_1=\sigma(z_1)=\sigma(w_1a_0+b_1)$$
 
 $$\begin{array}{rl}
 \frac{\partial C}{\partial b_1}= & \frac{\partial C}{\partial a_4} \frac{\partial a_4}{\partial z_4}\frac{\partial z_4}{\partial a_3}\frac{\partial a_3}{\partial z_3}\frac{\partial z_3}{\partial a_2}\frac{\partial a_2}{\partial z_2}\frac{\partial z_2}{\partial a_1}\frac{\partial a_1}{\partial z_1}\frac{\partial z_1}{\partial b_1}\\
 = & \frac{\partial C}{\partial a_4}\sigma'(z_4) w_4 \sigma'(z_3) w_3 \sigma'(z_2) w_2 \sigma'(z_1) * 1
-\end{array}​$$
+\end{array}$$
 
 sigmoid导数在0取得最大值1/4；如果我们使用均值为0，方差为1的高斯分布初始化参数w，有|w| < 1，可以看出随着网络层数的加深$$|w_j\sigma'(z_j)|<\frac{1}{4}$$的term也会变多，最后的乘积会指数级衰减，这就是梯度弥散的根本原因。如果w取值很大，这里四个w的乘积就很大，梯度爆炸。
 

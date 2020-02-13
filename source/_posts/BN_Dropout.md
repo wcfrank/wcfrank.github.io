@@ -1,6 +1,7 @@
 ---
 title: Batch Normalization & Dropout
 date: 2019-03-17
+updated: 2019-03-17
 categories:
     - 深度学习
 tags:
