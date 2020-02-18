@@ -27,7 +27,7 @@ FPR和TPR的分母均为真实的label，分子为预测为positive的FP和TP。
 
 随着threshold变小，成为postive的标准一再降低，越来越多的样本被预测为positive，无论它本事是正样本还是负样本。因此，ROC曲线是FPR关于TPR的单调曲线。Threshold很大时太严苛，几乎所有样本都不被预测为positive，即ROC曲线的(0, 0)点；threshold很小时太宽松，几乎所有样本都预测为positive，即ROC的(1, 1)点。因为，随着threshold由大变小，ROC曲线从(0, 0)单调变化至(1, 1)。
 
-![TPR&FPR](ROC PR曲线/ROC curve.png)
+![TPR_FPR](ROC_PR/ROCcurve.png)
 
 相对于ROC曲线，random guess是连接(0, 0)和(1, 1)的直线。Random guess指，无论一个样本label为1或0，模型预测它为positive的概率是一样的(FPR=TPR)，相当于**随便**挑一定比例的样本为positive，这个比例跟threshold有关。
 
@@ -53,7 +53,9 @@ ROC曲线对输出为概率的二元分类模型比较友好，可以按照概�
 
 # PR曲线
 
-Precision-Recall曲线，纵坐标precision = TP/(TP+FP)，横坐标recall = TPR = TP/(TP+FN)。PR曲线的两个指标都只关注正样本。
+Precision-Recall曲线，纵坐标precision = TP/(TP+FP)，横坐标recall = TPR = TP/(TP+FN)。查准率和查全率是一对矛盾的度量，一般来说，查准率高时，查全率往往偏低，查全率高时，查准率往往偏低。
+
+PR曲线的两个指标都只关注正样本。PR曲线的绘制方法与ROC类似，可参考[1]。
 
 # AUC
 
@@ -61,19 +63,30 @@ Precision-Recall曲线，纵坐标precision = TP/(TP+FP)，横坐标recall = TPR
 
 ROC曲线围成的面积 (即ROC-AUC)可以解读为：从所有正例中随机选取一个样本A，再从所有负例中随机选取一个样本B，分类器将A判为正例的概率比将B判为正例的概率大的可能性。
 
-从另一个角度看，由于画ROC曲线时都是先将所有样本按分类器的预测概率排序，所以**AUC反映的是分类器对样本的排序能力**，依照上面的例子就是A排在B前面的概率。AUC越大，自然排序能力越好，即分类器将越多的正例排在负例之前。
+从另一个角度看，由于画ROC曲线时都是先将所有样本按分类器的预测概率排序，所以**AUC反映的是分类器对样本的排序能力**，依照上面的例子就是A排在B前面的概率。AUC越大，自然排序能力越好，即分类器将越多的正样本排在负样本之前。即AUC越大，正样本的预测结果更加靠前。
+
+> [3] The AUC value is equivalent to the probability that a randomly chosen positive example is ranked higher than a randomly chosen negative example. 例如0.7的AUC，其含义可以大概理解为：给定**一个正样本**和**一个负样本**，在70%的情况下，模型对正样本的打分高于对负样本的打分。
 
 # ROC与PR的比较
 
 1. ROC曲线兼顾正样本与负样本，所以适用于评估分类器的整体性能，相比而言PR曲线完全聚焦于正样本。
 
 2. 类别不平衡问题，常常只关心正样本的预测情况，所以该**一般情况**下PR曲线被认为优于ROC曲线。如果想要评估在**相同**的类别分布下正样本的预测情况，适合选PR曲线。参考[1]的imbalance样本的例子，ROC-AUC为0.8左右，PR-AUC为0.68左右，ROC估计比较乐观，因为precision受到FP的影响，PR-AUC会低一些。
+
 3. 如果有**多份数据**且存在**不同**的类别分布，比如信用卡欺诈问题中每个月正、负样本的比例可能都不相同，这时候如果只想单纯地比较分类器的性能且剔除类别分布改变的影响，则ROC曲线比较适合，因为类别分布改变可能使得PR曲线发生变化时好时坏，难以进行模型比较；反之，如果想测试不同类别分布下对分类器的性能的影响，则PR曲线比较适合。
+
 4. 根据实际情况，选择ROC或者PR来评估分类器，找到曲线上最优的点，选择最合适的threshold
+
+5. （总结）在固定的数据集上，PR曲线更直观的反映其性能。假如数据集不同（如不同的测试集），PR曲线的变化太大，ROC曲线更加稳定。
+
+6. （总结）[4] If your model needs to perform equally well on the positive class as the negative class (for example, for classifying images between cats and dogs, you would like the model to perform well on the cats as well as on the dogs. For this you would use the ROC AUC.
+
+   On the other hand, if you're not really interested in how the model performs on the negative class, but just want to make sure every positive prediction is correct (precision), and that you get as many of the positives predicted as positives as possible (recall), then you should choose PR AUC.
 
 # References：
 
 1. （重点参考）[机器学习之类别不平衡问题 (2) —— ROC和PR曲线](https://zhuanlan.zhihu.com/p/34655990)
+2. [P-R曲线及与ROC曲线区别](https://www.cnblogs.com/gczr/p/10137063.html)
 
-2. []()
-3. []()
+3. [分类模型评估之ROC-AUC曲线和PRC曲线](https://blog.csdn.net/pipisorry/article/details/51788927)
+4. [Precision-Recall AUC vs ROC AUC for class imbalance problems](https://www.kaggle.com/general/7517)
