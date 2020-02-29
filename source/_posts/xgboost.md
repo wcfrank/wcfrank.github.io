@@ -1,7 +1,7 @@
 ---
 title: xgboost
 date: 2020-02-19
-updated: 2020-02-25
+updated: 2020-02-27
 categories:
     - 机器学习
 tags:
@@ -200,7 +200,8 @@ xgboost还支持列抽样， subsample ratio of columns when constructing each t
 
 ## 2.7 remaining questions
 
-- xgboost梯度的维度？不同样本的梯度是分开求的，每个样本求一次和二次导数，所以维度是：迭代数*（样本数\*2）
+- xgboost梯度的维度？不同样本的梯度是分开求的，每个样本求一次和二次导数，所以维度是：迭代数x样本数x2
+- 上文默认的基模型应该是`gbtree`，另外还有`gblinear`和`dart`。`gblinear`是线性模型，`dart`是带dropout的树模型。
 
 # 3. xgboost与GBDT的不同
 
