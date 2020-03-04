@@ -1,13 +1,13 @@
 ---
 title: GBDT
 date: 2018-11-18
-updated: 2020-03-01
+updated: 2020-03-04
 categories:
     - 机器学习
 tags:
     - Ensemble Learning
     - Boosting
-	- Loss函数
+    - Loss函数
 mathjax: true
 ---
 
@@ -57,15 +57,17 @@ Gradient Boosting:
 
 b步得到了J个区域，即J个叶子节点，那么叶子节点的取值是多少？也就是这棵树到底输出多少？对于不同的损失函数，叶子节点的值也不一样。 第m颗树的第j个叶子节点的值为$$\gamma_{jm}=b_{jm}\rho_m$$。在GBDT里，通常将c步称作Shrinkage。
 
-与Gradient Boosting形式一致的话 ，d步可写成$f_m(x)=f_{m-1}(x) + \rho_m\sum\limits_{j=1}^Jb_{jm}I(x\in R_{jm})$
+与Gradient Boosting形式一致的话 ，d步可写成$f_m(x)=f_{m-1}(x) + \rho_m\sum\limits_{j=1}^Jb_{jm}I(x\in R_{jm})$.
 
-**解释**
-
-对于加法模型，经过迭代，在每一步$m$得到$f_m(x)$，与真实值的差即为残差：$r=y-f_m(x)$.
-
-每一步迭代的目的，是缩小残差。GBDT每一步$m$迭代拟合的是负梯度，是损失函数关于上一轮预测值的负梯度$\frac{\partial L(y_i, f_{m-1}(x_i))}{\partial f_{m-1}(x_i)}$，预测值在负梯度方向上使得损失函数减小。拟合出来的值$\rho_{jm}b_{jm}$与之前的$$f_{m-1}$$相加$$f_m=f_{m-1}+ Fitted Residual$$，最终拟合预测值$f_M$.
+ **$f_m(x)$是前m轮的累积求和。**
 
 # 残差，负梯度，损失函数
+
+一方面，对于加法模型，经过迭代，在每一步$m$得到$f_m(x)$，与真实值的差即为残差：$r=y-f_m(x)$.
+
+另一方面，GBDT每一步$m$迭代拟合的是负梯度，是损失函数关于上一轮预测值的负梯度$\frac{\partial L(y_i, f_{m-1}(x_i))}{\partial f_{m-1}(x_i)}$，预测值在负梯度方向上使得损失函数减小。
+
+**问题：**每一步迭代的目的，是缩小残差吗？如果是的话，拟合出来的值$\gamma_{jm}I(x\in R_{jm})$与之前的$$f_{m-1}$$相加$$f_m=f_{m-1}+ Fitted Residual$$，最终拟合预测值$f_M$.
 
 回想泰勒展开，函数的变化量可以展开为各阶导数之和。也就是残差可以表示为各阶导数的线性组合，我们这里只考虑一阶导数，只用一阶导数（负梯度）这一项来近似表示残差。
 
@@ -115,15 +117,25 @@ $$
 P(y=t|x,\theta) = \frac{e^{\theta_t^Tx}}{\sum\limits_{k=1}^Ke^{\theta_k^Tx}}
 $$
 
-即通过softmax将预测结果归一化。softmax一般也对应着cross-entropy损失函数（单个样本）
+即通过softmax将预测结果归一化，如果不是线性模型，用$h_{\theta}(x)$来表示$\theta^Tx$。softmax一般也对应着cross-entropy损失函数（单个样本）
 $$
 Loss =  -\log \prod\limits_{k=1}^KP(y_k|x)^{y_k}=-\sum\limits_{k=1}^Ky_k\log(h_{\theta_k}(x))
 $$
-GBDT在处理多分类问题的时候，实际上每一轮都训练K颗树，去拟合softmax的K个分支。用$f(x)$代替$h_{\theta}(x)=\theta^Tx$，则**单个样本**的损失函数可写为
+GBDT在处理多分类问题的时候，实际上**每一轮都训练K颗树**，每一类都训练一个0-1二分类的回归树模型（属于第k类的样本标签为1，不属于第k类的标签为0），去拟合softmax的K个分支。
+
+用$f(x)$代替$h_{\theta}(x)$，则**单个样本**的损失函数可写为
 $$
 Loss(y, f_{1}(x),f_2(x), \dots, f_K(x)) = -\sum\limits_{k=1}^Ky_k\log(h_{\theta_k}(x)) = -\sum\limits_{k=1}^Ky_k\log\frac{e^{f_{k}(x)}}{\sum\limits_{k'=1}^Ke^{f_{k'}(x)}}
 $$
-这里是单个样本的损失函数，注意$f_k(x)$并非指第k轮迭代，而是在同一轮迭代中第k类分支的树模型。
+这里是单个样本的损失函数，注意$f_k(x)$并非指第k轮迭代，而是在同一轮迭代中第k类分支的树模型。该样本在第k类的负梯度为
+$$
+-\frac{\partial loss}{\partial f_k(x)}=y_k-\frac{e^{f_k(x)}}{\sum_{k'=1}^Ke^{f_{k'}(x)}} = y_k-\hat{y}_k
+$$
+这个形式同样与square loss和logloss保持一致，同样认为是在拟合样本真实值与预测值的概率差。
+
+## 4. 总结
+
+前面介绍了三种常见的损失函数square loss，logloss和cross-entropy，分别用于回归问题、二分类和多分类问题。**虽然损失函数的形式不同，GBDT拟合的负梯度，都可以理解成在拟合残差**。只不过square loss就是真实值与预测值之差。而logloss和cross-entropy的残差是指真实值与预测概率之差，每一轮得到的$f(x)$需要经过logistic函数或softmax来变成概率，拟合上一轮概率值的残差：$y_i-\frac{1}{1+e^{-F_{m-1}(x_i)}}$(这里以二分类为例)。分类的残差拟合不容易理解，就是每一轮训练的回归树，是需要经过变换成为概率值来拟合的。
 
 # 用Decision Tree来拟合残差
 
