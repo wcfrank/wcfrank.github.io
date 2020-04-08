@@ -77,7 +77,13 @@ PCA在选择主成分的时候，对选择对应特征值最大的k个特征向�
 
 ### 为什么要中心化和scaling
 
-中心化是每个特征减去这个特征的均值。[6]协方差矩阵的计算，本身就蕴含着中心化的思想$S=\frac{1}{n}\sum\limits_{i=1}^n(x_i-\mu)(x_i-\mu)^T$，分母是n-1还是n不重要。中心化对协方差矩阵没有影响。
+中心化是每个特征减去这个特征的均值。[6-1]协方差矩阵的计算，本身就蕴含着中心化的思想$S=\frac{1}{n}\sum\limits_{i=1}^n(x_i-\mu)(x_i-\mu)^T$，分母是n-1还是n不重要。中心化对协方差矩阵没有影响。不过：
+
+> [6-2] principal components inevitably come through the origin. If you forget to center your data, the 1st principal component may pierce the cloud not along the main direction of the cloud, and will be (for statistics purposes) misleading.
+>
+> ![before and after centering](https://i.stack.imgur.com/9vENg.jpg)
+
+如果使用特征值分解的求解方法，不提前做中心化，会得到不同的主成分，因为主成分必然经过远点，这会产生误差。（以下是自己的理解）最大化投影误差$\frac{1}{n}w^Tx^Txw$，如果没有中心化是$\frac{1}{n}w^T(x-\mu)^T(x-\mu)w$，虽然$x$和$x-\mu$是相同的，看似得到的w是一样的，但是这个$w$是在不同的坐标下，一个是中心化之后，一个是之前，这导致了得到的特征向量不同。
 
 Scaling同样也是推荐的preprocessing步骤，因为feature的取值范围可能相差很大，这会影响有些基方向的方差大小，如果没有做标准化，PCA算出的向量和长轴会有偏差。[PCA降维之前为什么要先标准化？](http://sofasofa.io/forum_main_post.php?postid=1000375)
 
@@ -116,11 +122,20 @@ Scaling同样也是推荐的preprocessing步骤，因为feature的取值范围�
 # References
 
 1. [机器学习-白板推导系列(五)-降维（Dimensionality Reduction）](https://www.bilibili.com/video/BV1vW411S7tH?from=search&seid=15511856047644180318)
+
 2. [主成分分析PCA算法：为什么去均值以后的高维矩阵乘以其协方差矩阵的特征向量矩阵就是“投影”？](https://www.zhihu.com/question/30094611/answer/275172932)
+
 3. [主成分分析（PCA）原理详解](https://zhuanlan.zhihu.com/p/37777074)
+
 4. [特征分解](https://zh.wikipedia.org/wiki/%E7%89%B9%E5%BE%81%E5%88%86%E8%A7%A3)
+
 5. [PCA的数学原理](http://blog.codinglabs.org/articles/pca-tutorial.html)
+
 6. [How does centering make a difference in PCA (for SVD and eigen decomposition)?](https://stats.stackexchange.com/a/189902)
+
+   [How does centering the data get rid of the intercept in regression and PCA?](https://stats.stackexchange.com/questions/22329/how-does-centering-the-data-get-rid-of-the-intercept-in-regression-and-pca)
+
 7. [主成分分析PCA算法：为什么要对数据矩阵进行均值化](https://www.zhihu.com/question/40956812)
+
 8. [主成分分析（Principal components analysis）-最大方差解释](https://www.cnblogs.com/jerrylead/archive/2011/04/18/2020209.html)
 
