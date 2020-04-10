@@ -101,9 +101,11 @@ PCA算法是其中一个步骤是对协方差进行特征值分解$\mathbf{A}=\m
 
 ## 最小重建cost
 
-通过对协方差矩阵进行特征值分解，得到了p组特征值和特征向量$u_1, u_2, \dots, u_p$，选择前k大的特征向量（即k个正交的单位向量），从p维降到k维。在这p个单位正交向量下，可以“无损失”的重构样本$x_i = \sum\limits_{j=1}^p\alpha_{ij}u_{j}=\sum\limits_{j=1}^p(x_i^Tu_j)u_j$，如果降维的重构样本$\hat{x}_i = \sum\limits_{j=1}^k\alpha_{ij}u_{j}=\sum\limits_{j=1}^k(x_i^Tu_j)u_j$.
+![reconstruction error](/Users/Chao/Machine_Learning/Git_Repository/wcfrank.github.io/source/_posts/PCA/reconstruction_error.png)
 
-原始的样本跟重构之后的样本的差距为
+以上是一个2维的例子，左图为原始的5个样本点，直线方向是第一个主成分；如果降维只用这个主成分表示样本，从2维降至1维，即为右图，5个样本点分布在这条直线上。降维前后，样本的信息必然有所损失，PCA用欧式距离来衡量这个损失。
+
+通过对协方差矩阵进行特征值分解，得到了p组特征值和特征向量$u_1, u_2, \dots, u_p$，选择前k大的特征向量（即k个正交的单位向量），从p维降到k维。在全部p个单位正交向量下，可以“无损失”的重构样本$x_i = \sum\limits_{j=1}^p\alpha_{ij}u_{j}=\sum\limits_{j=1}^p(x_i^Tu_j)u_j$. 如果降维的重构样本$\hat{x}_i = \sum\limits_{j=1}^k\alpha_{ij}u_{j}=\sum\limits_{j=1}^k(x_i^Tu_j)u_j$，原始的样本跟重构之后的样本的差距为
 $$
 \begin{array}{rl}
 Cost & = \frac{1}{n}\sum\limits_{i=1}^n||x_i-\hat{x}_i||^2\\
