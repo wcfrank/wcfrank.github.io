@@ -101,7 +101,7 @@ PCA算法是其中一个步骤是对协方差进行特征值分解$\mathbf{A}=\m
 
 ## 最小重建cost
 
-![reconstruction error](/Users/Chao/Machine_Learning/Git_Repository/wcfrank.github.io/source/_posts/PCA/reconstruction_error.png)
+![reconstruction error](PCA/reconstruction_error.png)
 
 以上是一个2维的例子，左图为原始的5个样本点，直线方向是第一个主成分；如果降维只用这个主成分表示样本，从2维降至1维，即为右图，5个样本点分布在这条直线上。降维前后，样本的信息必然有所损失，PCA用欧式距离来衡量这个损失。
 
