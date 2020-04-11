@@ -126,6 +126,14 @@ $$
 
 **总结：**最大投影方差是找主成分， 最小重建cost是维度缩减。这两个角度本质上是一样的，最小重建cost与降维的思想更加贴近。 
 
+## SVD与PCA
+
+前文中的特征值分解是针对样本数据x经过中心化之后的协方差矩阵$S=\frac{1}{n}xx^T=\mathbf{Q}\mathbf{\Lambda}\mathbf{Q}^{T}$，SVD分解是针对中心化之后的样本数据$x=U\Sigma V^T$，两者对应关系为
+$$
+\frac{1}{n}xx^T=\frac{1}{n}(U\Sigma V^T)(V\Sigma U^T)=\frac{1}{n}U\Sigma^2U^T
+$$
+所以$U=Q, ~\frac{1}{n}\Sigma^2=\Lambda$即协方差矩阵对角化之后的特征值矩阵。sklearn的PCA实现是使用SVD分解而不是特征值分解。[9]协方差的特征值分解对引起精度的损失，所以SVD分解更好。
+
 # PCA算法步骤
 
 输入：数据集$x=\{x_1,x_2,\dots,x_n\}$ ，$x_i$的维度为p维，需要降到k维。
@@ -166,18 +174,9 @@ $$
 
 # 优劣
 
-优点：
+优点：不受样本label的限制，以方差衡量信息；各个主成分之间正交，消除原始数据特征的相关性；计算简单，主要运算是特征值分解
 
-- 不受样本label的限制，以方差衡量信息，
-- 各个主成分之间正交，消除原始数据特征的相关性，
-
-- 计算简单，主要运算是特征值分解
-
-局限：
-
-- 基于线性变换的降维方法，
-
-- 主成分分析基于Euclidean distance, 
+局限：基于线性变换的降维方法；主成分分析基于Euclidean distance
 
 
 # References
@@ -203,4 +202,6 @@ $$
 8. [利用PCA降维，降到几维比较合适？](http://sofasofa.io/forum_main_post.php?postid=1000776)
 
    [主成分分析（PCA）主成分维度怎么选择？](https://www.zhihu.com/question/21980732)
+   
+9. [What is the intuitive relationship between SVD and PCA?](https://math.stackexchange.com/a/3871)
 
