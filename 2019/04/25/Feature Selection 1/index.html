@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="特征选择是特征工程里的一个重要问题，目的是找到最优特征子集。减少特征个数，减少运行时间，提高模型精确度；更好的理解特征，及其与label之间的相关性。  Filter（过滤法）：按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。注意，过滤法不能减弱特征间的共线性。 Wrapper（包装法）：根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。 Em">
+<meta name="keywords" content="Feature Selection">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Feature Selection 1">
+<meta property="og:url" content="http://yoursite.com/2019/04/25/Feature Selection 1/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="特征选择是特征工程里的一个重要问题，目的是找到最优特征子集。减少特征个数，减少运行时间，提高模型精确度；更好的理解特征，及其与label之间的相关性。  Filter（过滤法）：按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。注意，过滤法不能减弱特征间的共线性。 Wrapper（包装法）：根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。 Em">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://danielhomola.com/wp-content/uploads/2015/05/boruta2.png">
+<meta property="og:updated_time" content="2019-04-24T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Feature Selection 1">
+<meta name="twitter:description" content="特征选择是特征工程里的一个重要问题，目的是找到最优特征子集。减少特征个数，减少运行时间，提高模型精确度；更好的理解特征，及其与label之间的相关性。  Filter（过滤法）：按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。注意，过滤法不能减弱特征间的共线性。 Wrapper（包装法）：根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。 Em">
+<meta name="twitter:image" content="http://danielhomola.com/wp-content/uploads/2015/05/boruta2.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/25/Feature Selection 1/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Feature Selection 1 | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/25/Feature Selection 1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Feature Selection 1
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-25 00:00:00" itemprop="dateCreated datePublished" datetime="2019-04-25T00:00:00+08:00">2019-04-25</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/特征工程/" itemprop="url" rel="index"><span itemprop="name">特征工程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>特征选择是特征工程里的一个重要问题，目的是找到最优特征子集。<strong>减少特征个数</strong>，减少运行时间，提高模型精确度；<strong>更好的理解特征</strong>，及其与label之间的相关性。</p>
+<ul>
+<li>Filter（过滤法）：按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。注意，过滤法不能减弱特征间的共线性。</li>
+<li>Wrapper（包装法）：根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。</li>
+<li>Embedded（嵌入法）：先使用某些机器学习的算法和模型进行训练，得到各个特征的权值系数，根据系数从大到小排序选择特征。类似于Filter方法，但是是通过训练来确定特征的优劣。</li>
+</ul>
+<h2 id="Filter特征选择-Univariate-selection"><a href="#Filter特征选择-Univariate-selection" class="headerlink" title="Filter特征选择(Univariate selection)"></a>Filter特征选择(Univariate selection)</h2><p>针对样本的每个特征<script type="math/tex">x_i~(i=1,\dots,n)</script>，计算<script type="math/tex">x_i</script>与label标签<script type="math/tex">y</script>的信息量<script type="math/tex">S(i)</script>，得到<script type="math/tex">n</script>个结果，选择前<script type="math/tex">k</script>个信息量最大的特征。即选取与<script type="math/tex">y</script>关联最密切的一些特征<script type="math/tex">x_i</script>。下面介绍几种度量<script type="math/tex">S(i)</script>的方法：</p>
+<ol>
+<li><p>Pearson相关系数</p>
+<p>衡量变量之间的线性相关性(linear correlation)，结果取值为<script type="math/tex">[-1,1]</script>，-1表示完全负相关，+1表示完全正相关，0表示没有<strong>线性</strong>相关。</p>
+<p>简单，计算速度快；但只对线性关系敏感，如果关系是非线性的，即使两个变量有关联，Pearson相关性也可能接近0。scipy的pearsonr方法能计算相关系数和p-value[2], roughly showing the probability of an uncorrelated system creating a correlation value of this magnitude. The p-value is high meaning that it is very likely to observe such correlation on a dataset of this size purely by chance[6]：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> pearsonr</span><br><span class="line"></span><br><span class="line">np.random.seed(<span class="number">0</span>)</span><br><span class="line">size = <span class="number">300</span></span><br><span class="line">x = np.random.normal(<span class="number">0</span>, <span class="number">1</span>, size)</span><br><span class="line">print(<span class="string">"Lower noise"</span>, pearsonr(x, x + np.random.normal(<span class="number">0</span>, <span class="number">1</span>, size)))</span><br><span class="line">print(<span class="string">"Higher noise"</span>, pearsonr(x, x + np.random.normal(<span class="number">0</span>, <span class="number">10</span>, size)))</span><br><span class="line"><span class="comment"># output: (0.718248, 7.324017e-49), (0.057964, 0.317009)</span></span><br></pre></td></tr></table></figure>
+<p>类似的，在sklearn中针对回归问题有<code>f_regression</code>函数，测量一组变量与label的线性关系的p-value[6]</p>
+<p>Relying only on the correlation value on interpreting the relationship of two variables can be highly misleading, so it is always worth plotting the data[6]</p>
+</li>
+<li><p><strong>互信息和最大信息系数</strong> Mutual information and maximal information coefficient (MIC)</p>
+<p>MI评价自变量与因变量的相关性。当<script type="math/tex">x_i</script>为0/1取值时，<script type="math/tex">MI(x_i,y) = \sum\limits_{x_i\in\{0,1\}}\sum\limits_{y\in\{0,1\}}p(x_i,y)\log\frac{p(x_i,y)}{p(x_i)p(y)}</script>，同理也很容易推广到多个离散值情形。可以发现MI衡量的是<script type="math/tex">x_i</script>和<script type="math/tex">y</script>的独立性，如果两者独立，MI=0，即<script type="math/tex">x_i</script>和<script type="math/tex">y</script>不相关，可以去除<script type="math/tex">x_i</script>；反之两者相关，MI会很大。</p>
+<p>MI的缺点：不属于度量方式，无法归一化；无法计算连续值特征，通常需要先离散化，但对离散化方式很敏感。</p>
+<p>MIC解决MI的缺点：首先，寻找最优的离散化方式；然后，把MI变成一种度量方式，区间为<script type="math/tex">[0,1]</script></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> minepy <span class="keyword">import</span> MINE</span><br><span class="line">m = MINE()</span><br><span class="line">x = np.random.uniform(<span class="number">-1</span>, <span class="number">1</span>, <span class="number">10000</span>)</span><br><span class="line">m.compute_score(x, x**<span class="number">2</span>)</span><br><span class="line"><span class="keyword">print</span> m.mic() <span class="comment"># output: 1, the maximum</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Distance Correlation</p>
+<p>Pearson相较MIC或者Distance correlation的优势：1. 计算速度快；2. correlaiton的取值区间是[-1,1]，体现正负相关性</p>
+</li>
+<li><p>卡方验证（<strong>常用</strong>）</p>
+<p>基于频率分布来检验分类变量间的相关性。假设自变量有N种取值，因变量有M种取值，自变量等于i且因变量等于j的样本频数的观察值与期望的差距：<script type="math/tex">\chi^2 = \sum\frac{(A-E)^2}{E}</script>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_iris</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectKBest</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> chi2</span><br><span class="line">iris = load_iris()</span><br><span class="line">X, y = iris.data, iris.target</span><br><span class="line"><span class="comment">#选择K个最好的特征，返回选择特征后的数据</span></span><br><span class="line">X_new = SelectKBest(chi2, k=<span class="number">2</span>).fit_transform(X, y)</span><br><span class="line"><span class="comment"># Output:  X.shape = (150,4), X_new.shape = (150,2)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>基于模型的特征排序：</p>
+<p>直接用你要用的模型，对每个<strong>单独</strong>特征和标签<script type="math/tex">y</script>建立模型。假设此特征和标签的关系是非线形的，可用tree based模型，因为他们适合非线形关系的模型，但要注意防止过拟合，树的深度不要大，并运用交叉验证。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.cross_validation <span class="keyword">import</span> cross_val_score, ShuffleSplit</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_boston</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"></span><br><span class="line">boston = load_boston()</span><br><span class="line">X = boston[<span class="string">"data"</span>]</span><br><span class="line">Y = boston[<span class="string">"target"</span>]</span><br><span class="line">names = boston[<span class="string">"feature_names"</span>]</span><br><span class="line"></span><br><span class="line">rf = RandomForestRegressor(n_estimators=<span class="number">20</span>, max_depth=<span class="number">4</span>)</span><br><span class="line">scores = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(X.shape[<span class="number">1</span>]):</span><br><span class="line">     <span class="comment">#每次选择一个特征，进行交叉验证，训练集和测试集为7:3的比例进行分配，</span></span><br><span class="line">     <span class="comment">#ShuffleSplit()函数用于随机抽样（数据集总数，迭代次数，test所占比例）</span></span><br><span class="line">     score = cross_val_score(rf, X[:, i:i+<span class="number">1</span>], Y, scoring=<span class="string">"r2"</span>,</span><br><span class="line">                              cv=ShuffleSplit(len(X), <span class="number">3</span>, <span class="number">.3</span>))</span><br><span class="line">     scores.append((round(np.mean(score), <span class="number">3</span>), names[i]))</span><br><span class="line"></span><br><span class="line"><span class="comment">#打印出各个特征所对应的得分</span></span><br><span class="line">print(sorted(scores, reverse=<span class="keyword">True</span>))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Variance Threshold</p>
+<p>但这种方法不需要度量特征<script type="math/tex">x_i</script>和标签<script type="math/tex">y</script>的关系。计算各个特征的方差，然后根据阈值选择方差大于阈值的特征。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> VarianceThreshold</span><br><span class="line">X = [[<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>], [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>], [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>], [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>]]</span><br><span class="line">sel = VarianceThreshold(threshold=(<span class="number">.8</span> * (<span class="number">1</span> - <span class="number">.8</span>)))</span><br><span class="line">print(sel.fit_transform(X))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>LDA：考察特征的线性组合能否区分一个分类变量</p>
+</li>
+<li>ANOVA：原理和LDA类似只是它常用于特征是分类变量，响应变量是连续变量的情况下，它提供了不同组的均值是否相同的统计量</li>
+</ol>
+<h2 id="Wrapper特征选择"><a href="#Wrapper特征选择" class="headerlink" title="Wrapper特征选择"></a>Wrapper特征选择</h2><p>在确定模型之后，不断的使用不同的特征组合来测试模型的表现，一般选用普遍效果较好的算法，如RF，SVM，kNN等。</p>
+<ul>
+<li><p>前向搜索：每次从未选中的特征集合中选出一个加入，直到达到阈值或n为止</p>
+</li>
+<li><p>后向搜索：每一步删除一个特征</p>
+</li>
+<li><p>递归特征消除法RFE [9]：使用一个模型进行多轮训练，每轮训练后消除一个或多个重要性最低的特征，再基于新特征进行下一轮训练。sklearn中的RFE只能使用带有<code>coef_</code>或者<code>feature_importances_</code>的模型（所以SVM只能使用默认的liear核，不能使用rbf核）</p>
+<p>RFE明确指定选出几个特征。但使用回归模型时没有正则化会导致模型不稳定，回归模型推荐使用ridge回归。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> RFE</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="comment">#递归特征消除法，返回特征选择后的数据</span></span><br><span class="line"><span class="comment">#参数estimator为基模型</span></span><br><span class="line"><span class="comment">#参数n_features_to_select为选择的特征个数</span></span><br><span class="line">rfe = RFE(estimator=LogisticRegression(), n_features_to_select=<span class="number">2</span>, verbose=<span class="number">3</span>)</span><br><span class="line">rfe.fit(iris.data, iris.target)</span><br><span class="line">rfe.ranking_</span><br></pre></td></tr></table></figure>
+<p>RFECV会通过交叉验证选出最佳的特征数量[4]：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> RFECV</span><br><span class="line">all_features = [...]</span><br><span class="line">rfr = RandomForestRegressor(n_estimators=<span class="number">100</span>, max_features=<span class="string">'sqrt'</span>, max_depth=<span class="number">12</span>, n_jobs=<span class="number">-1</span>)</span><br><span class="line">rfecv = RFECV(estimator=rfr, step=<span class="number">10</span>, </span><br><span class="line">              cv=KFold(y.shape[<span class="number">0</span>], n_folds=<span class="number">5</span>, shuffle=<span class="keyword">False</span>, random_state=<span class="number">101</span>),</span><br><span class="line">              scoring=<span class="string">'neg_mean_absolute_error'</span>, verbose=<span class="number">2</span>)</span><br><span class="line">rfecv.fit(X, y)</span><br><span class="line">sel_features = [f <span class="keyword">for</span> f, s <span class="keyword">in</span> zip(all_features, rfecv.support_) <span class="keyword">if</span> s]</span><br><span class="line"></span><br><span class="line">print(<span class="string">' Optimal number of features: %d'</span> % rfecv.n_features_)</span><br><span class="line">print(<span class="string">' The selected features are &#123;&#125;'</span>.format(sel_features))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Save sorted feature rankings</span></span><br><span class="line">ranking = pd.DataFrame(&#123;<span class="string">'Features'</span>: all_features&#125;)</span><br><span class="line">ranking[<span class="string">'Rank'</span>] = np.asarray(rfecv.ranking_)</span><br><span class="line">ranking.sort_values(<span class="string">'Rank'</span>, inplace=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Stability selection:</p>
+<p>The high level idea is to apply a feature selection algorithm on different subsets of data and with different subsets of features. After repeating the process a number of times, the selection results can be aggregated, for example by checking how many times a feature ended up being selected as important when it was in an inspected feature subset. [9]</p>
+<p>Inject more noise into the original problem by generating bootstrap samples of the data, and to use a base feature selection algorithm (like the LASSO) to find out which features are important in every sampled version of the data. The results on each bootstrap sample are then aggregated to compute a <em>stability score</em> for each feature in the data. Features can then be selected by choosing an appropriate threshold for the stability scores. [10]</p>
+<p>N：有放回采样（bootstrap sampling）的次数；</p>
+<p><script type="math/tex">\lambda</script>：模型正则化参数，a grid of values；</p>
+<p>k：第k个特征；</p>
+<p><script type="math/tex">\hat{\Pi}^{\lambda}_k</script>：当正则化参数为<script type="math/tex">\lambda</script>时，特征k被选择的概率；</p>
+<p><script type="math/tex">\hat{S}^{\lambda}_i</script>：第<script type="math/tex">i</script>次采样，模型正则化参数为<script type="math/tex">\lambda</script>时选出来的特征子集；</p>
+<p><script type="math/tex">\hat{S}^{stable}\subset\{1,\dots,p\}</script>：最终输出的特征选择子集，其中<script type="math/tex">p</script>为总特征个数.</p>
+</li>
+</ul>
+<p>  <strong>step1:采样</strong>， 对于每个正则化参数<script type="math/tex">\lambda</script>:</p>
+<ol>
+<li><p>for i=1,…,N:</p>
+<p>对原样本<script type="math/tex">X^{n*p}</script>进行有放回采样，采样的大小为<script type="math/tex">\frac{n}{2}</script>;</p>
+<p>在采样的样本上训练模型（如lasso）选择出特征的子集<script type="math/tex">\hat{S}^{\lambda}_i</script>,</p>
+</li>
+<li><p>计算在<script type="math/tex">\lambda</script>固定时，不同的采样样本选出特征k的概率<script type="math/tex">\hat{\Pi}^\lambda_k=\mathbb{P}[k\in\hat{S}^\lambda]=\frac{1}{N}\sum_{i = 1}^N\mathbb{I}(k\in\hat{S}_i^\lambda)</script></p>
+<p><strong>step2:评分</strong>， <script type="math/tex">\hat{S}^{stable} = \{k: \max\limits_{\lambda}\hat{\Pi}_k^{\lambda}\ge\pi_{thres}\}</script>，其中<script type="math/tex">\pi_{thres}</script>为一个预设的阈值</p>
+<p>使用[10]的stability-selction库，只要模型中带有<code>coef_</code>或者<code>feature_importances</code>属性均可。</p>
+</li>
+</ol>
+<h2 id="Embedded特征选择"><a href="#Embedded特征选择" class="headerlink" title="Embedded特征选择"></a>Embedded特征选择</h2><ul>
+<li><p>Linear Model + 正则化：[7]</p>
+<p>该方法只适用于所有的特征都经过同样的scale，这样重要的特征对应的系数大，不重要的特征系数接近于0.这个方法适合简单的线性问题，并且数据的噪声不大。但如果问题的特征有multicollinearity：有多个线性相关的特征，将导致线性模型不稳定，即数据有微小的变化会导致模型的系数有较大的改变。例如有一个模型理论上为<script type="math/tex">Y=X_1+X_2</script>，但观测上有误差<script type="math/tex">\hat{Y}=X_1+X_2+\epsilon</script>，假设X1和X2是线性相关的<script type="math/tex">X_1\approx X_2</script>，误差会导致模型训练之后可能为<script type="math/tex">Y=2X_1</script>（只与X1有关）或者<script type="math/tex">Y=-X_1+3X_2</script>（X2是强正相关，X1是负相关），但事实上X1和X2都是等价值的正相关。</p>
+<p>加入正则项可以修正。L1正则项具有稀疏解的特性，适合特征选择。但L1同样不稳定，multicollinearity带来的问题依然存在。另外，L1没选到的特征不代表不重要，因为两个高相关性的特征可能只保留了一个。如果要确定哪个特征重要，再通过L2正则交叉验证。L2的效果不同于L1，L2会使特征的系数均分，用L2训练的模型更加稳定。尽管L2不如L1适合做特征选择，L2更适合做特征的解释。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">lr = LinearRegression(normalize=<span class="keyword">True</span>)</span><br><span class="line">lr.fit(X,Y)</span><br><span class="line">print(np.abs(lr.coef_)) <span class="comment"># 模型不稳定，数据的噪声对模型的系数影响较大</span></span><br><span class="line"></span><br><span class="line">ridge = Ridge(alpha = <span class="number">7</span>)</span><br><span class="line">ridge.fit(X,Y)</span><br><span class="line">print(np.abs(ridge.coef_) <span class="comment"># 模型同样不稳定，但可以得到稀疏解；无法确定选出来的特征是否重要</span></span><br><span class="line"></span><br><span class="line">lasso = Lasso(alpha=<span class="number">.05</span>)</span><br><span class="line">lasso.fit(X, Y)</span><br><span class="line">print(lasso.coef_) <span class="comment"># 验证Lasso选择的特征，检验是否其他共线性的特征表现更好；模型稳定</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Random Forest: [8]</p>
+<p>Mean decrease impurity: 分类问题使用Gini impurity 或者 information gain/entropy，回归问题用variance。在sklearn中使用<code>rf.feature_importances_</code>直接得到。<strong>Mean decrease impurity的缺点</strong>：1.存在bias，倾向于选择取值多的特征。2.如果存在多个correlated特征，从模型角度上出发，其中任何一个都可以用来做预测，没有明显偏好；但是一旦其中一个被使用，其他的correlated特征的重要性将大大降低。如果我们的目的是降低过拟合，那这个问题不重要；但如果我们想要解释模型，这个问题会误导我们，只有一个特征是重要的，其他与之correlated的特征都不重要，然而事实上他们与label的关系是相似的。</p>
+<p>Mean decrease accuracy: 直接衡量每个特征对模型accuracy的影响，将每个特征的顺序打乱permutate然后查看模型accuracy下降了多少。如果特征不重要，accuracy下降少；特征重要accuracy下降多。<strong>此方法是在模型训练完之后，比较测试数据在某特征permutate前后metrics的变化程度。（模型只需要训练一次）</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.cross_validation <span class="keyword">import</span> ShuffleSplit</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> r2_score</span><br><span class="line"> </span><br><span class="line">X = boston[<span class="string">"data"</span>]</span><br><span class="line">Y = boston[<span class="string">"target"</span>]</span><br><span class="line"> </span><br><span class="line">rf = RandomForestRegressor()</span><br><span class="line">scores = &#123;&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">#crossvalidate the scores on a number of different random splits of the data</span></span><br><span class="line"><span class="keyword">for</span> train_idx, test_idx <span class="keyword">in</span> ShuffleSplit(len(X), <span class="number">100</span>, <span class="number">.3</span>):</span><br><span class="line">    X_train, X_test = X[train_idx], X[test_idx]</span><br><span class="line">    Y_train, Y_test = Y[train_idx], Y[test_idx]</span><br><span class="line">    rf.fit(X_train, Y_train)</span><br><span class="line">    acc = r2_score(Y_test, rf.predict(X_test))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(X.shape[<span class="number">1</span>]):</span><br><span class="line">        X_t = X_test.copy()</span><br><span class="line">        np.random.shuffle(X_t[:, i])</span><br><span class="line">        shuff_acc = r2_score(Y_test, rf.predict(X_t))</span><br><span class="line">        scores[names[i]].append((acc-shuff_acc)/acc)</span><br><span class="line"><span class="keyword">print</span> sorted([(round(np.mean(score), <span class="number">4</span>), feat) <span class="keyword">for</span> feat, score <span class="keyword">in</span> scores.items()], reverse=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># output: [(0.7276, 'LSTAT'), (0.5675, 'RM'), (0.0867, 'DIS'), (0.0407, 'NOX'), (0.0351, 'CRIM'), (0.0233, 'PTRATIO'), (0.0168, 'TAX'), (0.0122, 'AGE'), (0.005, 'B'), (0.0048, 'INDUS'), (0.0043, 'RAD'), (0.0004, 'ZN'), (0.0001, 'CHAS')]</span></span><br><span class="line"><span class="comment"># LSAT and RM are 2 features that strongly impact model performance.</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Boruta [11]</p>
+<p>通常意义上用机器学习进行特征选择的目标是: 筛选出可以<strong>使得当前模型cost function最小</strong>的特征集合。如果删除某个特征，模型性能不变，未必说明该特征不相关，只能说明对于减小模型cost function没有帮助。Boruta的目标是：选出与label相关的特征，而不是选出另cost function最小的特征集合。Boruta能保留对模型有显著贡献的<strong>所有</strong>特征，这与很多特征降维方法使用的“最小最优特征集”思路相反。</p>
+<p><code>Boruta</code> is produced as an improvement over <code>random forest</code> variable importance. Boruta在回归和分类问题上均可使用，要求基模型带有<code>feature_impotances_</code>属性。</p>
+<ol>
+<li>duplicate dataset, shuffle the values in each columns, to obtain <strong>shadow features</strong></li>
+<li>train a classifier on merged dataset (real + shadow), and get importances of features. (树的ensemble模型的优势：对非线形的复杂数据支持；适合处理小样本多特征的数据。尽管这些模型也会过拟合，但是比其他模型过拟合速度慢)</li>
+<li>check for each real feature if they have higher importance than the best of shadow features. If they do, record this in a vector.</li>
+<li>At every iteration, check if a given feature is doing better than random chance, by simply comparing the number of times a feature did better than the shadow features using a binomial distribution. <img src="http://danielhomola.com/wp-content/uploads/2015/05/boruta2.png" alt="compare real feature with the max of shadow features"> 例如：F1在3次迭代的结果都优于shadow feature的最大值，使用binomial分布（k=3,n=3,p=0.5）计算p-value，如果p-value小于0.01就认为F1是与lable有相关性的，并删除F1对其余特征继续迭代。如果某特征连续15次没有超过shadow feature的max值，直接否决该特征，删除。持续这样做，直到达到迭代次数（或者所有特征都入选或否决）。</li>
+</ol>
+</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>sklearn.feature_selection模块适用于样本的特征选择/维数降低</p>
+<ol>
+<li><p><a href="https://zhuanlan.zhihu.com/p/32749489" target="_blank" rel="noopener">特征选择</a></p>
+</li>
+<li><p><a href="https://stats.stackexchange.com/questions/64676/statistical-meaning-of-pearsonr-output-in-python" target="_blank" rel="noopener">Statistical meaning of pearsonr() output in Python</a></p>
+</li>
+<li><p>(kaggle)<a href="https://www.kaggle.com/arthurtok/feature-ranking-rfe-random-forest-linear-models" target="_blank" rel="noopener">Feature Ranking RFE, Random Forest, linear models</a></p>
+<p>Compare different kinds of feature ranking: Stability selection, recursive feature elimination, linear model, random forest feature ranking. Then create a feature ranking matrix, each column presents one feature ranking, using the function <code>ranking</code> to scale the ranking from 0 to 1. </p>
+<p>最后，seaborn的pariplot(feature distribution)、heatmap(feature correlation)和factorplot(catplot)很漂亮。</p>
+</li>
+</ol>
+<ol>
+<li><p><a href="https://www.kaggle.com/tilii7/recursive-feature-elimination/code" target="_blank" rel="noopener">Recursive feature elimination</a></p>
+</li>
+<li><p><a href="https://www.kaggle.com/tilii7/boruta-feature-elimination" target="_blank" rel="noopener">Boruta feature elimination</a></p>
+</li>
+<li><p><a href="https://blog.datadive.net/selecting-good-features-part-i-univariate-selection/" target="_blank" rel="noopener">Feature selection – Part I: univariate selection</a> <strong>精华</strong></p>
+<p> Univariate selection examines each feature individually to determine the strength of the relationship of the feature with the lable</p>
+</li>
+<li><p><a href="http://blog.datadive.net/selecting-good-features-part-ii-linear-models-and-regularization/" target="_blank" rel="noopener">Selecting good features – Part II: linear models and regularization</a><br>Lasso produces sparse solutions and as such is very useful selecting a strong subset of features for improving model performance. Ridge regression on the other hand can be used for data interpretation due to its stability and the fact that useful features tend to have non-zero coefficients.</p>
+</li>
+<li><p><a href="http://blog.datadive.net/selecting-good-features-part-iii-random-forests/" target="_blank" rel="noopener">Selecting good features – Part III: random forests</a></p>
+</li>
+<li><p><a href="https://blog.datadive.net/selecting-good-features-part-iv-stability-selection-rfe-and-everything-side-by-side/" target="_blank" rel="noopener">Selecting good features – Part IV: stability selection, RFE and everything side by side</a></p>
+</li>
+<li><p><a href="https://thuijskens.github.io/2018/07/25/stability-selection/" target="_blank" rel="noopener">https://thuijskens.github.io/2018/07/25/stability-selection/</a><br> <a href="https://thuijskens.github.io/2017/10/07/feature-selection/" target="_blank" rel="noopener">https://thuijskens.github.io/2017/10/07/feature-selection/</a></p>
+</li>
+<li><p><a href="http://danielhomola.com/2015/05/08/borutapy-an-all-relevant-feature-selection-method/" target="_blank" rel="noopener">BorutaPy – an all relevant feature selection method</a></p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Feature-Selection/" rel="tag"># Feature Selection</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/25/Feature Selection 2 (Feature importance)/" rel="next" title="Feature Selection 2">
+                <i class="fa fa-chevron-left"></i> Feature Selection 2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/15/ROC_PR/" rel="prev" title="ROC, PR曲线">
+                ROC, PR曲线 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Filter特征选择-Univariate-selection"><span class="nav-number">1.</span> <span class="nav-text">Filter特征选择(Univariate selection)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Wrapper特征选择"><span class="nav-number">2.</span> <span class="nav-text">Wrapper特征选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Embedded特征选择"><span class="nav-number">3.</span> <span class="nav-text">Embedded特征选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共33.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

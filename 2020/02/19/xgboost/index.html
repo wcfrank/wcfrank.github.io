@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="xgboost与GBDT类似都是一种boosting方法，在之前写GBDT的时候有介绍过一点xgboost的思想，这里认真研究一下。 1. xgboost原理 Adaboost算法是模型为加法模型的、损失函数为指数函数的、学习方法为前向分布算法的二分类问题。— from本站《Adaboost》博客  xgboost同样也是加法模型、损失函数可以是不同类型的convex函数、学习方法为前向分布算法。">
+<meta name="keywords" content="Ensemble Learning,Boosting">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xgboost">
+<meta property="og:url" content="http://yoursite.com/2020/02/19/xgboost/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="xgboost与GBDT类似都是一种boosting方法，在之前写GBDT的时候有介绍过一点xgboost的思想，这里认真研究一下。 1. xgboost原理 Adaboost算法是模型为加法模型的、损失函数为指数函数的、学习方法为前向分布算法的二分类问题。— from本站《Adaboost》博客  xgboost同样也是加法模型、损失函数可以是不同类型的convex函数、学习方法为前向分布算法。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-69d198a1de945d849364e11e6b048579_hd.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-1fe2882f8ef3b0a80068c57905ceaba0_hd.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-cfecb2f6ad675e6e3bf536562e5c06dd_hd.jpg">
+<meta property="og:updated_time" content="2020-03-03T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xgboost">
+<meta name="twitter:description" content="xgboost与GBDT类似都是一种boosting方法，在之前写GBDT的时候有介绍过一点xgboost的思想，这里认真研究一下。 1. xgboost原理 Adaboost算法是模型为加法模型的、损失函数为指数函数的、学习方法为前向分布算法的二分类问题。— from本站《Adaboost》博客  xgboost同样也是加法模型、损失函数可以是不同类型的convex函数、学习方法为前向分布算法。">
+<meta name="twitter:image" content="https://pic2.zhimg.com/80/v2-69d198a1de945d849364e11e6b048579_hd.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/02/19/xgboost/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>xgboost | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/19/xgboost/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">xgboost
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-19 00:00:00" itemprop="dateCreated datePublished" datetime="2020-02-19T00:00:00+08:00">2020-02-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-03-04 00:00:00" itemprop="dateModified" datetime="2020-03-04T00:00:00+08:00">2020-03-04</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>xgboost与GBDT类似都是一种boosting方法，在之前写GBDT的时候有介绍过一点xgboost的思想，这里认真研究一下。</p>
+<h1 id="1-xgboost原理"><a href="#1-xgboost原理" class="headerlink" title="1. xgboost原理"></a>1. xgboost原理</h1><blockquote>
+<p>Adaboost算法是<strong>模型为加法模型的</strong>、<strong>损失函数为指数函数的</strong>、<strong>学习方法为前向分布算法</strong>的二分类问题。— from本站《Adaboost》博客</p>
+</blockquote>
+<p>xgboost同样也是加法模型、损失函数可以是不同类型的convex函数、学习方法为前向分布算法。继续借用这三点来解释xgboost：</p>
+<h2 id="1-1-加法模型"><a href="#1-1-加法模型" class="headerlink" title="1.1 加法模型"></a>1.1 加法模型</h2><p>xgboost是由m个基模型组成的加法模型，假设第t次迭代要训练的基模型（e.g.决策树）是$f_t(x)$，则</p>
+<script type="math/tex; mode=display">
+\hat{y}_i^{(t)}=\sum\limits_{k=1}^{t}f_k(x_i) = \hat{y}_i^{(t-1)} + f_t(x_i)</script><p>即对于任意样本$i$，第t次迭代后的预测值=前t-1颗树的预测值+第t棵树的预测值。</p>
+<p>注意：在GBDT一文中，$f(x)$表示的是前m轮迭代后的累积值，本文中的$f(x)$表示当前一轮迭代的预测值。</p>
+<h2 id="1-2-目标函数：正则化-amp-泰勒展开"><a href="#1-2-目标函数：正则化-amp-泰勒展开" class="headerlink" title="1.2 目标函数：正则化&amp;泰勒展开"></a>1.2 目标函数：正则化&amp;泰勒展开</h2><blockquote>
+<p>[1] 模型的预测精度由模型的偏差和方差共同决定，损失函数代表了模型的偏差，想要方差小则需要在目标函数中添加正则项，用于防止过拟合。 </p>
+</blockquote>
+<p>xgboost的一大改进是在目标函数中加入<strong>正则项</strong>，防止模型过拟合。损失函数可以广义的定义为$\sum\limits_{i=1}^nl(y_i,\hat{y_i})$，那么目标函数可定义为</p>
+<script type="math/tex; mode=display">
+Obj = \sum\limits_{i=1}^nl(y_i, \hat{y_i}) + \sum_{k=1}^m\Omega(f_k)</script><p>另一个改进是损失函数的<strong>泰勒展开</strong>：加法模型$\hat{y}_i^{(t)}= \hat{y}_i^{(t-1)} + f_t(x_i)$，预测值的增量即为$f_t(x_i)$，变化后的预测值对目标函数的影响为</p>
+<script type="math/tex; mode=display">
+\begin{align}
+Obj^{(t)} & = \sum\limits_{i=1}^nl(y_i, \hat{y_i}^{(t)}) + \sum\limits_{k=1}^{t}\Omega(f_k) \\
+ & = \sum\limits_{i=1}^nl(y_i, \hat{y_i}^{(t-1)}+f_t(x_i))+ \sum\limits_{k=1}^{t}\Omega(f_k)\\ 
+ & = \sum\limits_{i=1}^nl(y_i, \hat{y_i}^{(t-1)}+f_t(x_i))+ \Omega(f_t) + constant
+\end{align}</script><p>第t步迭代的时候只关心变量$f<em>t(x_i)$，t-1步之前的都是已知量，所以$\sum\limits</em>{k=1}^{t-1}\Omega(f_k)$看作常数。损失函数增加了$f_t(x_i)$，使用泰勒展开：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+f(x_0+\Delta x) & = \sum\limits_{i=0}^n\frac{f^{(i)}(x_0)}{i!}\Delta x^i + o(x^n) \\
+ & \approx f(x_0) + f'(x_0)\Delta x + \frac{1}{2}f''(x_0)\Delta x^2
+\end{align}</script><p>得到样本i在第t的迭代之后的预测值：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+l(y_i, \hat{y_i}^{(t)}) & = l(y_i, \hat{y_i}^{(t-1)}+f_t(x_i)) \\
+ & \approx l(y_i, \hat{y_i}^{(t-1)}) +  g_if_t(x_i) + \frac{1}{2}h_if_t^2(x_i)\\
+\end{align}</script><p>其中$g_i$为损失函数在$\hat{y_i}^{(t-1)}$点的一阶导，$h_i$为损失函数在$\hat{y_i}^{(t-1)}$点的二阶导。总结一下：<strong>泰勒展开是关于损失函数，求导是对上一轮迭代的预测值求一阶、二阶导数。</strong>目标函数可写为</p>
+<script type="math/tex; mode=display">
+Obj^{(t)}\approx\sum\limits_{i=1}^n[l(y_i,\hat{y_i}^{t-1})+g_if_t(x_i)+\frac{1}{2}h_if^2_t(x_i)] +\Omega(f_t) + constant</script><p>因为第t步时$\hat{y_i}^{(t-1)}$是已知值，所以$l(y_i, \hat{y_i}^{t-1})$可看作常数</p>
+<script type="math/tex; mode=display">
+Obj^{(t)} \approx \sum\limits_{i=1}^n[g_if_t(x_i) + \frac{1}{2}h_if_t^2(x_i)]+\Omega(f_t) + constant</script><p>constant项在下文可忽略，因为极小化目标函数$Obj^{(t)}$，就是找到第t步最优的变量$f_t(x_i)$（训练出一棵树$f_t$）。最后通过加法模型得到整体模型。</p>
+<h2 id="1-3-前向分布：学习过程"><a href="#1-3-前向分布：学习过程" class="headerlink" title="1.3 前向分布：学习过程"></a>1.3 前向分布：学习过程</h2><p>虽然xgboost基模型不仅支持决策树，还支持线性模型，这里是介绍树模型。</p>
+<p>在第t步，如何学习到一棵树$f_t$：树的结构、叶子节点对应的权重。</p>
+<h3 id="定义一棵树"><a href="#定义一棵树" class="headerlink" title="定义一棵树"></a>定义一棵树</h3><ul>
+<li>样本与叶子节点的mapping关系q</li>
+<li>叶子节点的权重w</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/80/v2-69d198a1de945d849364e11e6b048579_hd.jpg" alt="sample mapping to leaf nodes"></p>
+<h3 id="定义树之后的目标函数"><a href="#定义树之后的目标函数" class="headerlink" title="定义树之后的目标函数"></a>定义树之后的目标函数</h3><ul>
+<li><p>叶子节点归组：一棵树$f<em>t$确定之后，样本对应的叶子节点就确定了。若干条样本，会在有限个叶子节点中取值，$f_t(x_i) = w</em>{q(x_i)}$. 依照上图定义一棵树总共有T个叶子节点，令所有属于叶子节点$j$的样本$x_i$集合为$I_j={i | q(x_i)=j}$，所有属于$I_j$的样本取值均为$w_j$.</p>
+</li>
+<li><p>树的复杂度：复杂度由叶子数T和权重w组成，希望树不要有过多的叶子节点，并且节点的不具有过高的权重。</p>
+<script type="math/tex; mode=display">
+\Omega(f_t) = \gamma T + \frac{1}{2}\lambda\sum\limits_{j=1}^Tw_j^2</script></li>
+</ul>
+<p>结合以上2点变化，把样本点按照叶子节点归组，目标函数可以写成</p>
+<script type="math/tex; mode=display">
+\begin{align}
+Obj^{(t)} &\approx \sum\limits_{i=1}^n[g_if_t(x_i) + \frac{1}{2}h_if_t^2(x_i)]+\Omega(f_t)\\
+& = \sum\limits_{i=1}^n[g_iw_{q(x_i)}+\frac{1}{2}h_iw^2_{q(x_i)}] + \gamma T + \frac{1}{2}\lambda\sum\limits_{j=1}^Tw_j^2\\
+& = \sum\limits_{j=1}^T[(\sum\limits_{i\in I_j}g_i)w_j+\frac{1}{2}(\sum\limits_{i\in I_j}h_i+\lambda)w_j^2] + \gamma T\\
+& := \sum\limits_{j=1}^T[({\color{red}G_j}w_j+\frac{1}{2}({\color{red}H_j}+\lambda)w_j^2] + \gamma T
+\end{align}</script><p>$G<em>j=\sum\limits</em>{i\in I<em>j}g_i$是叶子节点j包含的所有样本的一阶导数之和，一阶导数是$\left.\frac{\partial l(y_i,y)}{\partial y}\right|</em>{\hat{y_i}^{(t-1)}}$，是t-1步得到的结果；</p>
+<p>$H<em>j=\sum\limits</em>{i\in I<em>j}h_i$是叶子节点j包含的所有样本的二阶导数之和，一阶导数是$\left.\frac{\partial^2 l(y_i,y)}{\partial y^2}\right|</em>{\hat{y_i}^{(t-1)}}$，也是t-1步得到的结果。</p>
+<p>这样目标函数的表达式，只有w是未知变量，其余都是t-1步后已知，是关于w的一元二次表达式。<strong>[3]只要目标函数是凸函数，即二阶导数$H_j&gt;0$，可以保证一元二次表达式的二次项&gt;0，目标函数取到最小值。</strong></p>
+<p>对每个叶子节点j，与j有关的目标函数的部分为$G_jw_j+\frac{1}{2}(H_j+\lambda)w_j^2$. 因为叶子节点相互独立，每个叶子节点对应的目标函数达到最小值，整个目标函数$Obj^{(t)}$就达到最小值。可求得节点j的最优权重$w_j=-\frac{G_j}{H_j+\lambda}$，树$f_t$的目标函数值（对<strong>树结构$f_t$打分</strong>）为</p>
+<script type="math/tex; mode=display">
+Obj=-\frac{1}{2}\sum\limits_{j=1}^T\frac{G_j^2}{H_j+\lambda} + \gamma T</script><h3 id="如何得到最优的树"><a href="#如何得到最优的树" class="headerlink" title="如何得到最优的树"></a>如何得到最优的树</h3><p>在确定一颗树之后，可以求得这棵树的最优权重值以及目标函数值，如何确定最优的树呢？一棵树从一个节点（树深为0）开始，逐渐划分节点，生长成新的树。关键就是在每次划分节点的时候，找到最好的划分方式。</p>
+<p>在树的生成过程中，如何判断当前叶子节点是否应该分裂？用分裂收益来衡量：</p>
+<p>如果某个叶子节点完成分裂，分裂前的目标函数为$Obj_1 = -\frac{1}{2}[\frac{(G_L+G_R)^2}{H_L+H_R+\lambda}]+\gamma$；分裂成左右两个分支之后的目标函数为$Obj_2=-\frac{1}{2}[\frac{G_L^2}{H_L+\lambda}+\frac{G_R^2}{H_R+\lambda}]+\gamma$. 则分裂后的收益为$Gain=Obj_1-Obj_2$：</p>
+<script type="math/tex; mode=display">
+Gain =\frac{1}{2}[\frac{G_L^2}{H_L+\lambda}+\frac{G_R^2}{H_R+\lambda}-\frac{(G_L+G_R)^2}{H_L+H_R+\lambda}]-\gamma</script><p>Gain越大，说明分裂之后目标函数减小量越大。注意，分裂收益也可作为feature importance的依据。</p>
+<p><strong>在树的生成过程中，样本的一阶、二阶导数只需要事先计算一次，在计算单个节点Obj的时候，只需将节点上对应的样本导数值求和得到不同的G和H。</strong></p>
+<p><strong>贪婪算法：</strong></p>
+<ol>
+<li>初始树的深度为0</li>
+<li>对叶子节点j：<ul>
+<li>枚举这个叶子节点的所有可用特征；</li>
+<li>对每个特征，对属于这个叶子节点的样本，按照特征的取值升序排列；</li>
+<li>计算每个特征取值分裂得到的分裂收益，选择分裂收益最大的，作为最优分裂特征的分裂位置</li>
+</ul>
+</li>
+<li>从所有节点上按照第2步找到最优分裂位置，分裂出左右两个新的叶子节点，并将j的样本分配到这两个节点上</li>
+<li>递归执行节点分裂，直到满足终止条件</li>
+</ol>
+<p>选取叶子节点进行分裂的顺序不重要，递归的进行即可。贪婪算法的每次分裂，都要枚举所有特征的所有可能分裂方案。将特征取值排序之后，计算按照不同取值进行分裂会变得很简单，因为梯度已经计算好，只需要简单的加减法就可以得到分裂的$G_L, G_R, H_L, H_R$，从而计算出Gain。节点的划分不一定会使Gain一直都&gt;0，因为有引入新叶子的正则惩罚项。如果分裂带来的Gain小于某个阈值，则剪掉该分裂。</p>
+<p><strong>近似算法：</strong></p>
+<p>贪婪算法可以得到最优解$f_t$，但是当数据量太大时内存会爆，这时可用近似算法，减少计算复杂度。</p>
+<p>对某节点的每个特征，不枚举所有的取值，只考虑某些分位点。根据特征取值的分布，提出候选分位点，然后在这些候选分位点上分裂。</p>
+<ul>
+<li>Global：学习每棵树前，确定分位点，每次分裂时都采用这种分裂；</li>
+<li>Lobal：每次分裂前重新制定候选分位点</li>
+</ul>
+<blockquote>
+<p>[1] Global 策略在候选点数多时（eps 小）可以和 Local 策略在候选点少时（eps 大）具有相似的精度。此外我们还发现，在eps取值合理的情况下，分位数策略可以获得与贪心算法相同的精度。</p>
+</blockquote>
+<p><img src="https://pic1.zhimg.com/80/v2-1fe2882f8ef3b0a80068c57905ceaba0_hd.jpg" alt="approximation psuedo code"></p>
+<p>第一个for循环对每个特征k确定分裂用的候选分位点$S_k$；第二个for循环对每个由分位数划分成的区间进行G和H的累加，方便了得到每个特征的候选分位点对应的G、H值。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-cfecb2f6ad675e6e3bf536562e5c06dd_hd.jpg" alt="one feature 3 percentile" style="zoom:75%;"></p>
+<p>上图的例子中，只针对某一个特征，取1/3、2/3分位点来作为候选。(s1, s2+s3), (s1+s2, s3)和s1+s2+s3来比较。</p>
+<p>xgboost不是简单的按照样本的个数来分位，而且用$h_i$作为样本权重进行分位，作者设计了weighted quantile sketch算法。为什么用二阶梯度$h_i$作为权重，参见[1]. </p>
+<h1 id="2-一些细节"><a href="#2-一些细节" class="headerlink" title="2. 一些细节"></a>2. 一些细节</h1><h2 id="2-1-缺失值"><a href="#2-1-缺失值" class="headerlink" title="2.1 缺失值"></a>2.1 缺失值</h2><p>一些设计对样本距离的度量的模型，如SVM和KNN，加入缺失值处理不当，最终导致模型预测效果很差。不过xgboost对缺失值不敏感，树模型对缺失值的敏感度都比较低。</p>
+<p>因为xgboost在构建树，即在某特征上寻找分裂点时，不考虑缺失样本，只考虑对非缺失数据的样本进行遍历，但同时对每个节点增加了一个缺失值方向（依然是二叉树）。剩下那些缺失值样本，把它们统一打包归组到左叶子节点和右叶子节点，然后再选分裂收益大的那个，作为预测时缺失特征的分裂方向。如果训练集没有缺失值，测试集有，那么默认将缺失值划分到右叶子节点方向。</p>
+<h2 id="2-2-feature-importance"><a href="#2-2-feature-importance" class="headerlink" title="2.2 feature importance"></a>2.2 feature importance</h2><ul>
+<li>gain: 以这个特征分裂之后，得到的gain在所有树上的平均值</li>
+<li>weight：该特征在所有树中被用作分裂节点的总次数</li>
+<li>cover：该特征在其出现过的所有树中的平均覆盖范围。覆盖范围指一个特征用作分裂点之后，其影响的样本数量，即有多少样本经过该特征分裂到两个子节点。</li>
+</ul>
+<h2 id="2-3-并行"><a href="#2-3-并行" class="headerlink" title="2.3 并行"></a>2.3 并行</h2><p>xgboost的并行，不是每棵树并行训练，xgboost依然是boosting思想，一棵树训练完才行训练下一颗。</p>
+<p>xgboost的并行，是指特征维度的并行：在训练之前，每个特征按取值对样本预排序，用稀疏矩阵格式存储为block结构，在block里面保存排序后的特征值及对应样本的引用，以便于获取样本的一阶、二阶导数值。在后面训练过程中（查找分裂点时）可重复使用block结构：在同一棵树的生成过程中，样本对应的一阶、二阶导数值不变，计算不同节点分裂收益时，只需要将block进行组合即可。</p>
+<p>每个特征都可以独立的进行预排序和分block，所以对<strong>同一个节点</strong>选择哪个特征的分裂收益最大时，可以<strong>对多个特征并行运算</strong>。</p>
+<h2 id="2-4-subsampling"><a href="#2-4-subsampling" class="headerlink" title="2.4 subsampling"></a>2.4 subsampling</h2><p>xgboost支持行采样，setting subsampling=0.5 means that XGBoost would randomly sample half of the training data prior to growing trees. and this will prevent overfitting. Subsampling will occur once in every boosting iteration.</p>
+<p>xgboost还支持列抽样， subsample ratio of columns when constructing each tree. Subsampling occurs once for every tree constructed.</p>
+<h2 id="2-5-Hessian矩阵"><a href="#2-5-Hessian矩阵" class="headerlink" title="2.5 Hessian矩阵"></a>2.5 Hessian矩阵</h2><p>为什么会牵扯到Hessian矩阵？牛顿法的思想：对损失函数泰勒展开到二阶导数，求极值得到牛顿下降方向 $-H^{-1}g$；类似地，xgboost也可以通过求牛顿方向来得到$f_t$，这样就需要求Hessian矩阵的逆了。牛顿法的牛顿方向对应于xgboost每一次迭代的增加量$f_t$.</p>
+<p>在xgboost这里，Hessian矩阵很特殊，是一个对角阵，容易计算。如果不考虑正则项，$Obj^{(t)}_i\approx l(y_i,\hat{y_i}^{t-1})+g_if_t(x_i)+\frac{1}{2}h_if^2_t(x_i)$，样本之间没有cross，所以Hessian矩阵是对角阵，如果把n个样本看成n维向量，nxn维的Hessian对角矩阵，牛顿方向$-H^{-1}g$. </p>
+<p>但xgboost的目标函数有所不同，存在正则项，正则项也包含需要优化的变量w，经过节点的归组，$Obj^{(t)}<em>j\approx G_jw</em>{j}+\frac{1}{2}(H<em>j+\lambda)w^2</em>{j}+\gamma$，类似地把T个节点看成T维向量，则有TxT维的Hessian对角矩阵，$w^*=-(H+\lambda)^{-1}G$，在形式上与上文使用的方法一致。</p>
+<h2 id="2-6-工程实现"><a href="#2-6-工程实现" class="headerlink" title="2.6 工程实现"></a>2.6 工程实现</h2><p>列块并行学习、缓存访问、核外块计算</p>
+<h2 id="2-7-remaining-questions"><a href="#2-7-remaining-questions" class="headerlink" title="2.7 remaining questions"></a>2.7 remaining questions</h2><ul>
+<li>xgboost梯度的维度？不同样本的梯度是分开求的，每个样本求一次和二次导数，所以维度是：迭代数x样本数x2</li>
+<li>上文默认的基模型应该是<code>gbtree</code>，另外还有<code>gblinear</code>和<code>dart</code>。<code>gblinear</code>是线性模型，<code>dart</code>是带dropout的树模型。</li>
+<li>xgboost如何处理分类问题？思路应该与GBDT相同，可参考GBDT一文。以二分类问题为例，损失函数为logloss，拟合后的值，需要经过logistic函数来转化为取值为1的概率，所以拟合的是概率的残差，最终的输出值为$P(y_i=1|x_i)=\frac{1}{1+e^{-\hat{y}_i^{(M)}}}$.</li>
+</ul>
+<h1 id="3-xgboost与GBDT"><a href="#3-xgboost与GBDT" class="headerlink" title="3. xgboost与GBDT"></a>3. xgboost与GBDT</h1><p>xgboost和GBDT都在拟合残差，之所以是拟合残差，可以从泰勒展开的角度理解。导数都是上一轮的预测值关于损失函数的导数。都是加法模型，上一轮的预测值，加上这一轮的拟合结果，等于这一轮的预测值。</p>
+<p>最重要的不同，是xgboost使用一阶和二阶导数来拟合残差，GBDT只使用一阶导数。训练树的过程也不同，GBDT用的是CART；而xgboost多考虑了正则项、使用不同的Gain生长树（分裂收益 v.s. Gini index）、获取叶子节点权重的方式也不同（$w_j=-\frac{G_j}{H_j+\lambda}$ v.s. line search），xgboost中默认的基模型为<code>gbtree</code>（上文整个推导过程）。可以看出，gbtree与CART是不同的。</p>
+<h2 id="3-1-xgboost的优点-1"><a href="#3-1-xgboost的优点-1" class="headerlink" title="3.1 xgboost的优点 [1]"></a>3.1 xgboost的优点 [1]</h2><ul>
+<li><strong>精度更高：</strong>GBDT 只用到一阶泰勒展开，而 xgboost 对损失函数进行了二阶泰勒展开。XGBoost 引入二阶导一方面是为了增加精度，另一方面也是为了能够自定义损失函数，二阶泰勒展开可以近似大量损失函数；</li>
+<li><strong>灵活性更强：</strong>GBDT 以 CART 作为基分类器，xgboost 不仅支持树模型还支持线性分类器，使用线性分类器的 xgboost 相当于带 L1 和 L2 正则化项的逻辑斯蒂回归（分类问题）或者线性回归（回归问题）。此外，xgboost 工具支持自定义损失函数，只需函数支持一阶和二阶求导；</li>
+<li><strong>正则化：</strong>xgboost 在目标函数中加入了正则项，用于控制模型的复杂度。正则项里包含了树的叶子节点个数、叶子节点权重的 L2 范式。正则项降低了模型的方差，使学习出来的模型更加简单，有助于防止过拟合，提高泛化能力，这也是xgboost优于传统GBDT的一个特性。</li>
+<li><strong>Shrinkage（缩减）：</strong>相当于学习速率。xgboost 在进行完一次迭代后，会将叶子节点的权重乘上该系数，主要是为了削弱每棵树的影响，让后面有更大的学习空间。传统GBDT的实现也有学习速率；</li>
+<li><strong>子采样&amp;列抽样：</strong>xgboost 借鉴了随机森林的做法，支持行采样、列抽样，不仅能降低过拟合，还能减少计算。这也是xgboost异于传统GBDT的一个特性；</li>
+<li><strong>缺失值处理：</strong>对于特征的值有缺失的样本，xgboost 采用的稀疏感知算法可以自动学习出它的分裂方向；</li>
+<li><strong>XGBoost工具支持并行：</strong>注意xgboost的并行不是tree粒度的并行，xgboost也是一次迭代完才能进行下一次迭代的（第t次迭代的代价函数里包含了前面t-1次迭代的预测值）。xgboost的并行是在特征粒度上的。我们知道，决策树的学习最耗时的一个步骤就是对特征的值进行排序（因为要确定最佳分割点），xgboost在训练之前，预先对每个特征按照特征值排序，保存为block结构，后面的迭代中重复地使用这个结构，大大减小计算量。这个block结构也使得并行成为了可能，在进行节点的分裂时，需要计算每个特征的增益，最终选增益最大的那个特征去做分裂，那么各个特征的增益计算就可以开多线程进行。</li>
+<li><strong>可并行的近似算法：</strong>树节点在进行分裂时，我们需要计算每个特征的每个分割点对应的增益，即用贪心法枚举所有可能的分割点。当数据无法一次载入内存或者在分布式情况下，贪心算法效率就会变得很低，所以xgboost还提出了一种可并行的近似算法，用于高效地生成候选的分割点。</li>
+</ul>
+<h2 id="3-2-xgboost的缺点-1"><a href="#3-2-xgboost的缺点-1" class="headerlink" title="3.2 xgboost的缺点 [1]"></a>3.2 xgboost的缺点 [1]</h2><ul>
+<li>虽然利用预排序和近似算法可以降低寻找最佳分裂点的计算量，但在节点分裂过程中仍需要遍历数据集；</li>
+<li>预排序过程的空间复杂度过高，不仅需要存储特征值，还需要存储特征对应样本的梯度统计值的索引，相当于消耗了两倍的内存。</li>
+</ul>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<li>(重点参考) <a href="https://zhuanlan.zhihu.com/p/83901304" target="_blank" rel="noopener">深入理解XGBoost</a></li>
+<li><a href="https://www.cnblogs.com/LittleHann/p/7512397.html" target="_blank" rel="noopener">前向分步算法：AdaBoost，GBDT和XGBoost算法</a></li>
+<li><a href="https://github.com/dmlc/xgboost/issues/353" target="_blank" rel="noopener">Custom Loss Functions #353</a></li>
+<li><a href="https://arxiv.org/abs/1603.02754" target="_blank" rel="noopener">https://arxiv.org/abs/1603.02754</a></li>
+<li><a href="https://www.zhihu.com/question/306569072/answer/563395377" target="_blank" rel="noopener">XGBoost是如何求Hessian矩阵逆的？</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/37588590" target="_blank" rel="noopener">理解牛顿法</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Ensemble-Learning/" rel="tag"># Ensemble Learning</a>
+          
+            <a href="/tags/Boosting/" rel="tag"># Boosting</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/15/ROC_PR/" rel="next" title="ROC, PR曲线">
+                <i class="fa fa-chevron-left"></i> ROC, PR曲线
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/03/PCA/" rel="prev" title="PCA">
+                PCA <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-xgboost原理"><span class="nav-number">1.</span> <span class="nav-text">1. xgboost原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-加法模型"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 加法模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-目标函数：正则化-amp-泰勒展开"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 目标函数：正则化&amp;泰勒展开</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-前向分布：学习过程"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 前向分布：学习过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义一棵树"><span class="nav-number">1.3.1.</span> <span class="nav-text">定义一棵树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义树之后的目标函数"><span class="nav-number">1.3.2.</span> <span class="nav-text">定义树之后的目标函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何得到最优的树"><span class="nav-number">1.3.3.</span> <span class="nav-text">如何得到最优的树</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-一些细节"><span class="nav-number">2.</span> <span class="nav-text">2. 一些细节</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-缺失值"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 缺失值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-feature-importance"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 feature importance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-并行"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-subsampling"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 subsampling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-Hessian矩阵"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 Hessian矩阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-工程实现"><span class="nav-number">2.6.</span> <span class="nav-text">2.6 工程实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-7-remaining-questions"><span class="nav-number">2.7.</span> <span class="nav-text">2.7 remaining questions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-xgboost与GBDT"><span class="nav-number">3.</span> <span class="nav-text">3. xgboost与GBDT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-xgboost的优点-1"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 xgboost的优点 [1]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-xgboost的缺点-1"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 xgboost的缺点 [1]</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共33.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

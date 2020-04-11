@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
+<meta name="keywords" content="SVM,Kernel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kernel Trick（核技巧）">
+<meta property="og:url" content="http://yoursite.com/2018/10/21/kernel/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/10/21/kernel/gamma.jpg">
+<meta property="og:updated_time" content="2018-11-17T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kernel Trick（核技巧）">
+<meta name="twitter:description" content="首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。再次放出SVM的对偶形式： \begin{array}{rl} \max\limits_{\alpha} &amp; \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\">
+<meta name="twitter:image" content="http://yoursite.com/2018/10/21/kernel/gamma.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/21/kernel/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Kernel Trick（核技巧） | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/21/kernel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kernel Trick（核技巧）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-21 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-21T00:00:00+08:00">2018-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-18 00:00:00" itemprop="dateModified" datetime="2018-11-18T00:00:00+08:00">2018-11-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>首先声明核函数的技巧是一个很大的范畴，与SVM模型平起平坐，相见参考资料1的高票回答。这里我们只讨论Kenel trick在SVM的对偶形式中的应用。<br>再次放出SVM的对偶形式：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jx_i^Tx_j \\
+s.t.    & \alpha_i\ge 0, i=1,\dots, m \\
+        & \sum\limits_{i=1}^m\alpha_iy_i = 0
+\end{array}</script><p>这里，$x, y$这些值都是已知的，是不同样本的特征和标签，我们要求的是$\alpha$. 对偶的目标函数里，有内积$x_i^Tx_j$，这可用于线性可分的样本集合；如果样本线性不可分，需要对特征$x$进行某些非线性变换$\phi(x)$，然后再求内积。</p>
+<p><strong>一般的这些非线性变换将原来的特征映射到更高维度的空间中，使其更容易分类。</strong></p>
+<h1 id="特征映射-feature-mapping"><a href="#特征映射-feature-mapping" class="headerlink" title="特征映射(feature mapping)"></a>特征映射(feature mapping)</h1><p>先来定义一下两个不同的概念，attribute和feature，这两个词中文翻译过来都叫做特征。例如 <strong>原始</strong> 的特征$x$，比如是一个房屋的面积，它可以进一步生成许多特征，比如$x,x^2,x^3$。这里原始特征$x$定义为attribute，生成的特征$x,x^2,x^3$为features。定义从attri到features这个过程为feature mapping（特征映射），记为$\phi$。在上面这个小例子中，</p>
+<script type="math/tex; mode=display">\phi(x) = \left[
+\begin{array}{c}
+  x\\
+  x^2\\
+  x^3
+\end{array}
+\right]</script><p>对于SVM模型，我们可能不想用attributes $x$，而想用features $\phi(x)$。我们只需要把SVM对偶形式中的$x$替换成$\phi(x)$。<br>因为模型中的特征完全是$x^T_ix_j$的形式，可以写成向量内积的形式<script type="math/tex">\langle x_i, x_j\rangle</script>（最终结果是一个标量），所以我们可以把所有的内积替换成<script type="math/tex">\langle \phi(x_i), \phi(x_j)\rangle</script>。</p>
+<h1 id="核-Kernel"><a href="#核-Kernel" class="headerlink" title="核(Kernel)"></a>核(Kernel)</h1><p>如果有特征映射$\phi$，我们定义相应的核Kenel为</p>
+<script type="math/tex; mode=display">K(x,z) = \phi(x)^T\phi(z)</script><p><strong>所以所有出现内积$\langle x_i, x_j\rangle$的地方，我们把它们替换成核$K(x_i,x_j)$</strong>，然后SVM算法将用features来进行机器学习。<br>如果已知特征映射函数$\phi$，我们可以通过找$\phi(x_i)$和$\phi(x_j)$，计算得到核$K(x_i,x_j)$。</p>
+<p>但更有趣的是，<strong>即使有时特征映射函数$\phi$的计算量很大，甚至可能是无穷维的，核$K(x_i,x_j)$可能计算起来非常简单。这样的话，直接计算$K(x_i,x_j)$反而更加高效，我们可以得到一个高维特征空间的SVM模型，这个特征空间其实是由特征映射函数$\phi$产生的，但是我们却不必显式的计算$\phi(x)$（可能$\phi(x)$维度太高，计算量太大）。</strong></p>
+<p><strong>如何证明$K$是一个核？</strong><br>Kernel matrix: $K_{ij} = K(x_i,x_j)$</p>
+<ul>
+<li>Kernel matrix 是对称的；</li>
+<li>Kernel matrix 是半正定的</li>
+</ul>
+<h1 id="两个常见的核"><a href="#两个常见的核" class="headerlink" title="两个常见的核"></a>两个常见的核</h1><p>我们考虑两个核函数，一个是将低维特征映射到高维的多项式核，另一种是将低维特征映射到无限维的高斯核（RBF）：</p>
+<h2 id="多项式核"><a href="#多项式核" class="headerlink" title="多项式核"></a>多项式核</h2><p>假设$a,b\in\mathcal{R}^n$，考虑</p>
+<script type="math/tex; mode=display">K(a,b)=(a^Tb)^2</script><p>这里我们令$n=3$，即样本点特征的维度为3，多项式核的度数为2. 例如$a=[a_1,a_2,a_3]^T$.<br>将$K(a,b)$用另一种形式表示</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+K(a,b) & = (\sum\limits_{i=1}^3a_ib_i)(\sum\limits_{j=1}^3a_jb_j) \\
+        & = \sum\limits_{i=1}^3\sum\limits_{j=1}^3a_ia_jb_ib_j \\
+        & = \sum\limits_{i,j=1}^3(a_ia_j)(b_ib_j)
+\end{array}</script><p>这样，$K(a,b)=\phi(a)\phi(b)$，其中</p>
+<script type="math/tex; mode=display">\phi(a) = \left[
+\begin{array}{c}
+a_1a_1\\
+a_1a_2\\
+a_1a_3\\
+a_2a_2\\
+a_2a_3\\
+a_3a_3
+\end{array}
+\right]</script><ul>
+<li>计算特征映射函数$\phi$需要$O(n^2)$时间，然而计算核函数$K(a,b)$只需要$O(n)$时间。</li>
+<li><p>函数$\phi$是将$\mathcal{R}^3\to\mathcal{R}^6$，更高维度。</p>
+</li>
+<li><p>(参考资料2-1)即使我们知道映射函数张什么样子，我们也很难知道它对应的核会产生什么样的作用。但某些特殊情况我们可以略知一二：比如多项式核$K(a,b)=(a^Tb)^2$，对应的$\phi(a)=(a_1^2,\sqrt{2}a_1a_2,a_2^2)$. 本来特征是二维的，映射后变成三维。可以发现，本来二维的特征在一三象限的样本点被映射到三维中的同一个象限；二维特征在二四象限的样本点被映射到另一个三维象限，所以该三维特征是线性可分的。还说明一个问题，这个核可以用于分类XOR问题~</p>
+</li>
+</ul>
+<h2 id="高斯核（RBF）"><a href="#高斯核（RBF）" class="headerlink" title="高斯核（RBF）"></a>高斯核（RBF）</h2><p>高斯核又称为Radial Basis Function (RBF).</p>
+<script type="math/tex; mode=display">K(a,b) = e^{-\frac{||a-b||^2}{2\sigma^2}}</script><p>下面用最最简单的特例来证明RBF是一个核，而且是映射到无穷维的核：<br>考虑样本的原始特征是二维的$\mathcal{R}^2$，并假设$\gamma=\frac{1}{2\sigma^2}=1$，核可以写成</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+k(a,b) & = e^{-||a-b||^2} \\
+       & = e^{-(a_1-b_1)^2 - (a_2-b_2)^2} \\
+       & = e^{-a_1^2+2a_1b_1-b_1^2-a_2^2+2a_2b_2-b_2^2} \\
+       & = e^{-||a||^2}e^{||b||^2}e^{2a^Tb} \\
+\text{(taylor series)} & = e^{-||a||^2}e^{||b||^2}\sum\limits_{n=0}^\infty\frac{(2a^Tb)^n}{n!}
+\end{array}</script><ul>
+<li>函数$\phi$是将2维特征映射到无限维，<strong>即RBF将每个样本的特征映射到无限维空间中</strong></li>
+<li>（参考资料2-3）证明RBF确实是一个核函数的方法</li>
+<li>如果$a$和$b$很接近，则核函数$K(a,b)$接近1；如果$a$和$b$差异很大（正交），则$K(a,b)$接近于0.因此RBF核也是一种衡量$a$和$b$(或者$\phi(a)$和$\phi(b)$)相似度的指标。</li>
+</ul>
+<h2 id="高斯核的进一步讨论"><a href="#高斯核的进一步讨论" class="headerlink" title="高斯核的进一步讨论"></a>高斯核的进一步讨论</h2><ul>
+<li><p>RBF中的gamma参数是用来干嘛的？<br>  $\gamma=\frac{1}{2\sigma^2}$，所以有$K(x,y) = e^{-\gamma||x-y||^2}$.<br>  BRF之所以称为高斯核，因为它的函数形式与高斯分布（正态分布）非常相似。<br>  高斯核里面的$\sigma$对应高斯分布里面的$\sigma$；高斯核里面的$y$对应高斯分布里面的$\mu$.<br>  如果高斯分布里面的$\sigma$变小，则高斯分布会变得又瘦又高。同理，如果$\gamma$很大，则$\sigma$就很小（脑补高斯分布又瘦又高的样子）。这样只有$x$跟$y$很接近时，$K(x,y)$才不会接近于0；否则只要$x$和$y$距离稍远一点点，$K(x,y)\to 0$.<br>  所以当$\gamma$变大，分割超平面会越来越复杂，甚至变成一个个分离的区域，这是因为两个样本点距离稍微远一点，就有$K(x,y)\to 0$，不敢保证中间地带的类别。<br>  <img src="/2018/10/21/kernel/gamma.jpg" alt="gamma"></p>
+</li>
+<li><p>（参考资料4）A small gamma means a Gaussian with a large variance so the influence of x_j is more, i.e. if x_j is a support vector, a small gamma implies the class of this support vector will have influence on deciding the class of the vector x_i even if the distance between them is large. If gamma is large, then variance is small implying the support vector does not have wide-spread influence. Technically speaking, large gamma leads to high bias and low variance models, and vice-versa.</p>
+</li>
+<li><p>（参考资料4）The hyperparameter $\gamma$ controls the tradeoff between error due to bias and variance in your model. If you have a very large value of gamma, then even if your two inputs are quite “similar”, the value of the kernel function will be small - meaning that the support vector $x_n$ does not have much influence on the classification of the training example $x_m$. This allows the SVM to capture more of the complexity and shape of the data, but if the value of gamma is too large, then the model can overfit and be prone to low bias/high variance. On the other hand, a small value for gamma implies that the support vector has larger influence on the classification of $x_m$. This means that the model is less prone to overfitting, but you may risk not learning a decision boundary that captures the shape and complexity of your data. This leads to a high bias, low variance model.</p>
+</li>
+<li><p>（参考文献3）分别对不同的gamma和C取值，通过图来说明各自的作用</p>
+</li>
+<li>Open问题：<strong>为什么$\gamma$变大，支持向量个数减少；$\gamma$变小，支持向量个数变多？</strong><br>  我的理解：首先回忆对偶形式<script type="math/tex; mode=display">\begin{array}{rl}
+  \max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_jK(x_i,x_j) \\
+  s.t.    & \alpha_i\ge 0, i=1,\dots, m \\
+          & \sum\limits_{i=1}^m\alpha_iy_i = 0
+  \end{array}</script>  观察目标函数，高斯核的值$K(x_i,x_j)&gt;0$，$\alpha_i\ge 0$，$y_i=\pm 1$，并且要最大化目标函数。只有在$y_iy_j=-1$时，才能对极大化目标函数产生贡献，即两个样本点来自不同类别。但是当$\gamma$太大时，属于不同类的$y_i,y_j$的距离够远，使得$K(x_i,x_j)\to 0$，还是没啥贡献。只有$x_i,x_j$足够接近时，才有$K(x_i,x_j)$不接近0，这种情况往往是$x_i,x_j$属于同一类别，即$y_iy_j=1$，对极大化目标函数有不利的贡献，为了不要产生贡献，只能令$\alpha_i\alpha_j=0$，即很多点都是非支持向量。<br>  相反的，当$\gamma$比较小，$K(x_i,x_j)$会比较容易取值大一些，即使不同类别的样本点$y_iy_j=-1$. 这时就令$\alpha_i\alpha_j&gt;0$，为极大化目标函数做贡献，也成为支持向量。<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1></li>
+</ul>
+<ol>
+<li><a href="https://www.zhihu.com/question/24627666" target="_blank" rel="noopener">机器学习有很多关于核函数的说法，核函数的定义和作用是什么？</a></li>
+<li>StackExchange<br> <a href="https://stats.stackexchange.com/questions/58585/how-to-understand-effect-of-rbf-svm" target="_blank" rel="noopener">How to understand effect of RBF SVM</a><br> <a href="https://stats.stackexchange.com/questions/43779/non-linear-svm-classification-with-rbf-kernel/43806#43806" target="_blank" rel="noopener">Non-linear SVM classification with RBF kernel</a><br> <a href="https://stats.stackexchange.com/questions/35634/how-to-prove-that-the-radial-basis-function-is-a-kernel" target="_blank" rel="noopener">How to prove that the radial basis function is a kernel?</a></li>
+<li><a href="https://chrisalbon.com/machine_learning/support_vector_machines/svc_parameters_using_rbf_kernel/" target="_blank" rel="noopener">SVC Parameters When Using RBF Kernel</a></li>
+<li><a href="https://www.quora.com/What-are-C-and-gamma-with-regards-to-a-support-vector-machine" target="_blank" rel="noopener">What are C and gamma with regards to a support vector machine?</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SVM/" rel="tag"># SVM</a>
+          
+            <a href="/tags/Kernel/" rel="tag"># Kernel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/11/dual/" rel="next" title="拉格朗日对偶与SVM">
+                <i class="fa fa-chevron-left"></i> 拉格朗日对偶与SVM
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/23/hinge/" rel="prev" title="软间隔与hinge loss">
+                软间隔与hinge loss <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#特征映射-feature-mapping"><span class="nav-number">1.</span> <span class="nav-text">特征映射(feature mapping)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#核-Kernel"><span class="nav-number">2.</span> <span class="nav-text">核(Kernel)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#两个常见的核"><span class="nav-number">3.</span> <span class="nav-text">两个常见的核</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多项式核"><span class="nav-number">3.1.</span> <span class="nav-text">多项式核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高斯核（RBF）"><span class="nav-number">3.2.</span> <span class="nav-text">高斯核（RBF）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高斯核的进一步讨论"><span class="nav-number">3.3.</span> <span class="nav-text">高斯核的进一步讨论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共33.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

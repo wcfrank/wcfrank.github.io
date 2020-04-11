@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="PCA原理PCA全称为Principal Component Analysis，主成分分析。什么叫做主成分呢，主成分跟降维什么关系？ PCA的思路就是进行线性变换，对原始特征空间进行重构，在一组线性无关的标准正交基下，挑选一部分最重要的维度。 基础知识假设有n个样本，每个样本的维度为p，则  x=(x_1,x_2,\dots,x_n)^T= \begin{pmatrix}x_1^T\\x_2^T\">
+<meta name="keywords" content="降维">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PCA">
+<meta property="og:url" content="http://yoursite.com/2020/04/03/PCA/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="PCA原理PCA全称为Principal Component Analysis，主成分分析。什么叫做主成分呢，主成分跟降维什么关系？ PCA的思路就是进行线性变换，对原始特征空间进行重构，在一组线性无关的标准正交基下，挑选一部分最重要的维度。 基础知识假设有n个样本，每个样本的维度为p，则  x=(x_1,x_2,\dots,x_n)^T= \begin{pmatrix}x_1^T\\x_2^T\">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://i.stack.imgur.com/9vENg.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/04/03/PCA/reconstruction_error.png">
+<meta property="og:updated_time" content="2020-04-09T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PCA">
+<meta name="twitter:description" content="PCA原理PCA全称为Principal Component Analysis，主成分分析。什么叫做主成分呢，主成分跟降维什么关系？ PCA的思路就是进行线性变换，对原始特征空间进行重构，在一组线性无关的标准正交基下，挑选一部分最重要的维度。 基础知识假设有n个样本，每个样本的维度为p，则  x=(x_1,x_2,\dots,x_n)^T= \begin{pmatrix}x_1^T\\x_2^T\">
+<meta name="twitter:image" content="https://i.stack.imgur.com/9vENg.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/04/03/PCA/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>PCA | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/03/PCA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PCA
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-03 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-03T00:00:00+08:00">2020-04-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-04-10 00:00:00" itemprop="dateModified" datetime="2020-04-10T00:00:00+08:00">2020-04-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="PCA原理"><a href="#PCA原理" class="headerlink" title="PCA原理"></a>PCA原理</h1><p>PCA全称为Principal Component Analysis，主成分分析。什么叫做主成分呢，主成分跟降维什么关系？</p>
+<p>PCA的思路就是进行线性变换，对原始特征空间进行重构，在一组线性无关的标准正交基下，挑选一部分最重要的维度。</p>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>假设有n个样本，每个样本的维度为p，则</p>
+<script type="math/tex; mode=display">
+x=(x_1,x_2,\dots,x_n)^T=
+\begin{pmatrix}x_1^T\\x_2^T\\\dots\\x_n^T\end{pmatrix}
+=\begin{pmatrix}x_{11}& x_{12}&\dots& x_{1p}\\x_{21}&x_{22}&\dots&x_{2p}\\\dots&\dots&\dots&\dots\\x_{n1}&x_{n2}&\dots&x_{np}\end{pmatrix}</script><ul>
+<li><p>样本均值：$\mu=\frac{1}{n}\sum\limits_{i=1}^n x_i$</p>
+</li>
+<li><p>样本协方差矩阵covariance matrix：$S=\frac{1}{n}\sum\limits_{i=1}^n(x_i-\mu)(x_i-\mu)^T$，$x_i$是px1维的，协方差矩阵维pxp维的。</p>
+</li>
+</ul>
+<p>按照[1]和[2]的思路，我们从两个角度来解释PCA：最大投影方差&amp;最小构建误差</p>
+<h2 id="最大投影方差"><a href="#最大投影方差" class="headerlink" title="最大投影方差"></a>最大投影方差</h2><p>为什么是最大化方差？有种说法是信号的方差较大、噪声的方差较小。最大化方差是把有用的“信号”信息提取出来，舍弃没用的“噪声”信息。样本在某个基方向上的坐标为投影，投影的方差就是在某个基方向上坐标的方差。投影方差达到最大的前k个基方向，为前k个主成分。</p>
+<blockquote>
+<p> [5]降维问题的优化目标：将一组p维向量降为k维，其目标是选择k个单位正交基，使得原始数据变换到这组基上后，各字段两两间协方差为0，而字段的方差则尽可能大。</p>
+</blockquote>
+<p>假设某一个基方向为$w$，样本在这个基方向上的投影为$w^Tx$（即在$w$方向上的坐标）。 样本在这个方向投影的方差可表示为</p>
+<script type="math/tex; mode=display">
+Var(w^Tx) = \frac{1}{n}\sum\limits_{i=1}^n(w^Tx_i-\mu)^2</script><p>另外，PCA有一个必须的步骤是中心化，即样本在原坐标下减去均值$\mu=\frac{1}{n}\sum\limits_{i} x_i$。所以样本在线性变换之后的方差可表示为</p>
+<script type="math/tex; mode=display">
+Var(w^Tx) = \frac{1}{n}\sum\limits_{i=1}^n(w^Tx_i)^2=w^T(\frac{1}{n}\sum\limits_{i=1}^n x_ix_i^T)w=w^TSw</script><p>最大投影方差变成了寻找基向量$w$（且单位长度$w^Tw=1$），使得$w=\arg\max w^TSw$. 转化为一个优化问题：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\max\limits_{w} & w^TSw \\
+s.t. & ||w||=1
+\end{array}</script><p>使用拉格朗日乘子法将其变为无约束优化问题：</p>
+<script type="math/tex; mode=display">
+L(w,\lambda) = w^TSw -\lambda(1-w^Tw)\\
+\frac{\partial L}{\partial w} = 2Sw - 2\lambda w=0\\
+Sw=\lambda w</script><p>可以发现，求极值等价于求<strong>协方差矩阵S</strong>的特征值和特征向量。如果基向量$w$为极值，同时也是S的特征向量，投影到该基向量的方差取得极大值，值为$w^TSw=w^T\lambda w=\lambda$. 我们要找的最大投影方差，基向量就是样本协方差矩阵的特征向量（i.e.一个主成分），投影方差的值就是该特征向量对应的特征值。</p>
+<blockquote>
+<p>实对称矩阵的不同特征值对应的特征向量互相正交。n阶实对称矩阵A必可对角化，且对角阵上的元素即为矩阵本身特征值。n*n的实对称矩阵一定存在 n个相互正交的特征向量</p>
+</blockquote>
+<p>将特征值按照从大到小排列，选择前k个特征值对应的特征向量（正交化），这就是k个主成分，用这k个主成分来表示样本，达到降维的目的（$p\rightarrow k$）。[3]第一个基方向是原始数据中方差最大的方向，第二个基方向的选取是与第一个基方向正交的平面中方差最大的，第三个轴是与第1,2个轴正交的平面中方差最大的…</p>
+<h3 id="特征值重数与主成分"><a href="#特征值重数与主成分" class="headerlink" title="特征值重数与主成分"></a>特征值重数与主成分</h3><p>关于S的特征值的重数可能大于1，即同一个特征值会对应多个线性无关的特征向量。PCA选择前k个特征向量的时候，是包括特征值的重数还是选择k个不同取值的特征值？</p>
+<p>PCA在选择主成分的时候，对选择对应特征值最大的k个特征向量，有的特征向量对应相同的特征值，这些特征向量可以都被选择。但是，实对称矩阵相同特征值对应的特征向量是线性无关，但未必正交。所以需要对相同特征值的特征向量做正交化，才可以作为基方向被PCA选择。这里不多做展开，可以参考[3, 4]：</p>
+<blockquote>
+<p>[4] 任意的 N×N 实对称矩阵都有 N 个线性无关的特征向量。并且这些特征向量都可以正交单位化而得到一组正交且模为 1 的向量。故实对称矩阵 A 可被分解成$\mathbf{A}=\mathbf{Q}\mathbf{\Lambda}\mathbf{Q}^{T}$，其中其中 Q为正交矩阵，Λ 为实对角矩阵。</p>
+</blockquote>
+<p>[3]把实对称矩阵A做特征值分解，Q就是A的（正交的）特征向量所组成的矩阵，Λ对角线上的元素就是A的特征值。A经过Q变成对角阵，也呼应了前文引用[5]中优化目标：<strong>字段内的方差最大化，字段间的协方差为0. </strong></p>
+<h3 id="为什么要中心化和scaling"><a href="#为什么要中心化和scaling" class="headerlink" title="为什么要中心化和scaling"></a>为什么要中心化和scaling</h3><p>中心化是每个特征减去这个特征的均值。[6-1]协方差矩阵的计算，本身就蕴含着中心化的思想$S=\frac{1}{n}\sum\limits_{i=1}^n(x_i-\mu)(x_i-\mu)^T$，分母是n-1还是n不重要。中心化对协方差矩阵没有影响。不过：</p>
+<blockquote>
+<p>[6-2] principal components inevitably come through the origin. If you forget to center your data, the 1st principal component may pierce the cloud not along the main direction of the cloud, and will be (for statistics purposes) misleading.</p>
+<p><img src="https://i.stack.imgur.com/9vENg.jpg" alt="before and after centering"></p>
+</blockquote>
+<p>如果使用特征值分解的求解方法，不提前做中心化，会得到不同的主成分，因为主成分必然经过远点，这会产生误差。</p>
+<p>（以下是自己的理解）最大化投影误差$\frac{1}{n}w^Tx^Txw$，如果没有中心化是$\frac{1}{n}w^T(x-\mu)^T(x-\mu)w$，虽然$x$和$x-\mu$是相同的，看似得到的w是一样的，但是这个$w$是在不同的坐标下，一个是中心化之后，一个是之前，这导致了得到的特征向量不同。</p>
+<blockquote>
+<p>[6-3] 从线性变换的本质来说，PCA就是在线性空间做一个旋转（数据矩阵右乘协方差矩阵的特征向量矩阵），然后取低维子空间（实际上就是前n_components个特征向量张成的子空间）上的投影点来代替原本的点，以达到降维的目的，注意我说的，只做了旋转，没有平移，所以首先你要保证原本空间里的点是以原点为中心分布的，这就是zero mean的目的。</p>
+</blockquote>
+<p>Scaling同样也是推荐的preprocessing步骤，因为feature的取值范围可能相差很大，这会影响有些基方向的方差大小，如果没有做标准化，PCA算出的向量和长轴会有偏差。<a href="http://sofasofa.io/forum_main_post.php?postid=1000375" target="_blank" rel="noopener">PCA降维之前为什么要先标准化？</a></p>
+<h3 id="为什么要用协方差"><a href="#为什么要用协方差" class="headerlink" title="为什么要用协方差"></a>为什么要用协方差</h3><p>[7] 协方差矩阵已经中心化过；协方差矩阵$\frac{1}{n}xx^T$是对称矩阵，可以转化为协方差矩阵的特征向量求解，而且主成分就是协方差矩阵特征值最大的那几个特征向量。</p>
+<h3 id="为什么基向量是单位长度"><a href="#为什么基向量是单位长度" class="headerlink" title="为什么基向量是单位长度"></a>为什么基向量是单位长度</h3><p>内积只有在某个向量为单位向量的时候可称作是投影，一般性的$a^Tb=|a||b|cos\theta$为a的投影*b的长度。PCA是最大投影方差，所以要规定基向量为单位向量。</p>
+<p>PCA算法是其中一个步骤是对协方差进行特征值分解$\mathbf{A}=\mathbf{Q}\mathbf{\Lambda}\mathbf{Q}^{T}$，矩阵Q就是一个正交向量构成的矩阵。可将矩阵Q单位化，就得到对应的基向量长度为1了。</p>
+<h2 id="最小重建cost"><a href="#最小重建cost" class="headerlink" title="最小重建cost"></a>最小重建cost</h2><p><img src="/2020/04/03/PCA/reconstruction_error.png" alt="reconstruction error"></p>
+<p>以上是一个2维的例子，左图为原始的5个样本点，直线方向是第一个主成分；如果降维只用这个主成分表示样本，从2维降至1维，即为右图，5个样本点分布在这条直线上。降维前后，样本的信息必然有所损失，PCA用欧式距离来衡量这个损失。</p>
+<p>通过对协方差矩阵进行特征值分解，得到了p组特征值和特征向量$u<em>1, u_2, \dots, u_p$，选择前k大的特征向量（即k个正交的单位向量），从p维降到k维。在全部p个单位正交向量下，可以“无损失”的重构样本$x_i = \sum\limits</em>{j=1}^p\alpha<em>{ij}u</em>{j}=\sum\limits<em>{j=1}^p(x_i^Tu_j)u_j$. 如果降维的重构样本$\hat{x}_i = \sum\limits</em>{j=1}^k\alpha<em>{ij}u</em>{j}=\sum\limits_{j=1}^k(x_i^Tu_j)u_j$，原始的样本跟重构之后的样本的差距为</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+Cost & = \frac{1}{n}\sum\limits_{i=1}^n||x_i-\hat{x}_i||^2\\
+ & =\frac{1}{n}\sum\limits_{i=1}^n ||\sum\limits_{j=k+1}^p(x_i^Tu_j)u_j||^2\\
+ & =\frac{1}{n}\sum\limits_{i=1}^n\sum\limits_{j=k+1}^pu_j^Tx_ix_i^Tu_j\\
+ & =\sum\limits_{j=k+1}^pu_j^T(\frac{1}{n}\sum\limits_{i=1}^nx_ix_i^T)u_j\\
+ & =\sum\limits_{j=k+1}^pu_j^TSu_j\\
+\end{array}</script><p>同样可以转化为一个极小化的优化问题</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\min & \sum\limits_{j=k+1}^pu_j^TSu_j\\
+s.t. & u_j^Tu_j=1
+\end{array}</script><p>因为单位正交向量线性无关，所以向量可以逐个进行优化。有最大投影方差的推导可知，$\sum\limits<em>{j=k+1}^pu^T_jSu_j=\sum\limits</em>{j=k+1}^p\lambda<em>j$，忽略了最小特征值对应的特征向量所在的维度，重建样本与原始样本的差距为$\sum\limits</em>{j=1k+1}^p\lambda$，最小重建cost目的是最小化这个差距。</p>
+<p><strong>总结：</strong>最大投影方差是找主成分， 最小重建cost是维度缩减。这两个角度本质上是一样的，最小重建cost与降维的思想更加贴近。 </p>
+<h2 id="SVD与PCA"><a href="#SVD与PCA" class="headerlink" title="SVD与PCA"></a>SVD与PCA</h2><p>前文中的特征值分解是针对样本数据x经过中心化之后的协方差矩阵$S=\frac{1}{n}xx^T=\mathbf{Q}\mathbf{\Lambda}\mathbf{Q}^{T}$，SVD分解是针对中心化之后的样本数据$x=U\Sigma V^T$，两者对应关系为</p>
+<script type="math/tex; mode=display">
+\frac{1}{n}xx^T=\frac{1}{n}(U\Sigma V^T)(V\Sigma U^T)=\frac{1}{n}U\Sigma^2U^T</script><p>所以$U=Q, ~\frac{1}{n}\Sigma^2=\Lambda$即协方差矩阵对角化之后的特征值矩阵。sklearn的PCA实现是使用SVD分解而不是特征值分解。[9]协方差的特征值分解对引起精度的损失，所以SVD分解更好。</p>
+<h1 id="PCA算法步骤"><a href="#PCA算法步骤" class="headerlink" title="PCA算法步骤"></a>PCA算法步骤</h1><p>输入：数据集$x={x_1,x_2,\dots,x_n}$ ，$x_i$的维度为p维，需要降到k维。</p>
+<p>1) 去平均值(即去中心化)，即每个<strong>特征</strong>减去各自的平均值。</p>
+<p>2) 计算协方差矩阵$S=\frac{1}{n}xx^T$,注：这里除或不除样本数量n或n-1,其实对求出的特征向量没有影响。</p>
+<p>3) 用特征值分解方法求协方差矩阵$S=\frac{1}{n}xx^T$的特征值与特征向量。</p>
+<p>4) 对特征值从大到小排序，选择其中最大的k个。然后将其对应的k个特征向量分别作为行向量组成特征向量矩阵P。</p>
+<p>5) 将数据转换到k个特征向量构建的新空间中，即Y=Px。</p>
+<h1 id="PCA主成分维度怎么确定"><a href="#PCA主成分维度怎么确定" class="headerlink" title="PCA主成分维度怎么确定"></a>PCA主成分维度怎么确定</h1><p>使用PCA从p维降至k维，那k取多少合适呢？</p>
+<p>关于最优的k选取，[8-1]的总结比较全面：</p>
+<blockquote>
+<ol>
+<li><p>如果是为了数据可视化，可以降到1维（线），2维（平面），或者3维（立体）。</p>
+</li>
+<li><p>如果是为了建立预测模型而降维，比较常用的方法是看多少个主成分解释了多少百分比的方差，常用的比如说99%,95%,90%。</p>
+</li>
+<li>另一个方法是Kaiser’s Rule，保留所有奇异值大于1的</li>
+<li>还有个类似elbow method的方法，画出主成分的个数和解释方差百分比的曲线，找出手肘的那个点。</li>
+</ol>
+</blockquote>
+<p>关于上面第2点，可以参考[8-2]中的一个引用cs229的回答：选择k使得（重建cost / total variation）达到最小或者达到一个阈值。这最终可转化为协方差矩阵对角化之后，对角线上元素的计算。</p>
+<p>假设阈值设为10%，要找到最小的k，使得</p>
+<script type="math/tex; mode=display">
+\frac{\frac{1}{n}\sum\limits_{i=1}^n||\sum\limits_{j=1}^p(x_i^Tu_j)u_j-\sum\limits_{j=1}^k(x_i^Tu_j)u_j||^2}{\frac{1}{n}\sum\limits_{i=1}^n||\sum\limits_{j=1}^p(x_i^Tu_j)u_j||^2}\le 10\%</script><p>即</p>
+<script type="math/tex; mode=display">
+1 - \frac{\sum\limits_{i=1}^k\lambda_i}{\sum\limits_{i=1}^p\lambda_i}\le 10\%</script><h1 id="优劣"><a href="#优劣" class="headerlink" title="优劣"></a>优劣</h1><p>优点：不受样本label的限制，以方差衡量信息；各个主成分之间正交，消除原始数据特征的相关性；计算简单，主要运算是特征值分解</p>
+<p>局限：基于线性变换的降维方法；主成分分析基于Euclidean distance</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<li><p><a href="https://www.bilibili.com/video/BV1vW411S7tH?from=search&amp;seid=15511856047644180318" target="_blank" rel="noopener">机器学习-白板推导系列(五)-降维（Dimensionality Reduction）</a></p>
+</li>
+<li><p><a href="https://www.zhihu.com/question/30094611/answer/275172932" target="_blank" rel="noopener">主成分分析PCA算法：为什么去均值以后的高维矩阵乘以其协方差矩阵的特征向量矩阵就是“投影”？</a></p>
+</li>
+<li><p><a href="https://zhuanlan.zhihu.com/p/37777074" target="_blank" rel="noopener">主成分分析（PCA）原理详解</a></p>
+</li>
+<li><p><a href="https://zh.wikipedia.org/wiki/%E7%89%B9%E5%BE%81%E5%88%86%E8%A7%A3" target="_blank" rel="noopener">特征分解</a></p>
+</li>
+<li><p><a href="http://blog.codinglabs.org/articles/pca-tutorial.html" target="_blank" rel="noopener">PCA的数学原理</a></p>
+</li>
+<li><p><a href="https://stats.stackexchange.com/a/189902" target="_blank" rel="noopener">How does centering make a difference in PCA (for SVD and eigen decomposition)?</a></p>
+<p><a href="https://stats.stackexchange.com/questions/22329/how-does-centering-the-data-get-rid-of-the-intercept-in-regression-and-pca" target="_blank" rel="noopener">How does centering the data get rid of the intercept in regression and PCA?</a></p>
+<p><a href="https://www.zhihu.com/question/40956812" target="_blank" rel="noopener">主成分分析PCA算法：为什么要对数据矩阵进行均值化</a></p>
+</li>
+<li><p><a href="https://www.zhihu.com/question/39234760/answer/80323126" target="_blank" rel="noopener">求pca的时候，能不能不用协方差矩阵？</a></p>
+</li>
+<li><p><a href="http://sofasofa.io/forum_main_post.php?postid=1000776" target="_blank" rel="noopener">利用PCA降维，降到几维比较合适？</a></p>
+<p><a href="https://www.zhihu.com/question/21980732" target="_blank" rel="noopener">主成分分析（PCA）主成分维度怎么选择？</a></p>
+</li>
+<li><p><a href="https://math.stackexchange.com/a/3871" target="_blank" rel="noopener">What is the intuitive relationship between SVD and PCA?</a></p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/降维/" rel="tag"># 降维</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/19/xgboost/" rel="next" title="xgboost">
+                <i class="fa fa-chevron-left"></i> xgboost
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA原理"><span class="nav-number">1.</span> <span class="nav-text">PCA原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识"><span class="nav-number">1.1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最大投影方差"><span class="nav-number">1.2.</span> <span class="nav-text">最大投影方差</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特征值重数与主成分"><span class="nav-number">1.2.1.</span> <span class="nav-text">特征值重数与主成分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要中心化和scaling"><span class="nav-number">1.2.2.</span> <span class="nav-text">为什么要中心化和scaling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要用协方差"><span class="nav-number">1.2.3.</span> <span class="nav-text">为什么要用协方差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么基向量是单位长度"><span class="nav-number">1.2.4.</span> <span class="nav-text">为什么基向量是单位长度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最小重建cost"><span class="nav-number">1.3.</span> <span class="nav-text">最小重建cost</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVD与PCA"><span class="nav-number">1.4.</span> <span class="nav-text">SVD与PCA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA算法步骤"><span class="nav-number">2.</span> <span class="nav-text">PCA算法步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA主成分维度怎么确定"><span class="nav-number">3.</span> <span class="nav-text">PCA主成分维度怎么确定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优劣"><span class="nav-number">4.</span> <span class="nav-text">优劣</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共33.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

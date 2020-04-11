@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
+<meta name="keywords" content="SVM,Loss函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软间隔与hinge loss">
+<meta property="og:url" content="http://yoursite.com/2018/10/23/hinge/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/outlier.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/violation2.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/C.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/10/23/hinge/KKT.jpg">
+<meta property="og:updated_time" content="2018-11-17T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="软间隔与hinge loss">
+<meta name="twitter:description" content="从hard margin到soft margin之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个o">
+<meta name="twitter:image" content="http://yoursite.com/2018/10/23/hinge/outlier.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/23/hinge/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>软间隔与hinge loss | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/23/hinge/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">软间隔与hinge loss
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-10-23 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-23T00:00:00+08:00">2018-10-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-18 00:00:00" itemprop="dateModified" datetime="2018-11-18T00:00:00+08:00">2018-11-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="从hard-margin到soft-margin"><a href="#从hard-margin到soft-margin" class="headerlink" title="从hard margin到soft margin"></a>从hard margin到soft margin</h1><p>之前对SVM的讨论，都是假设数据是线性可分的。通过使用Kernel trick可以将特征映射到更高维的空间，也可以增加数据线性可分的可能性（likelihood），但是我们不能保证Kernel trick一直都能起作用。<br>另一方面，即使这个数据是线性可分的，可能存在某些噪声（outlier）点，恰巧是支持向量，从而干扰了分割超平面的选择。如下图，某个outlier干扰了分割超平面：<br><img src="/2018/10/23/hinge/outlier.jpg" alt="outlier.jpg"></p>
+<p>为了让算法能够分割线性不可分的数据，并对outlier不那么敏感，我们引入软间隔（soft margin）：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\min\limits_{w,b} & \frac{1}{2}||w||^2 + C\sum\limits_{i=1}^m\xi_i \\
+\text{s.t.}       & y_i(w^Tx_i + b)\ge 1 - \xi_i, ~~~i=1,\dots,m \\
+                  & \xi_i\ge0, ~~~i=1,\dots,m.
+\end{array}</script><p>$\xi_i$的存在使得点的margin可以小于1. 如果某个点的margin是$1-\xi_i$，则在目标函数上要增加$C\xi_i$的代价。<br>注意，margin是区分正负的：</p>
+<ul>
+<li>如果$1-\xi_i\ge 0$，说明这个点分类正确，但是在支持向量与分割超平面之间；<br><img src="/2018/10/23/hinge/violation.jpg" alt="violation.jpg"></li>
+<li>如果$1-\xi_i&lt; 0$，说明这个点已经越过分割超平面，跑到河对岸去了- -!<br><img src="/2018/10/23/hinge/violation2.jpg" alt="violation2.jpg"></li>
+</ul>
+<p>参数$C$用来控制目标函数两项的相对权重：</p>
+<ol>
+<li>$\min ||w||^2$的目标是最大化margin，</li>
+<li>$\min \sum\limits_{i=1}^m\xi_i$的目标是尽可能多的找到margin至少为1的点，即正确分类的非噪声点。</li>
+</ol>
+<p>参考资料1：解释了不同的C对模型的影响。参数C越大，目标函数越不能容忍错误分类的点，因为这些点对应的$\xi_i$会比较大，所以分割超平面会容易过拟合。<br>参考资料2：大C：我们宁愿边界小一点也要尽量不犯错误（$\xi$小一点）。小C：我们宁愿犯一点错误（$\xi$大一点）也要边界胖一点。<br><img src="/2018/10/23/hinge/C.jpg" alt="C.jpg"></p>
+<h1 id="软间隔的拉格朗日对偶问题"><a href="#软间隔的拉格朗日对偶问题" class="headerlink" title="软间隔的拉格朗日对偶问题"></a>软间隔的拉格朗日对偶问题</h1><p>使用拉格朗日乘子法将约束条件放到目标函数上</p>
+<script type="math/tex; mode=display">\mathcal{L}(w,b,\xi,\alpha,r) = \frac{1}{2}||w||^2 + C\sum\limits_{i=1}^m\xi_i - \sum\limits_{i=1}^m\alpha_i[y_i(w^Tx_i+b)-1+\xi_i] - \sum\limits_{i=1}^mr_i\xi_i</script><p>这里<script type="math/tex">\alpha_i</script>和<script type="math/tex">r_i</script>是拉格朗日乘子，然后原问题等价于<script type="math/tex">\min\max\mathcal{L}</script>，其拉格朗日对偶是<script type="math/tex">\max\limits_{\alpha\ge 0,r\ge 0}\min\limits_{w,b,\xi}\mathcal{L}</script>.<br>分别求解关于$w,b,\xi$导数为0的条件：</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\frac{\partial\mathcal{L}}{\partial w} = 0, \\
+\frac{\partial\mathcal{L}}{\partial b} = 0, \\
+\frac{\partial\mathcal{L}}{\partial \xi_i} = 0
+\end{array}</script><p>得到<script type="math/tex">w = \sum\limits_{i=1}^m\alpha_i y_ix_i,~~~ \sum\limits_{i=1}^m\alpha_i y_i=0, ~~~C-\alpha_i-r_i=0</script>. 最终得到</p>
+<script type="math/tex; mode=display">\begin{array}{rl}
+\max\limits_{\alpha} & \sum\limits_{i=1}^m\alpha_i -  \frac{1}{2}\sum\limits_{j,j=1}^my_iy_j\alpha_i\alpha_j\langle x_i,x_j\rangle \\
+s.t.    & 0\le\alpha_i\le C, ~~~i=1,\dots, m \\
+        & \sum\limits_{i=1}^m\alpha_iy_i = 0
+\end{array}</script><p>与hard margin的情况一样，$w = \sum\limits_{i=1}^m\alpha_i y_ix_i$，所以通过对偶形式求得$\alpha$之后，可以求出$w$来做预测。有趣的是，软间隔加入的$\mathcal{l}_1$正则项$C\sum\xi_i$在对偶问题上只是改变了约束条件，从$0\le\alpha_i$变成$0\le\alpha_i\le C$.</p>
+<h1 id="软间隔的KKT条件"><a href="#软间隔的KKT条件" class="headerlink" title="软间隔的KKT条件"></a>软间隔的KKT条件</h1><p>软间隔情形，KKT条件中的松弛互补条件为</p>
+<script type="math/tex; mode=display">\begin{array}{c}
+\alpha_i(y_i(w^Tx_i+b)-1+\xi_i)=0 \\
+r_i\xi_i = 0
+\end{array}</script><ol>
+<li>如果$\alpha_i=0$，由$\frac{\partial\mathcal{L}}{\partial \xi_i} = 0$得到$C-\alpha_i-r_i=0$，从而$r_i=C&gt;0$，所以$\xi_i=0$. 因为$\alpha_i=0, \xi_i=0$，所以$y_i(w^Tx_i+b)\ge 1$，即样本要么是支持向量，要么样本被正确分类。</li>
+<li>如果$0&lt;\alpha_i&lt;C$，所以$r_i\neq 0$，所以有$\xi_i=0$.因此$y_i(w^Tx_i+b) = 1$，即该样本点为支持向量。</li>
+<li>如果$\alpha_i=C$, 则$y_i(w^Tx_i+b)=1-\xi_i\le 1$，说明这个样本点要么是噪声点，要么是误分类点：<ul>
+<li>如果$0&lt;\xi_i&lt;1$，该点被正确分类，但在超平面与自己类别的支持向量之间（噪声点）</li>
+<li>如果$\xi_i=1$， 该点在分割超平面上，无法被正确分类</li>
+<li>如果$\xi_i&gt;1$，该点是误分类点。</li>
+</ul>
+</li>
+</ol>
+<p>在证明SMO算法收敛性时会用到软间隔的KKT条件。<br><img src="/2018/10/23/hinge/KKT.jpg" alt="KKT"><br>图片来自于参考资料3.1.</p>
+<h1 id="hinge-loss"><a href="#hinge-loss" class="headerlink" title="hinge loss"></a>hinge loss</h1><p>Hinge loss: $L(t) = \max(0, 1-t)$.</p>
+<ol>
+<li>应用到SVM上，损失函数可以写成<script type="math/tex; mode=display">\min \frac{1}{m}\sum\limits_{i=1}^m\max(0, 1 - y_i(w^Tx_i+b)) + \frac{\lambda}{2}||w||_2^2</script></li>
+<li>之前硬间隔的SVM可写成：<script type="math/tex; mode=display">\begin{array}{rl}
+\min & \frac{1}{2}||w||_2^2 \\
+\text{s.t.} & y_i(w^Tx_i +b) \ge 1, ~~~i=1,\dots,m
+\end{array}</script></li>
+<li>软间隔的SVM可写成：<script type="math/tex; mode=display">\begin{array}{rl}
+\min & \frac{1}{2}||w||_2^2 + \frac{C}{m}\sum\limits_{i=1}^m\xi_i \\
+\text{s.t.} & y_i(w^Tx_i +b) \ge 1-\xi_i, ~~~i=1,\dots,m \\
+& \xi_i\ge 0, ~~~i=1,\dots,m
+\end{array}</script></li>
+</ol>
+<p><strong>硬间隔SVM和软间隔SVM形式都可以写成损失函数为Hinge loss的形式。</strong> 推导过程见参考资料3.1.</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="https://chrisalbon.com/machine_learning/support_vector_machines/svc_parameters_using_rbf_kernel/" target="_blank" rel="noopener">SVC Parameters When Using RBF Kernel</a></li>
+<li><a href="https://blog.csdn.net/qq_34993631/article/details/79340747" target="_blank" rel="noopener">机器学习之软间隔支持向量机（机器学习技法）</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/36379394" target="_blank" rel="noopener">攀登传统机器学习的珠峰-SVM (中)</a><br> <a href="https://zhuanlan.zhihu.com/p/36535299" target="_blank" rel="noopener">攀登传统机器学习的珠峰-SVM (下)</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SVM/" rel="tag"># SVM</a>
+          
+            <a href="/tags/Loss函数/" rel="tag"># Loss函数</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/21/kernel/" rel="next" title="Kernel Trick（核技巧）">
+                <i class="fa fa-chevron-left"></i> Kernel Trick（核技巧）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/23/use_svm/" rel="prev" title="SVM的使用">
+                SVM的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从hard-margin到soft-margin"><span class="nav-number">1.</span> <span class="nav-text">从hard margin到soft margin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软间隔的拉格朗日对偶问题"><span class="nav-number">2.</span> <span class="nav-text">软间隔的拉格朗日对偶问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软间隔的KKT条件"><span class="nav-number">3.</span> <span class="nav-text">软间隔的KKT条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hinge-loss"><span class="nav-number">4.</span> <span class="nav-text">hinge loss</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共33.8k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
