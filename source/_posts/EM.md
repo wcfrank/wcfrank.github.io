@@ -1,7 +1,7 @@
 ---
 title: EM算法
 date: 2020-07-19
-updated: 2020-07-19
+updated: 2020-07-30
 categories:
     - 机器学习
 tags:
@@ -116,6 +116,19 @@ $$
 \end{array}
 $$
 $\frac{p(x,z|\theta)}{q(z)}$为常数时等号成立，可证明$q(z)=p(z|x,\theta)$.
+
+## Q函数与ELBO
+
+在证明EM算法收敛性的时候，有提到过Q函数$Q(\theta,\theta^{(t)})=\int_z p(z|x,\theta^{(t)})\cdot \log p(x,z|\theta)dz$. 很多EM算法的E-step是计算Q函数，M-step是极大化Q函数。实际上，Q函数与ELBO是一致的：
+$$
+\begin{array}{rl}
+ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
+& = \int_zp(z|x,\theta^{(t)})\cdot\log\frac{p(x,z|\theta)}{p(z|x,\theta^{(t)})}dz\\
+& = \int_zp(z|x,\theta^{(t)})\cdot\log p(x,z|\theta)dz - \int_zp(z|x,\theta^{(t)})\cdot\log p(z|x,\theta^{(t)})\\
+& = Q(\theta, \theta^{(t)}) + const
+\end{array}
+$$
+本文一开始的EM算法的公式$(1)$，用的就是Q函数的形式。
 
 # 广义EM
 
