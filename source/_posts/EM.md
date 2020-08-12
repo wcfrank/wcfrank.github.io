@@ -1,12 +1,12 @@
 ---
 title: EM算法
 date: 2020-07-19
-updated: 2020-07-30
+updated: 2020-08-12
 categories:
     - 机器学习
 tags:
     - EM
-    - 概率模型
+    - 混合模型
 mathjax: true
 ---
 
@@ -144,6 +144,14 @@ EM算法必须要求后验$p(z|x,\theta)$是tractable的，这样才可能$q(z)=
 **ELBO的分解：**
 
 ELBO = $E_{q(z)}[\log p(x,z|\theta) - \log q(z)]=E_q[\log p(x,z|\theta)]+ H(q)$
+
+**图解：**
+
+最后，引用一张PRML里的图（书中Figure 9.14）解释EM算法的迭代过程
+
+<img src="EM/EM_iteration.png" alt="computing lower bound on the log-likelihood" style="zoom:50%;" />
+
+这里的$L(q,\theta)$就是ELBO，所以EM算法的实质就是每次迭代尽可能的让ELBO增大，$\log p(X|\theta)$增大。不过，**EM算法不能保证找到全局最优解**。
 
 
 
