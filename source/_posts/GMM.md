@@ -17,9 +17,9 @@ mathjax: true
 
 - 从混合模型角度：除了观测变量$X$；引入隐变量$Z$，$Z$代表对应的样本$X$是属于哪一个高斯分布，GMM的$Z$是离散的随机变量，概率分布为（以下$\sum\limits_{k=1}^Kp_k=1$）
 
-  | Z    | C_1  | C_2  | ...  | C_K  |
-  | ---- | ---- | ---- | ---- | ---- |
-  | p(z) | p_1  | p_2  | ...  | p_K  |
+| Z    | C_1  | C_2  | ...  | C_K  |
+| ---- | ---- | ---- | ---- | ---- |
+| p(z) | p_1  | p_2  | ...  | p_K  |
 
   如果GMM由K个高斯分布构成，每个样本x既可能属于分布$C_1$, ..., 也可能属于$C_K$，只不过属于不同高斯分布的概率不同。
 
@@ -27,7 +27,11 @@ mathjax: true
   1. 首先按照概率$p_k$选择隐变量Z的分类，假设选择的结果是第h类$Z_i=C_h$，
   2. 然后用第h类对应的高斯分布$N(\mu_h,\Sigma_h)$采样得到样本$x_i$
 
-x的概率密度函数：$p(x) = \sum\limits_{Z}p(x,z) = \sum\limits_{k=1}^Kp(x,z=C_k) = \sum\limits_{k=1}^Kp(z=C_k)p(x|z=C_k)=\sum\limits_{k=1}^Kp_kN(x|\mu_k, \Sigma_k)$.  可以发现混合模型角度与几何角度是一致的。
+x的概率密度函数：
+$$
+p(x) = \sum\limits_{Z}p(x,z) = \sum\limits_{k=1}^Kp(x,z=C_k) = \sum\limits_{k=1}^Kp(z=C_k)p(x|z=C_k)=\sum\limits_{k=1}^Kp_kN(x|\mu_k, \Sigma_k)
+$$  
+可以发现混合模型角度与几何角度是一致的。
 
 # GMM的求解
 
@@ -138,5 +142,6 @@ $$
 # References
 
 1. [机器学习-白板推导系列(十一)-高斯混合模型GMM（Gaussian Mixture Model）](https://www.bilibili.com/video/BV13b411w7Xj)
+2. PRML Chapter 9.2
 
 
