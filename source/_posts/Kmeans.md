@@ -94,7 +94,7 @@ $$
 
 GMM的目标是确定三个高斯分布的参数，使得样本点的log-likelihood达到最大；而Kmeans的目标是确定$\mu_1,\mu_2,\mu_3$的值，使得样本点到最近$\mu$值的距离之和最小。从图容易理解，Kmeans里面参数$p$不再重要，只需要找到最佳的参数$\mu$.
 
-![GMM v.s. K-means](/Users/Chao/Machine_Learning/Git_Repository/wcfrank.github.io/source/_posts/Kmeans/GMM v.s. K-means.png)
+![GMM v.s. K-means](Kmeans/GMM v.s. K-means.png)
 
 
 
@@ -105,5 +105,5 @@ GMM的目标是确定三个高斯分布的参数，使得样本点的log-likelih
 # References
 
 1. [K-Means聚类算法原理 Pinard](https://www.cnblogs.com/pinard/p/6164214.html)
-
 2. PRML Chapter 9.3.2
+3. [请问如何用数学方法证明K-means是EM算法的特例？](https://www.zhihu.com/question/49972233)
