@@ -7,7 +7,7 @@ categories:
 tags:
     - EM
     - 混合模型
-	- 聚类
+    - 聚类
 mathjax: true
 ---
 
