@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Kmeans算法原理Kmeans算法思想：按照样本间距离大小，划分为K个簇，使得每个簇内部的样本点尽量紧密，簇之间的样本点离得尽量远。 假设簇的划分为$(C1,C_2,\dots,C_K)$，Kmeans的目标是最小化平方误差$\sum\limits{i=1}^n\sum\limits{x_i\in C_k}||x_i-\mu_k||_2^2$，其中$\mu_k=\frac{1}{|C_k|}\s">
+<meta name="keywords" content="EM,混合模型,聚类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="K-means">
+<meta property="og:url" content="http://yoursite.com/2020/08/16/Kmeans/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="Kmeans算法原理Kmeans算法思想：按照样本间距离大小，划分为K个簇，使得每个簇内部的样本点尽量紧密，簇之间的样本点离得尽量远。 假设簇的划分为$(C1,C_2,\dots,C_K)$，Kmeans的目标是最小化平方误差$\sum\limits{i=1}^n\sum\limits{x_i\in C_k}||x_i-\mu_k||_2^2$，其中$\mu_k=\frac{1}{|C_k|}\s">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/08/16/Kmeans/GMM%20v.s.%20K-means.png">
+<meta property="og:updated_time" content="2020-08-15T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="K-means">
+<meta name="twitter:description" content="Kmeans算法原理Kmeans算法思想：按照样本间距离大小，划分为K个簇，使得每个簇内部的样本点尽量紧密，簇之间的样本点离得尽量远。 假设簇的划分为$(C1,C_2,\dots,C_K)$，Kmeans的目标是最小化平方误差$\sum\limits{i=1}^n\sum\limits{x_i\in C_k}||x_i-\mu_k||_2^2$，其中$\mu_k=\frac{1}{|C_k|}\s">
+<meta name="twitter:image" content="http://yoursite.com/2020/08/16/Kmeans/GMM%20v.s.%20K-means.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/08/16/Kmeans/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>K-means | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/16/Kmeans/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">K-means
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-08-16 00:00:00" itemprop="dateCreated datePublished" datetime="2020-08-16T00:00:00+08:00">2020-08-16</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Kmeans算法原理"><a href="#Kmeans算法原理" class="headerlink" title="Kmeans算法原理"></a>Kmeans算法原理</h1><p><strong>Kmeans算法思想：</strong>按照样本间距离大小，划分为K个簇，使得每个簇内部的样本点尽量紧密，簇之间的样本点离得尽量远。</p>
+<p>假设簇的划分为$(C<em>1,C_2,\dots,C_K)$，Kmeans的目标是最小化平方误差$\sum\limits</em>{i=1}^n\sum\limits<em>{x_i\in C_k}||x_i-\mu_k||_2^2$，其中$\mu_k=\frac{1}{|C_k|}\sum\limits</em>{x\in C_k}x$为$C_k$的质心。</p>
+<p><strong>Kmeans算法流程：</strong>（类别数K已经选定）</p>
+<ol>
+<li>初始化簇的划分$C={C_1,C_2,\dots,C_K}$和质心${\mu_1,\mu_2,\dots,\mu_K}$</li>
+<li>对于每一轮迭代：<ol>
+<li>每个计算样本$x<em>i$与$\mu_k$之间的距离$d</em>{ik}=||x<em>i-\mu_k||^2_2$，假如$d</em>{ij} = \min\limits_{k}||x_i-\mu_k||$，将样本归为$C_j=C_j\cup{x_i}$</li>
+<li>得到了新的划分C，重新计算每个簇的质心$\mu<em>k=\frac{1}{|C_k|}\sum\limits</em>{x\in C_k}x$</li>
+</ol>
+</li>
+<li>质心不再发生变化了，说明算法已经收敛，输出最终的划分C</li>
+</ol>
+<h1 id="Kmeans与GMM、EM算法的关系"><a href="#Kmeans与GMM、EM算法的关系" class="headerlink" title="Kmeans与GMM、EM算法的关系"></a>Kmeans与GMM、EM算法的关系</h1><p>最直观的感受是Kmeans算法也是迭代的求解最优的参数（质心）。事实上，Kmeans可以看作是GMM的特殊情况。</p>
+<p>回顾一下GMM（详见GMM博客），引入隐变量Z服从一个离散的分布$p<em>k$， $k=1,\dots,K$，当Z属于第k个取值时，X服从高斯分布$N(\mu_k,\Sigma_k)$，GMM就是找到参数$p_k,\mu_k,\Sigma_k$使得X的log-likelihood$\sum\limits</em>{i}\log p(x|p,\mu,\Sigma)$达到最大。</p>
+<h2 id="GMM如何变成Kmeans？"><a href="#GMM如何变成Kmeans？" class="headerlink" title="GMM如何变成Kmeans？"></a>GMM如何变成Kmeans？</h2><p>将GMM里面每个component的协方差矩阵$\Sigma_k$都变为$\epsilon I$，这样高斯分布的协方差就固定了，不需要再参数估计。</p>
+<p>将$\Sigma_k=\epsilon I$固定之后，会有什么影响？样本点$x_i$的后验概率为</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+p(z_i=C_k|x_i) & = \frac{p(x_i,z_i=C_k)}{p(x_i)}\\
+& = \frac{p_kN(x_i|\mu_k,\Sigma_k)}{\sum\limits_{j=1}^Kp_jN(x_i|\mu_j,\Sigma_j)}\\
+& = \frac{p_k\exp\{-||x_i-\mu_k||^2/2\epsilon\}}{\sum\limits_{j=1}^Kp_j\exp\{-||x_i-\mu_j||^2/2\epsilon\}}
+\end{array}</script><p>当$\epsilon\rightarrow0$，上式分母中最小的一项为$||x_i-\mu_j||^2$，最慢的趋向于0. 所以当$\epsilon\rightarrow0$时，$p(z_i=C_k|x_i)$中其他项都趋近于0，只有$|||x_i-\mu_j||^2$那一项比较大，所以</p>
+<script type="math/tex; mode=display">
+p(z_i=C_k|x_i)=\begin{cases}
+0,~~if~~k\neq j\\
+1,~~if ~~k=j\\
+\end{cases}</script><p>所以，我们得到了样本点分配到簇的hard assignment，正如Kmeans算法，每个样本点会被分配到离它最近的簇。</p>
+<blockquote>
+<p>[2] Means algorithm performs <em>hard</em> assignment of data points to cluster, in which each data point is associated uniquely with one cluster, the EM algorithm makes a <em>soft</em> assignment based on the posterior probabilities.</p>
+</blockquote>
+<h2 id="Kmeans的E-step"><a href="#Kmeans的E-step" class="headerlink" title="Kmeans的E-step"></a>Kmeans的E-step</h2><p>GMM中的E-step是最大化Q函数</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+Q(\theta,\theta^{(t)}) & = \sum\limits_{i=1}^n\sum\limits_{k=1}^{K}\log p_{k}N(x_i|p_{k},\Sigma_k)\cdot p(z_i=C_k|x_i)\\
+& = \sum\limits_{i=1}^n\sum\limits_{k=1}^K(\log p_k + \log N(x_i|p_k,\Sigma_k))\cdot p(z_i=C_k|x_i)
+\end{array}</script><p>当$\epsilon\rightarrow 0$时，如果只考虑参数$\mu$（不考虑参数$p$），把化简之后的后验概率$p(z_i=C_k|x_i)$代入Q函数，得到</p>
+<script type="math/tex; mode=display">
+Q(\mu,\mu^{(t)}) = -\frac{1}{2}\sum\limits_{i=1}^n\sum\limits_{k=1}^{K}||x_i-\mu_k||^2+const</script><p>因此，经过化简之后的GMM的最大化Q函数，实际上就是最小化每个点到最近质心的距离之和，与Kmeans的算法一致。</p>
+<h2 id="Kmeans的M-step"><a href="#Kmeans的M-step" class="headerlink" title="Kmeans的M-step"></a>Kmeans的M-step</h2><p>GMM中参数$\mu$和$p$迭代的公式为：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\mu_k^{(t+1)} & = \frac{\sum\limits_{i=1}^np(z_i=C_k|x_i,\theta^{(t)})x_i}{\sum\limits_{i=1}^np(z_i=C_k|x_i,\theta^{(t)})}\\
+p^{(t+1)}_k & = \frac{1}{n}\sum\limits_{i=1}^np(z_i=C_k|x_i,\theta^{(t)})
+\end{array}</script><p>经过化简之后</p>
+<ul>
+<li><p>$\mu<em>k^{(t+1)} = \sum\limits</em>{i\in C_k}\frac{x_i}{|C_k|}$，即为属于第k个簇的样本均值，与Kmeans算法一致；</p>
+</li>
+<li><p>$p_k^{(t+1)} = \frac{|C_k|}{n}$，即为每个簇占总样本的比例，不过在Kmeans算法里，这个参数不再重要。</p>
+</li>
+</ul>
+<h2 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h2><p>下面2幅图是一维GMM和Kmeans的比较，当$\epsilon\rightarrow0$时，$\epsilon I$表示高斯分布几乎没有variance，GMM从上图变成下图的样子。</p>
+<p>从混合模型的角度出发，GMM的点（例如图中的黄色星星）有一定的概率三种不同的高斯分布，但是Kmeans只有一种选择，那就是离这个点最近的$\mu$. </p>
+<p>GMM的目标是确定三个高斯分布的参数，使得样本点的log-likelihood达到最大；而Kmeans的目标是确定$\mu_1,\mu_2,\mu_3$的值，使得样本点到最近$\mu$值的距离之和最小。从图容易理解，Kmeans里面参数$p$不再重要，只需要找到最佳的参数$\mu$.</p>
+<p><img src="/2020/08/16/Kmeans/GMM v.s. K-means.png" alt="GMM v.s. K-means"></p>
+<p>如果是样本是三维的话，Kmeans由于是GMM的协方差矩阵取$\epsilon I$的特殊情况，所以Kmeans是在球形范围内寻找样本点，GMM是椭球形范围内寻找。</p>
+<p>因为Kmeans是简化之后的GMM，Kmeans的收敛速度更快。</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<li><a href="https://www.cnblogs.com/pinard/p/6164214.html" target="_blank" rel="noopener">K-Means聚类算法原理 Pinard</a></li>
+<li>PRML Chapter 9.3.2</li>
+<li><a href="https://www.zhihu.com/question/49972233" target="_blank" rel="noopener">请问如何用数学方法证明K-means是EM算法的特例？</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/EM/" rel="tag"># EM</a>
+          
+            <a href="/tags/混合模型/" rel="tag"># 混合模型</a>
+          
+            <a href="/tags/聚类/" rel="tag"># 聚类</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/12/GMM/" rel="next" title="GMM">
+                <i class="fa fa-chevron-left"></i> GMM
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/23/Variational Inference/" rel="prev" title="变分推断">
+                变分推断 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kmeans算法原理"><span class="nav-number">1.</span> <span class="nav-text">Kmeans算法原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kmeans与GMM、EM算法的关系"><span class="nav-number">2.</span> <span class="nav-text">Kmeans与GMM、EM算法的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GMM如何变成Kmeans？"><span class="nav-number">2.1.</span> <span class="nav-text">GMM如何变成Kmeans？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kmeans的E-step"><span class="nav-number">2.2.</span> <span class="nav-text">Kmeans的E-step</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kmeans的M-step"><span class="nav-number">2.3.</span> <span class="nav-text">Kmeans的M-step</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图解"><span class="nav-number">2.4.</span> <span class="nav-text">图解</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">3.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共40k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

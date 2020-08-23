@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="变分推断的由来从贝叶斯角度思考，inference（推断）指的是求出后验分布$p(\theta|X) = p(X|\theta)p(\theta)/p(X)$，常常参数空间（或隐变量所在的空格）非常复杂、维度非常高，无法求出积分$p(X) = \int_{\theta}p(X|\theta)p(\theta)d\theta$，也就无法求出后验$p(\theta|X)$，无法精确的求出inferen">
+<meta name="keywords" content="近似推断">
+<meta property="og:type" content="article">
+<meta property="og:title" content="变分推断">
+<meta property="og:url" content="http://yoursite.com/2020/08/23/Variational Inference/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="变分推断的由来从贝叶斯角度思考，inference（推断）指的是求出后验分布$p(\theta|X) = p(X|\theta)p(\theta)/p(X)$，常常参数空间（或隐变量所在的空格）非常复杂、维度非常高，无法求出积分$p(X) = \int_{\theta}p(X|\theta)p(\theta)d\theta$，也就无法求出后验$p(\theta|X)$，无法精确的求出inferen">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-08-22T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="变分推断">
+<meta name="twitter:description" content="变分推断的由来从贝叶斯角度思考，inference（推断）指的是求出后验分布$p(\theta|X) = p(X|\theta)p(\theta)/p(X)$，常常参数空间（或隐变量所在的空格）非常复杂、维度非常高，无法求出积分$p(X) = \int_{\theta}p(X|\theta)p(\theta)d\theta$，也就无法求出后验$p(\theta|X)$，无法精确的求出inferen">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/08/23/Variational Inference/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>变分推断 | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/23/Variational Inference/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">变分推断
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-08-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-08-23T00:00:00+08:00">2020-08-23</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="变分推断的由来"><a href="#变分推断的由来" class="headerlink" title="变分推断的由来"></a>变分推断的由来</h1><p>从贝叶斯角度思考，inference（推断）指的是求出后验分布$p(\theta|X) = p(X|\theta)p(\theta)/p(X)$，常常参数空间（或隐变量所在的空格）非常复杂、维度非常高，无法求出积分$p(X) = \int_{\theta}p(X|\theta)p(\theta)d\theta$，也就无法求出后验$p(\theta|X)$，无法精确的求出inference，只能做近似的inference。近似inference里面有确定性近似和随机近似两种，这篇介绍的变分推断属于确定性近似推断，随机近似推断指的是MCMC等方法。</p>
+<h1 id="经典变分推断的推导"><a href="#经典变分推断的推导" class="headerlink" title="经典变分推断的推导"></a>经典变分推断的推导</h1><p>用$X$表示观测数据；$Z$表示隐变量+参数，这里于EM算法、GMM模型的符号定义不同，之前$Z$只表示隐变量，这里的$Z$是隐变量以及参数，相当于这里把参数也看作是随机变量了；记$(X, Z)$为完整数据。回顾EM算法：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\log p(X) & = \int_zq(Z)\cdot\log\frac{p(X,Z)}{q(Z)}dz - \int_zq(Z)\log\frac{p(Z|X)}{q(Z)}dz\\
+& = ELBO + KL(q||p)\\
+& = L(q) + KL(q||p)\\
+& \ge L(q)
+\end{array}</script><p>这里用定义$L(q)$来代替ELBO，$L$的输入是概率密度函数$q$，$q(Z)$是一个变分。等式左边的$\log p(X)$跟$q$没有关系，当$X$固定，等式右边也是固定的值。在等式右边，因为KL divergence是非负的，所以无论$q$怎么变，$L(q)$顶多能跟$\log p(X)$一样大。</p>
+<p><strong>因为后验$p(Z|X)$不好求（intractable），我们用$q(Z)$来近似</strong>：找到一个$q(Z)\approx p(Z|X)$. 如果$~q~$跟$~p~$越相似，KL divergence就越接近于0. 所以只需要最大化$L(q)$，就可以找到那个$q(Z)$了。</p>
+<script type="math/tex; mode=display">
+\hat{q}(Z) = \arg\max\limits_{q(z)} L(q)</script><p>经典的变分推断是基于<strong>平均场理论</strong>，假设$q(Z)$可以划分成m个相互独立的组<script type="math/tex">q(Z) = \prod\limits_{j=1}^m q_j(Z_j)</script>，<strong>这里的$Z_j$表示的是多个维度的集合</strong>。我们固定m-1个<script type="math/tex">q_1, \dots, q_{j-1}, q_{j+1}, \dots, q_m</script>，求<script type="math/tex">q_j(Z_j)</script>：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+L(q) &= \int_Zq(Z)\log p(X,Z)dZ - \int_Zq(Z)\log q(Z)dZ = (1) - (2)\\
+(1)& =\int_Z \prod\limits_{i=1}^m q_i(Z_i)\log p(X,Z)dZ_1dZ_2\dots d_{Z_m}\\
+& = \int_Zq_j(Z_j)\prod\limits_{i\neq j}q_i(Z_i)\log p(X,Z)dZ_1\dots d{Z_m}\\
+& = \int_{Z_j}q_j(Z_j)(\int_{Z_i\neq Z_j}\log p(X,Z)\prod\limits_{i}q_i(Z_i)dZ_i)dZ_j\\
+& = \int_{Z_j}q_j(Z_j)\cdot E_{\prod\limits_{i\neq j}q_i(Z_i)}[\log p(X,Z)]dZ_j\\
+(2) & = \int_Z\prod\limits_{i=1}^m q_i(Z_i)\cdot \log\prod\limits_{i=1}^m q_i(Z_i)dZ\\
+& = \int_Z\prod\limits_{i=1}^m q_i(Z_i)\cdot \sum\limits_{i=1}^m\log q_i(Z_i)dZ\\
+& = \int_Z\prod\limits_{i=1}^m q_i(Z_i)\cdot[\log q_1(Z_1)+ \dots + \log q_m(Z_m)]dZ\\
+& = \int_Z\prod\limits_{i=1}^m q_i(Z_i)\cdot \log q_1(Z_1)dZ + \dots \\
+& = \int_{Z_1Z_2\dots Z_m} q_1q_2\dots q_m\cdot \log q_1dZ_1dZ_2\dots dZ_m + \dots\\
+& = \int_{Z_1} q_1\log q_1dZ_1\int_{Z_2}q_2dZ_2\dots\int_{Z_m}q_mdZ_m + \dots\\
+& = \int_{Z_1}q_1\log q_1dZ_1 + \dots + \int_{Z_m}q_m\log q_mdZ_m\\
+& = \sum\limits_{i=1}^m\int_{Z_i}q_i(Z_i)\log q_i(Z_i)dZ_i\\
+& = \int_{Z_j}q_j(Z_j)\log q_j(Z_j)dZ_j + C~(\text{only care}~q_j)
+\end{array}</script><p>表达式（1）和（2）都写成了$\int_{Z_j}q_j(Z_j){\color{red}{A}}dZ_j$的形式，我们把（1）式的里面也写成log的形式</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+(1) & = \int_{Z_j}q_j(Z_j)\cdot\Bigl( E_{\prod\limits_{i\neq j}q_i(Z_i)}[\log p(X,Z)]\Bigr)dZ_j\\
+& := \int_{Z_j}q_j(Z_j)\cdot\Bigl( \log\hat{p}(X,Z_j)\Bigr)dZ_j\\
+(1) - (2) & = \int_{Z_j}q_j(Z_j)\log\frac{\hat{p}(X,Z_j)}{q_j(Z_j)}dZ_j~(\text{only care}~q_j)\\
+& = -KL(q_j||\hat{p}(X,Z_j))\\
+& \le 0
+\end{array}</script><p>所以当$q_j(Z_j)=\hat{p}(X,Z_j)$时，$L(q)$达到最大。</p>
+<h1 id="经典变分推断Revisited"><a href="#经典变分推断Revisited" class="headerlink" title="经典变分推断Revisited"></a>经典变分推断Revisited</h1><p>经典的变分推断是基于平均场理论的坐标上升法。平均场理论的假设$q(Z) = \prod\limits_{j=1}^m q_j(Z_j)$是比较强的假设：$Z_j$之间是相互独立的（每个$Z_j$不是单一维度，是一部分维度的集合），这样做是为了简化；但是实际上$Z_i$之间往往是有关联的。</p>
+<p>EM算法与变分推断，运用的方法是相似的，都是把log-likelihood写成ELBO+KL divergence. 变分推断关注的是后验概率，所以这里就不单独考虑参数。</p>
+<p>变分推断的本意是后验概率$p(Z|X)$无法求得，就用概率$q(Z)$去近似，即寻找$\hat{q} = \arg\min\limits_{q} KL(q||p)=\arg\max\limits_q L(q)$，就可以认为这个q接近于p. 但前面由于平均场理论的简化，把q分成了几个$q_j$的乘积，然后逐个的优化$q_j$：</p>
+<script type="math/tex; mode=display">
+\log q_j(Z_j) = E_{\prod\limits_{i\neq j}q_i(Z_i)}[\log p(X,Z)] + C</script><p>这个方法是<strong>迭代的</strong>去找到每个$q_j(Z_j)$，把$q_j(Z_j)$展开：</p>
+<script type="math/tex; mode=display">
+\log \hat{q}_1(Z_1) = \int_{q_2}\int_{q_3}\dots\int_{q_m}q_1q_2,\dots,q_m \log p(X,Z)dq_1dq_2\dots dq_m\\
+\log \hat{q}_2(Z_2) = \int_{\hat{q}_1}\int_{q_3}\dots\int_{q_m}\hat{q}_1q_3,\dots,q_m \log p(X,Z)d\hat{q}_1dq_3\dots dq_m\\
+\dots\\
+\log \hat{q}_m(Z_m) = \int_{\hat{q}_1}\int_{\hat{q}_2}\dots\int_{\hat{q}_{m-1}}\hat{q}_1\hat{q}_2,\dots,\hat{q}_{m-1} \log p(X,Z)d\hat{q}_1d\hat{q}_3\dots d\hat{q}_m\\</script><p>这也是坐标上升法的思想。以上是一轮迭代，每轮迭代之后，可以通过检验$L(q)$是否持续变大，来判断迭代是否中止。</p>
+<h2 id="经典变分推断的缺点"><a href="#经典变分推断的缺点" class="headerlink" title="经典变分推断的缺点"></a>经典变分推断的缺点</h2><ul>
+<li>经典变分推断是基于平均场理论，这个假设太强，m份$Z_j$之间是独立的。假设Z非常复杂，比如一个神经网络，每一个维度是一个神经元，那它们相互连接，平均场理论不再适用。</li>
+<li>即使可以写成<script type="math/tex">\prod\limits_{j=1}^mq_j(Z_j)</script>的形式，在坐标上升法求每个<script type="math/tex">q_j(Z_j)</script>的时候，要求m-1重积分，这个基本上是intractable的。（前面提到的后验是intractable的，也是因为积分$p(X) = \int_{Z}p(X|Z)p(Z)dZ$难以求得）</li>
+</ul>
+<h1 id="随机梯度变分推断"><a href="#随机梯度变分推断" class="headerlink" title="随机梯度变分推断"></a>随机梯度变分推断</h1><p>待续</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/近似推断/" rel="tag"># 近似推断</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/16/Kmeans/" rel="next" title="K-means">
+                <i class="fa fa-chevron-left"></i> K-means
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#变分推断的由来"><span class="nav-number">1.</span> <span class="nav-text">变分推断的由来</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#经典变分推断的推导"><span class="nav-number">2.</span> <span class="nav-text">经典变分推断的推导</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#经典变分推断Revisited"><span class="nav-number">3.</span> <span class="nav-text">经典变分推断Revisited</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#经典变分推断的缺点"><span class="nav-number">3.1.</span> <span class="nav-text">经典变分推断的缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#随机梯度变分推断"><span class="nav-number">4.</span> <span class="nav-text">随机梯度变分推断</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共40k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

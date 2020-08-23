@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta{MLE} = \arg\max\limits{\t">
+<meta name="keywords" content="EM,混合模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EM算法">
+<meta property="og:url" content="http://yoursite.com/2020/07/19/EM/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta{MLE} = \arg\max\limits{\t">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/07/19/EM/EM_iteration.png">
+<meta property="og:updated_time" content="2020-08-11T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EM算法">
+<meta name="twitter:description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta{MLE} = \arg\max\limits{\t">
+<meta name="twitter:image" content="http://yoursite.com/2020/07/19/EM/EM_iteration.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/07/19/EM/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>EM算法 | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/19/EM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">EM算法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-07-19 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-19T00:00:00+08:00">2020-07-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-08-12 00:00:00" itemprop="dateModified" datetime="2020-08-12T00:00:00+08:00">2020-08-12</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>EM算法解决带有隐变量的混合模型的<strong>参数估计</strong>（极大似然估计MLE），主要用来解决<strong>生成模型</strong>。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$.</p>
+<p>一般的参数估计，比如MLE，$\theta<em>{MLE} = \arg\max</em>\limits{\theta}\log P(x|\theta)$，直接对$\theta$求导数，就可以直接得到解析解。但对于含有隐变量的混合模型（比如GMM），直接求得解析解非常困难。</p>
+<p>EM是迭代的算法，</p>
+<script type="math/tex; mode=display">
+\theta^{(t+1)} = \arg\max\limits_{\theta}\int_z\log p(x,z|\theta)\cdot p(z|x, \theta^{(t)})dz = \arg\max\limits_{\theta}E_{z|x,\theta^{(t)}}[\log p(x,z|\theta)]  \tag{1}</script><p>其中E步是写出期望这个表达式，M步求期望最大的$\theta^{(t+1)}$.</p>
+<h1 id="算法收敛性"><a href="#算法收敛性" class="headerlink" title="算法收敛性"></a>算法收敛性</h1><p>通过上式的不断迭代，$\theta^{(t)}\rightarrow\theta^{(t+1)}$，$\log p(x|\theta^{(t)})\le\log p(x|\theta^{(t+1)})$，这样log-likelihood一直在增加，最终算法收敛。</p>
+<p>通项可写为：</p>
+<script type="math/tex; mode=display">
+\log p(x|\theta) = \log p(x,z|\theta) - \log p(z|x,\theta)\\</script><p>两边关于分布$p(z|x, \theta^{(t)}))$求积分（求期望）：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+左边&=\int_z p(z|x,\theta^{(t)})\cdot \log p(x|\theta) dz\\
+ &=\log p(x|\theta)\int_z p(z|x,\theta^{(t)})dz \\
+ &=\log p(x|\theta) \\
+右边&={\color{red}\int_z p(z|x,\theta^{(t)})\cdot \log p(x,z|\theta)dz} - {\color{blue}\int_z p(z|x,\theta^{(t)})\cdot\log p(z|x,\theta)dz} \\
+ & = \color{red}Q(\theta, \theta^{(t)}) - {\color{blue}H(\theta, \theta^{(t)})}
+\end{array}</script><p>其中$Q(\theta, \theta^{(t)})$就是$(1)$式的积分。又因为$\theta^{(t+1)}$的取值使得积分达到最大，有$Q(\theta^{(t+1)}, \theta^{(t)})\ge Q(\theta, \theta^{(t)})$，对任意$\theta$都成立。特别地，取$\theta=\theta^{(t)}$也同样成立，$Q(\theta^{(t+1)}, \theta^{(t)})\ge Q(\theta^{(t)}, \theta^{(t)})$. 只需证明$H(\theta^{(t+1)}, \theta^{(t)})\le H(\theta^{(t)}, \theta^{(t)})$，就可以得到结论$\log p(x|\theta^{(t)})\le\log p(x|\theta^{(t+1)})$.</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+&H(\theta^{(t+1)}, \theta^{(t)}) - H(\theta^{(t)}, \theta^{(t)})\\
+= & \int_z p(z|x,\theta^{(t)})\cdot \log p(z|x,\theta^{(t+1)})dz - \int_z p(z|x,\theta^{(t)})\cdot \log p(z|x,\theta^{(t)})dz \\
+= & \int_z p(z|x,\theta^{(t)})\cdot\log\frac{p(z|x,\theta^{(t+1)})}{p(z|x,\theta^{(t)})}dz\\
+= & -KL(p(z|x,\theta^{(t)})~||~p(z|x,\theta^{(t+1)}))\\
+\le & 0
+\end{array}</script><h1 id="ELBO-KL-divergence"><a href="#ELBO-KL-divergence" class="headerlink" title="ELBO + KL divergence"></a>ELBO + KL divergence</h1><ul>
+<li>E-step：写出log complete data关于后验概率分布的期望$p(z|x,\theta^{(t)}) \rightarrow E_{z|x,\theta^{(t)}}[\log p(x,z|\theta)]$</li>
+<li>M-step：选择$\theta$使得期望达到最大</li>
+</ul>
+<p>通过这种方式，迭代地使得$\log p(x|\theta)$达到最大（收敛性已经证明）。虽然可以证明这个迭代公式确实可以使log-likelihood达到最大，但还没有解释这个迭代公式是怎么得到的。本节来推导出这个迭代公式。</p>
+<p>从log-likelihood出发：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\log p(x|\theta) = & \log p(x,z|\theta) - \log p(z|x,\theta)\\
+= & \log\frac{p(x,z|\theta)}{q(z)} - \log\frac{p(z|x,\theta)}{q(z)}
+\end{array}</script><p>等式两边关于$q(z)$求期望（积分）：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+左边 & = \int_z q(z)\cdot\log p(x|\theta)dz\\
+& = \log p(x|\theta) \int_z q(z)dz\\
+& = \log p(x|\theta)\\
+右边 & = {\color{red}\int_z q(z)\log\frac{p(x,z|\theta)}{q(z)}dz} ~{\color{blue} - \int_z q(z)\log\frac{p(z|x,\theta)}{q(z)}dz}\\
+& = {\color{red}ELBO} + {\color{blue}KL(q(z)~||~p(z|x,\theta))}
+\end{array}</script><p>所以有$\log p(x|\theta) = ELBO + KL(q(z)~||~p(z|x,\theta))$，其中p是后验。ELBO是Evidence of Lower Bound的缩写，可看作是关于q的期望，同时ELBO可写成q和$\theta$的函数$L(q,\theta)$。因为KL divergence $\ge0$，所以$\log p(x|\theta)\ge ELBO$. 当且仅当$p=q$时，$\log p(x|\theta) = ELBO$.</p>
+<h2 id="EM算法的思路"><a href="#EM算法的思路" class="headerlink" title="EM算法的思路"></a>EM算法的思路</h2><p>在每一步迭代，让ELBO达到最大，如果ELBO能够持续增大，那么log-likelihood$~\log p(x|\theta)$就可以持续增大。</p>
+<ul>
+<li><p><strong>E-step是固定参数$\theta$，调整q让ELBO达到最大。</strong>极大似然$p(x|\theta)$与$q(z)$的选择无关，$q(z)$在等于后验$p(z|x,\theta^{(t)})$时，能够使ELBO最大。也就是当KL divergence=0时，即$q(z) = p(z|x, \theta^{(t)})$时，$ELBO=\log p(x|\theta)$，Expectation就是ELBO，这时</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+p(x|\theta) & = ELBO\\
+& = \int_z q(z)\cdot \log\frac{p(x,z|\theta)}{q(z)}dz\\
+& = \int_z p(z|x,\theta^{(t)})\cdot\log\frac{p(x,z|\theta)}{p(z|x,\theta^{(t)})}dz
+\end{array}</script><p>$q(z)$能取到后验$p(z|x,\theta)$是最佳的q，实际情况后验是intractable的话，q无法取到后验$p(z|x,\theta)$.</p>
+</li>
+<li><p><strong>M-step固定q调整$\theta$</strong>：期望ELBO是关于$\theta$的函数，选择$\theta$使期望最大</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\theta^{(t+1)} & = \arg\max\limits_{\theta}p(x|\theta) = \arg\max\limits_{\theta}ELBO\\
+& = \arg\max\limits_{\theta}\int_z p(z|x,\theta^{(t)})[\log p(x,z|\theta) - \log p(z|x,\theta^{(t)})]dz\\
+& = \arg\max\limits_{\theta}\int_z p(z|x,\theta^{(t)})\log p(x,z|\theta)dz
+\end{array}</script></li>
+</ul>
+<p>即为EM算法的迭代公式$(1)$。</p>
+<p><strong>EM算法的E、M步，都是在增大ELBO。</strong>M步使用的q是由E步$\theta^{(t)}$得到的（$q(z)=p(z|x,\theta^{(t)})$），q不等于$\theta^{(t+1)}$对应的后验分布$p(z|x,\theta^{(t+1)})$。所以一轮E、M迭代之后，会产生大于0的KL divergence，所以log-likelihood $\log p(x|\theta)$的增加量，大于ELBO的增加量，所以下一轮还有继续提高的空间（跟收敛性的证明有联系）。</p>
+<p>另外，EM公式的推导也可以通过Jenson不等式得到，详见参考资料[1]第3集：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\log p(x|\theta) & = \log\int_z p(x,z|\theta)dz\\
+& = \log\int_z\frac{p(x,z|\theta)}{q(z)}q(z)dz\\
+& = \log E_{q(z)}[\frac{p(x,z|\theta)}{q(z)}]\\
+& \ge E_{q(z)}[\log\frac{p(x,z|\theta)}{q(z)}]\\
+& = ELBO \\
+\end{array}</script><p>$\frac{p(x,z|\theta)}{q(z)}$为常数时等号成立，可证明$q(z)=p(z|x,\theta)$.</p>
+<h2 id="Q函数与ELBO"><a href="#Q函数与ELBO" class="headerlink" title="Q函数与ELBO"></a>Q函数与ELBO</h2><p>在证明EM算法收敛性的时候，有提到过Q函数$Q(\theta,\theta^{(t)})=\int_z p(z|x,\theta^{(t)})\cdot \log p(x,z|\theta)dz$. 很多EM算法的E-step是计算Q函数，M-step是极大化Q函数。实际上，Q函数与ELBO是一致的：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
+& = \int_zp(z|x,\theta^{(t)})\cdot\log\frac{p(x,z|\theta)}{p(z|x,\theta^{(t)})}dz\\
+& = \int_zp(z|x,\theta^{(t)})\cdot\log p(x,z|\theta)dz - \int_zp(z|x,\theta^{(t)})\cdot\log p(z|x,\theta^{(t)})\\
+& = Q(\theta, \theta^{(t)}) + const
+\end{array}</script><p>本文一开始的EM算法的公式$(1)$，用的就是Q函数的形式。</p>
+<h1 id="广义EM"><a href="#广义EM" class="headerlink" title="广义EM"></a>广义EM</h1><p>EM算法必须要求后验$p(z|x,\theta)$是tractable的，这样才可能$q(z)=p(z|x,\theta)$；如果$p(z|x,\theta)$是intractable的，则找不到$q(z)=p(z|x,\theta)$了。当p是intractable时，无法使用EM算法，只能用其他如变分推断或者MCMC采样的方法近似求出后验。</p>
+<p><strong>广义的EM：</strong></p>
+<p>如果后验p是intractable的，（ELBO=$L(q, \theta)$）</p>
+<ul>
+<li>E-step就不再是$q(z)=p(z|x, \theta^{(t)})$了，而是（固定$\theta$）$q^{(t+1)} = \arg\min\limits_{q} KL(q||p)=\arg\max L(q,\theta^{(t)})$</li>
+<li>M-step就是（固定$q^{(t+1)}$）$\theta^{(t+1)}=\arg\max\limits_{\theta}L(q^{(t+1)}, \theta)$</li>
+</ul>
+<p><strong>ELBO的分解：</strong></p>
+<p>ELBO = $E_{q(z)}[\log p(x,z|\theta) - \log q(z)]=E_q[\log p(x,z|\theta)]+ H(q)$</p>
+<p><strong>图解：</strong></p>
+<p>最后，引用一张PRML里的图（书中Figure 9.14）解释EM算法的迭代过程</p>
+<p><img src="/2020/07/19/EM/EM_iteration.png" alt="computing lower bound on the log-likelihood" style="zoom:50%;"></p>
+<p>这里的$L(q,\theta)$就是ELBO，所以EM算法的实质就是每次迭代尽可能的让ELBO增大，$\log p(X|\theta)$增大。不过，<strong>EM算法不能保证找到全局最优解</strong>。</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<li><a href="https://www.bilibili.com/video/BV1qW411k7ao" target="_blank" rel="noopener">机器学习-白板推导系列(十)-EM算法（Expectation Maximization）</a></li>
+<li>PRML Chapter 9.4</li>
+<li><a href="https://www.zhihu.com/question/40797593/answer/275171156" target="_blank" rel="noopener">EM算法存在的意义是什么？ - 史博的回答 - 知乎</a>：我们这篇文章只介绍到了第1、2、4层境界</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/EM/" rel="tag"># EM</a>
+          
+            <a href="/tags/混合模型/" rel="tag"># 混合模型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/03/PCA/" rel="next" title="PCA">
+                <i class="fa fa-chevron-left"></i> PCA
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/12/GMM/" rel="prev" title="GMM">
+                GMM <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#算法收敛性"><span class="nav-number">1.</span> <span class="nav-text">算法收敛性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ELBO-KL-divergence"><span class="nav-number">2.</span> <span class="nav-text">ELBO + KL divergence</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EM算法的思路"><span class="nav-number">2.1.</span> <span class="nav-text">EM算法的思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q函数与ELBO"><span class="nav-number">2.2.</span> <span class="nav-text">Q函数与ELBO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#广义EM"><span class="nav-number">3.</span> <span class="nav-text">广义EM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共40k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
