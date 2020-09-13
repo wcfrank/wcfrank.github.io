@@ -25,7 +25,7 @@ VAE也是latent variable model. 如果GMM是K个高斯分布的混合，那么VA
 $$
 p_{\theta}(X) = \int_{Z}p_{\theta}(X,Z) = \int_Zp(Z)p_{\theta}(X|Z)dZ
 $$
-因为Z是高维的，所以上面的积分，即$p(X)$是intractable，所以后验$p_{\theta}(Z|X)=p(Z)P_{\theta}(X|Z)/p_{\theta}(X)$是intractable. 
+因为Z是高维的，所以上面的积分，即$p(X)$是intractable，所以后验$$p_{\theta}(Z|X)=p(Z)P_{\theta}(X|Z)/p_{\theta}(X)$$是intractable. 
 
 # 从Auto-Encoder到VAE
 
@@ -47,7 +47,7 @@ Auto-Encoder无法保证样本之外的code，会得到怎样的结果：假设�
 
 VAE给满月（弦月）encode的时候，会额外给code引入noise（即为参数$\Sigma$），在noise范围内的code，经过decode回去之后都应该还是满月（弦月）。正因为引入了noise，所以满月和弦月对应的code可能会重合一部分（就是中间的那一段）。假设目标函数的极小化MSE，那么这个部分的code，将既跟满月有点像，又跟弦月有点像，就是一张介于满月和弦月之间的图。
 
-<img src="VAE/moon.jpg" alt="月亮的例子" style="zoom: 50%;" />
+<img src="VAE/Moon.jpg" alt="Moon" style="zoom:50%;" />
 
 可以认为，经过encoder之后得到的$\mu(x)$就是Auto-Encoder的code；得到的$\Sigma(x)$是noise的variance. Decoder要根据加入noise之后的code，再重新构造得到原来的输入。但如果不加任何措施，算法会自动学习到noise的variance是0，构建误差是最小的，这就变回Auto-Encoder了。所以需要加一下限制，强迫variance不能太小，目标函数就多了一个正则项，后面再展开。
 
