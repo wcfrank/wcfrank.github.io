@@ -115,25 +115,30 @@
 
 
 
-  <meta name="description" content="Samples with Unbalanced Labelfrom [1] 在两类比例非常不均衡的情况下，就不能再用「分类正确率」（accuracy）来衡量模型性能，而要用少数类的「准确率」（precision）和「召回率」（recall），或者二者的综合（F1, equal error rate, AUC等等）。 在训练时，如果能够把这些评价指标作为目标函数，那是最好的。 如果你的模型只支持用分">
-<meta name="keywords" content="metrics">
+  <meta name="description" content="VAE是一个生成模型，生成模型一般具有两个基本功能：密度估计$P(X)$和生成样本[2]。本文先从一些其他的模型，比如GMM和Auto-Encoder，来引入VAE，这样可以更好的理解什么是VAE。然后再从理论上解释VAE的理论细节。 从GMM到VAEVAE也是latent variable model. 如果GMM是K个高斯分布的混合，那么VAE是无限多个高斯分布的混合。高斯分布只有K个高斯分布">
+<meta name="keywords" content="概率生成模型">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unbalanced Label">
-<meta property="og:url" content="http://yoursite.com/2019/03/17/unbalanced label samples/index.html">
+<meta property="og:title" content="VAE">
+<meta property="og:url" content="http://yoursite.com/2020/09/13/VAE/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="Samples with Unbalanced Labelfrom [1] 在两类比例非常不均衡的情况下，就不能再用「分类正确率」（accuracy）来衡量模型性能，而要用少数类的「准确率」（precision）和「召回率」（recall），或者二者的综合（F1, equal error rate, AUC等等）。 在训练时，如果能够把这些评价指标作为目标函数，那是最好的。 如果你的模型只支持用分">
+<meta property="og:description" content="VAE是一个生成模型，生成模型一般具有两个基本功能：密度估计$P(X)$和生成样本[2]。本文先从一些其他的模型，比如GMM和Auto-Encoder，来引入VAE，这样可以更好的理解什么是VAE。然后再从理论上解释VAE的理论细节。 从GMM到VAEVAE也是latent variable model. 如果GMM是K个高斯分布的混合，那么VAE是无限多个高斯分布的混合。高斯分布只有K个高斯分布">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-03-16T16:00:00.000Z">
+<meta property="og:image" content="http://yoursite.com/2020/09/13/VAE/GMM.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/09/13/VAE/GMM2VAE.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/09/13/VAE/AE2VAE.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/09/13/VAE/Moon.jpg">
+<meta property="og:updated_time" content="2020-09-12T16:00:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unbalanced Label">
-<meta name="twitter:description" content="Samples with Unbalanced Labelfrom [1] 在两类比例非常不均衡的情况下，就不能再用「分类正确率」（accuracy）来衡量模型性能，而要用少数类的「准确率」（precision）和「召回率」（recall），或者二者的综合（F1, equal error rate, AUC等等）。 在训练时，如果能够把这些评价指标作为目标函数，那是最好的。 如果你的模型只支持用分">
+<meta name="twitter:title" content="VAE">
+<meta name="twitter:description" content="VAE是一个生成模型，生成模型一般具有两个基本功能：密度估计$P(X)$和生成样本[2]。本文先从一些其他的模型，比如GMM和Auto-Encoder，来引入VAE，这样可以更好的理解什么是VAE。然后再从理论上解释VAE的理论细节。 从GMM到VAEVAE也是latent variable model. 如果GMM是K个高斯分布的混合，那么VAE是无限多个高斯分布的混合。高斯分布只有K个高斯分布">
+<meta name="twitter:image" content="http://yoursite.com/2020/09/13/VAE/GMM.jpg">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/17/unbalanced label samples/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/09/13/VAE/"/>
 
 
 
@@ -143,7 +148,7 @@
   };
 </script>
 
-  <title>Unbalanced Label | Hardcore Coder</title>
+  <title>VAE | Hardcore Coder</title>
   
 
 
@@ -314,7 +319,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/17/unbalanced label samples/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/13/VAE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="骚炼">
@@ -331,7 +336,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Unbalanced Label
+          <h1 class="post-title" itemprop="name headline">VAE
               
             
           </h1>
@@ -356,7 +361,7 @@
                 
               
 
-              <time title="创建时间：2019-03-17 00:00:00" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00+08:00">2019-03-17</time>
+              <time title="创建时间：2020-09-13 00:00:00" itemprop="dateCreated datePublished" datetime="2020-09-13T00:00:00+08:00">2020-09-13</time>
             
 
             
@@ -408,31 +413,47 @@
       
 
       
-        <h1 id="Samples-with-Unbalanced-Label"><a href="#Samples-with-Unbalanced-Label" class="headerlink" title="Samples with Unbalanced Label"></a>Samples with Unbalanced Label</h1><p>from [1]</p>
-<p>在两类比例非常不均衡的情况下，就不能再用「分类正确率」（accuracy）来衡量模型性能，而要用少数类的「准确率」（precision）和「召回率」（recall），或者二者的综合（F1, equal error rate, AUC等等）。</p>
-<p>在训练时，如果能够把这些评价指标作为目标函数，那是最好的。</p>
-<p>如果你的模型只支持用分类正确率作为目标函数，那么可以有下面几种对策：</p>
-<ol>
-<li>(weight) 调整两类训练样本的权重，使得两类的总权重相等。这是最省事的办法。</li>
-<li>(upsampling) 如果你的模型不支持类加权或样本加权，那么可以把少数类的数据复制几份，使得两类数据量基本相同。这与加权重是等效的，但是会浪费空间和时间。</li>
-<li>(upsampling) 把少数类的数据复制几份，并适当加噪声。这可以增强模型的鲁棒性。</li>
-<li>(data augmentation) 加噪声可以拓展到一般的 data augmentation —— 根据已有数据生成新的数据，但保证类别相同。data augmentation 的方法有很多，不同性质的数据，augmentation 的方法也不一样。例如，图像数据可以平移、放缩、旋转、翻转等等。</li>
-<li>(downsampling) 如果多数类的数据量太大，也可以从中随机地取一小部分。当然，此方法一般要与上面 1~4 结合使用。</li>
-</ol>
-<p>from [2]，翻译Quora</p>
-<ul>
-<li>考虑对各类别尝试不同的采样比例，比一定是1:1，有时候1:1反而不好，因为与现实情况相差甚远。</li>
-<li>决策树往往在类别不均衡数据上表现不错。它使用基于类变量的划分规则去创建分类树，因此可以强制地将不同类别的样本分开。目前流行的决策树算法有：C4.5、C5.0、CART和Random Forest等。</li>
-<li>使用相同的分类算法，但是使用一个不同的角度，比如你的分类任务是识别那些小类，那么可以对分类器的小类样本数据增加权值，降低大类样本的权值（这种方法其实是产生了新的数据分布，即产生了新的数据集，译者注），从而使得分类器将重点集中在小类样本身上。一个具体做法就是，在训练分类器时，若分类器将小类样本分错时额外增加分类器一个小类样本分错代价，这个额外的代价可以使得分类器更加“关心”小类样本。如penalized-SVM和penalized-LDA算法</li>
-<li>一个很好的方法去处理非平衡数据问题，并且在理论上证明了。这个方法便是由Robert E. Schapire于1990年在Machine Learning提出的”The strength of weak learnability” ，该方法是一个boosting算法，它递归地训练三个弱学习器，然后将这三个弱学习器结合起形成一个强的学习器。我们可以使用这个算法的第一步去解决数据不平衡问题。 </li>
-<li>对小类中的样本进行复制以增加该类中的样本数，但是可能会增加bias。</li>
-<li>AUC是最好的评价指标。</li>
+        <p>VAE是一个生成模型，<strong>生成模型一般具有两个基本功能：密度估计$P(X)$和生成样本</strong>[2]。本文先从一些其他的模型，比如GMM和Auto-Encoder，来引入VAE，这样可以更好的理解什么是VAE。然后再从理论上解释VAE的理论细节。</p>
+<h1 id="从GMM到VAE"><a href="#从GMM到VAE" class="headerlink" title="从GMM到VAE"></a>从GMM到VAE</h1><p>VAE也是latent variable model. 如果GMM是K个高斯分布的混合，那么VAE是无限多个高斯分布的混合。高斯分布只有K个高斯分布的混合$P(Z)=p_k$，无法处理复杂的任务，只能做简单的聚类。</p>
+<p><img src="/2020/09/13/VAE/GMM.jpg" alt="GMM"></p>
+<p>但实际中样本绝不仅仅属于某几个类那么简单，用distributed representation比聚类更好的表示样本：样本有不同的latent attributes，比如关于疾病的人口样本的latent attributes有职业、生活习惯等等，所以latent attributes可以<strong>用向量来描述各个不同的attribute（多维的），而且服从某种分布</strong>[3]。VAE就是GMM的distributed representation版本，是GMM的推广。</p>
+<p><img src="/2020/09/13/VAE/GMM2VAE.jpg" alt="GMM2VAE"></p>
+<p>一般假设VAE的latent attritbutes服从高斯分布$Z\sim N(0,I)$，是<strong>连续的+高维的</strong>。从这个分布Z中采样得到一个向量z，向量z的每一个维度，代表一种latent attribute. 上图假设Z是一维的高斯分布，实际上可以是高维的高斯分布。采样得到z之后，可以根据z来决定X的分布。相比GMM，只有K个不同的$\mu,\Sigma$，但在VAE中，z的采样有无穷多种可能，所以$\mu,\Sigma$也有无穷多种可能。如何做到$\mu,\Sigma$也有无穷多种可能呢？把$\mu,\Sigma$看成是关于z的函数（神经网络就是一个函数）！如果X是连续的，$X|z\sim N(\mu(z), \Sigma(z))$. </p>
+<script type="math/tex; mode=display">
+p_{\theta}(X) = \int_{Z}p_{\theta}(X,Z) = \int_Zp(Z)p_{\theta}(X|Z)dZ</script><p>因为Z是高维的，所以上面的积分，即$p(X)$是intractable，所以后验<script type="math/tex">p_{\theta}(Z|X)=p(Z)P_{\theta}(X|Z)/p_{\theta}(X)</script>是intractable. </p>
+<h1 id="从Auto-Encoder到VAE"><a href="#从Auto-Encoder到VAE" class="headerlink" title="从Auto-Encoder到VAE"></a>从Auto-Encoder到VAE</h1><p>VAE指的是Variational Auto-Encoder，这里就比较Auto-Encoder与VAE之间的关系。</p>
+<p>Auto-Encoder是由encoder和decoder两部分组成，样本经过encoder变成一段code，code再通过decoder变回去，希望输出的结果与样本越接近越好（code往往是低维度的）。训练完Auto-Encoder之后，可以把decoder单独拎出来，给decoder输入任意的code，就会得到不同的样本，起到了生成模型的作用。</p>
+<p><img src="/2020/09/13/VAE/AE2VAE.jpg" alt="AE2VAE"></p>
+<p>VAE同样有encoder和decoder，与Auto-Encoder不同的是：<strong>中间得到的不是确定性的code，而是一个分布（或分布的参数）。</strong>上图中的latent attributes是三维的，所以先输出1组三维的均值向量+1组三维的方差向量，然后用高斯分布采样得到另外一组三维的向量，最后得到的向量$c$才对应着Auto-Encoder里面的code. 上图中的两个极小化的目标函数后面再解释。</p>
+<p><strong>注意：</strong>VAE中间步骤得到分布的参数，与神经网络里面的参与不是一回事。分布的参数是根据样本确定的值，是encoder的输出$\mu(x), \Sigma(x)$. 与上一节相类似（尽管GMM小节实际上解释的是decoder），得到的$\mu,\Sigma$是关于输入x的函数。输入x不同，$\mu, \Sigma$也不同。</p>
+<h2 id="VAE比Auto-Encoder的优势"><a href="#VAE比Auto-Encoder的优势" class="headerlink" title="VAE比Auto-Encoder的优势"></a>VAE比Auto-Encoder的优势</h2><p>可以参照李宏毅课件的满月和弦月的例子[3]。</p>
+<p>Auto-Encoder无法保证样本之外的code，会得到怎样的结果：假设有一张满月的图片，对应一个code，一张弦月的图片，对应另外一个code。我们想要得到一张介于满月和弦月之间的照片，理论上只需要取两个code的中间的一组向量即可，但神经网络内部是非线性的，无法保证得到的结果。只能保证已知的样本，能够尽可能高的还原。</p>
+<p>VAE给满月（弦月）encode的时候，会额外给code引入noise（即为参数$\Sigma$），在noise范围内的code，经过decode回去之后都应该还是满月（弦月）。正因为引入了noise，所以满月和弦月对应的code可能会重合一部分（就是中间的那一段）。假设目标函数的极小化MSE，那么这个部分的code，将既跟满月有点像，又跟弦月有点像，就是一张介于满月和弦月之间的图。</p>
+<p><img src="/2020/09/13/VAE/Moon.jpg" alt="Moon" style="zoom:50%;"></p>
+<p>可以认为，经过encoder之后得到的$\mu(x)$就是Auto-Encoder的code；得到的$\Sigma(x)$是noise的variance. Decoder要根据加入noise之后的code，再重新构造得到原来的输入。但如果不加任何措施，算法会自动学习到noise的variance是0，构建误差是最小的，这就变回Auto-Encoder了。所以需要加一下限制，强迫variance不能太小，目标函数就多了一个正则项，后面再展开。</p>
+<h1 id="VAE中的变分"><a href="#VAE中的变分" class="headerlink" title="VAE中的变分"></a>VAE中的变分</h1><h1 id="VAE的learning、inference问题"><a href="#VAE的learning、inference问题" class="headerlink" title="VAE的learning、inference问题"></a>VAE的learning、inference问题</h1><p>如果用EM算法的公式来求$q_{\theta}(Z|X)$：</p>
+<script type="math/tex; mode=display">
+\log p(X) = ELBO + KL(q_{\phi}(Z|X), p_{\theta}(Z|X))</script><ul>
+<li>E-step： 当$q=p_{\theta}(Z|X)$时，KL divergence=0，Expectation is ELBO </li>
+<li>M-step: $\theta = \arg\max\limits<em>{\theta} ELBO = \arg\max\limits</em>{\theta} E<em>{p</em>{\theta’}(Z|X)}[\log p_{\theta}(X, Z)]$</li>
 </ul>
-<p>参考资料：</p>
-<ol>
-<li><p><a href="https://www.zhihu.com/question/30492527" target="_blank" rel="noopener">机器学习中非均衡数据集的处理方法？</a>（王赟 Maigo的回答）</p>
+<p>但VAE无法使用EM算法来解决，因为EM算法的前提是后验概率$p<em>{\theta}(Z|X)$为tractable的。但因为$p</em>{\theta}(Z|X)$是intractable，我们用$q_{\phi}(Z|X)$来逼近它。那就只能找到一个q来逼近后验概率：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+<\hat{\theta}, \hat{\phi}>&=arg\min\limits_{}KL(q_{\phi}(Z|X), p_{\theta}(Z|X)) \\
+& = arg\max ELBO\\
+& = \arg\max E_{q_{\phi}(Z|X)}[\log p_{\theta}(X,Z)] + H[q_{\phi}]\\
+& = \arg\max E_{q_{\phi}(Z|X)}[\log p_{\theta}(X|Z)] - KL(q_{\phi}(Z|X)||p(Z)) 
+\end{array}</script><p>上式对$\theta$或$\phi$求梯度，就可以得到想要的参数值，具体的过程也参考变分推断的求解。</p>
+<p>一般假设$Z|X\sim N(\mu<em>{\phi}(X), \Sigma</em>{\phi}(X))$，经过重参数化技巧，$Z = \mu<em>{\phi}(X) + \Sigma</em>{\phi}^{1/2}(X)\cdot\epsilon$.  </p>
+<p>考虑公式里的$\log p<em>{\theta}(X|Z)$，是给定Z的情况下看X，是decoder；Z是来自于$q</em>{\phi}(Z|X)$，是encoder。在learning过程中，先从X到Z，然后再从Z到X，就是从encoder到decoder的过程。公式里的第二项KL divergence是正则化项。</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<li><a href="https://www.bilibili.com/video/BV15E411w7Pz?from=search&amp;seid=9357319156757457518" target="_blank" rel="noopener">白板推导系列(三十二) ～ 变分自编码器(VAE)</a></li>
+<li><p><a href="https://nndl.github.io/nndl-book.pdf" target="_blank" rel="noopener">NNDL</a></p>
 </li>
-<li><p><a href="https://blog.csdn.net/heyongluoyao8/article/details/49408131" target="_blank" rel="noopener">在分类中如何处理训练集中不平衡问题</a></p>
+<li><p><a href="https://www.bilibili.com/video/BV1JE411g7XF" target="_blank" rel="noopener">李宏毅2020机器学习深度学习 P60 P61</a></p>
+</li>
+<li><p><a href="https://keras.io/examples/generative/vae/" target="_blank" rel="noopener">Keras: Variational AutoEncoder</a></p>
 </li>
 </ol>
 
@@ -455,7 +476,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/metrics/" rel="tag"># metrics</a>
+            <a href="/tags/概率生成模型/" rel="tag"># 概率生成模型</a>
           
         </div>
       
@@ -468,8 +489,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/17/BN_Dropout/" rel="next" title="Batch Normalization & Dropout">
-                <i class="fa fa-chevron-left"></i> Batch Normalization & Dropout
+              <a href="/2020/08/23/Variational Inference/" rel="next" title="变分推断">
+                <i class="fa fa-chevron-left"></i> 变分推断
               </a>
             
           </div>
@@ -477,10 +498,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/25/Feature Selection 1/" rel="prev" title="Feature Selection 1">
-                Feature Selection 1 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -674,7 +691,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Samples-with-Unbalanced-Label"><span class="nav-number">1.</span> <span class="nav-text">Samples with Unbalanced Label</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从GMM到VAE"><span class="nav-number">1.</span> <span class="nav-text">从GMM到VAE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#从Auto-Encoder到VAE"><span class="nav-number">2.</span> <span class="nav-text">从Auto-Encoder到VAE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#VAE比Auto-Encoder的优势"><span class="nav-number">2.1.</span> <span class="nav-text">VAE比Auto-Encoder的优势</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VAE中的变分"><span class="nav-number">3.</span> <span class="nav-text">VAE中的变分</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VAE的learning、inference问题"><span class="nav-number">4.</span> <span class="nav-text">VAE的learning、inference问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">5.</span> <span class="nav-text">References</span></a></li></ol></div>
             
 
           </div>
