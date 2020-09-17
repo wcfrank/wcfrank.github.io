@@ -1,7 +1,7 @@
 ---
 title: VAE
 date: 2020-09-13
-updated: 2020-09-13
+updated: 2020-09-17
 categories:
     - 机器学习
 tags:
@@ -118,7 +118,7 @@ $$
 
 ## VAE中的Encoder和Decoder
 
-- Encoder的目标是是使得$q_{\phi}(z|x)$ 尽可能接近真实的后验$p_{\theta}(z|x)$， 需要找到一组网络参数$\phi^*$来最小化两个分布的KL散度，即$\phi^*=\arg\min\limits KL(q_{\phi}(z|x), p_{\theta}(z|x))$. 这一般无法直接计算，VAE是通过最大化ELBO间接使得KL散度最小化，因此VAE的Encoder目标是找到一组网络参数$\phi^*$使得ELBO最大化。
+- Encoder的目标是是使得$q_{\phi}(z|x)$ 尽可能接近真实的后验$p_{\theta}(z|x)$， 需要找到一组网络参数$$\phi^*$$来最小化两个分布的KL散度，即$$\phi^*=\arg\min\limits KL(q_{\phi}(z|x), p_{\theta}(z|x))$$. 这一般无法直接计算，VAE是通过最大化ELBO间接使得KL散度最小化，因此VAE的Encoder目标是找到一组网络参数$\phi^*$使得ELBO最大化。
 - Decoder的目标是找到一组网络参数$\theta^*$使得ELBO最大化。
 
 **综上，$q_{\phi}(z|x)$是decoder对应的神经网络；$p_{\theta}(x|z)$是encoder对应的神经网络。从EM算法的角度看，Encoder和Decoder分别可以看成是EM算法的E步和M步。**目标函数分为两部分，一个是Reconstruction Loss（Decoder），另一项是正则化项（Encoder）。
