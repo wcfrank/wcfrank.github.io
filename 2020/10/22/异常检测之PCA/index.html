@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="PCA方法适用于线性模型。一般的，PCA的主要作用是降维（在之前的文章中已经讨论过），但也可以用于异常检测，本文就来解释一下PCA如何用来进行异常检测，本文复述了参考资料[2]中的Section3.3 PCA回顾PCA可以找到任意维度的最优的超平面，来表示原始数据$X_{n\times d}=[x_1,x_2,\dots,x_n]^T$. 也就是说，PCA可以找到$k$ -维超平面($k&amp;lt;d">
+<meta name="keywords" content="PCA,线性模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="异常检测之PCA">
+<meta property="og:url" content="http://yoursite.com/2020/10/22/异常检测之PCA/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="PCA方法适用于线性模型。一般的，PCA的主要作用是降维（在之前的文章中已经讨论过），但也可以用于异常检测，本文就来解释一下PCA如何用来进行异常检测，本文复述了参考资料[2]中的Section3.3 PCA回顾PCA可以找到任意维度的最优的超平面，来表示原始数据$X_{n\times d}=[x_1,x_2,\dots,x_n]^T$. 也就是说，PCA可以找到$k$ -维超平面($k&amp;lt;d">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-10-21T16:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="异常检测之PCA">
+<meta name="twitter:description" content="PCA方法适用于线性模型。一般的，PCA的主要作用是降维（在之前的文章中已经讨论过），但也可以用于异常检测，本文就来解释一下PCA如何用来进行异常检测，本文复述了参考资料[2]中的Section3.3 PCA回顾PCA可以找到任意维度的最优的超平面，来表示原始数据$X_{n\times d}=[x_1,x_2,\dots,x_n]^T$. 也就是说，PCA可以找到$k$ -维超平面($k&amp;lt;d">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/10/22/异常检测之PCA/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>异常检测之PCA | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/22/异常检测之PCA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">异常检测之PCA
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-10-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-10-22T00:00:00+08:00">2020-10-22</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/异常检测/" itemprop="url" rel="index"><span itemprop="name">异常检测</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>PCA方法适用于<strong>线性模型</strong>。一般的，PCA的主要作用是降维（在之前的文章中已经讨论过），但也可以用于异常检测，本文就来解释一下PCA如何用来进行异常检测，本文复述了参考资料[2]中的Section3.3</p>
+<h1 id="PCA回顾"><a href="#PCA回顾" class="headerlink" title="PCA回顾"></a>PCA回顾</h1><p>PCA可以找到任意维度的最优的超平面，来表示原始数据$X_{n\times d}=[x_1,x_2,\dots,x_n]^T$. 也就是说，PCA可以找到$k$ -维超平面($k&lt;d$)，使得剩下的$(d-k)$-维投影到这k维上去的投影误差最小。</p>
+<p>协方差矩阵是$d\times d$维的，其中第$(i,j)$个元素表示对于这n个观测样本，第$i$维和第$j$维特征的协方差。协方差矩阵记为$S=\frac{1}{n}X^TX$. </p>
+<p>协方差矩阵是对称的、半正定的，所以可以特征值分解为$S=P\Lambda P^T$，其中$\Lambda$为对角阵，对角线上的元素为$S$的特征值，矩阵$P_{d\times d}$的列是对应特征值的特征向量。可以选择k个最大特征值对应的特征向量（正交的），构成k维子空间，来近似表示原始数据。所以PCA首先需要根据协方差矩阵$S$的一部分特征向量为正交基向量，构造新的子空间；特征向量是子空间的基，是原始数据$x_i$被投影的方向。</p>
+<p>PCA有以下两个重要性质[2]:</p>
+<blockquote>
+<ol>
+<li><p>If the data is transformed to the axis-system corresponding to the orthogonal eigen- vectors, the variance of the transformed data along each axis (eigenvector) is equal to the corresponding eigenvalue. The covariances of the transformed data in this new representation are 0.</p>
+</li>
+<li><p>Since the variances of the transformed data along the eigenvectors with small eigen- values are low, significant deviations of the transformed data from the mean values along these directions may represent outliers.</p>
+</li>
+</ol>
+</blockquote>
+<p>假设原始数据$x_i$，是1xd维的，在完整的特征向量构成的空间下的坐标为$x’_i=x_iP$，还是1xd维的。同理$X’=XP$. 对于新的表示$X’$，不同特征之间的协方差为0，同一特征的方差为特征值（呼应前面性质2）。</p>
+<h1 id="PCA用于异常检测"><a href="#PCA用于异常检测" class="headerlink" title="PCA用于异常检测"></a>PCA用于异常检测</h1><p>由性质1，经过空间变换之后，每个特征的方差为对应的特征值。假设第$j$个特征值非常小，则变换之后$x’<em>{ij}$在固定的$j$以及不同的$i$时，取值的变化不会很大。因为PCA的数据会去中心化，即每个特征减去各自的均值，变换之后的$x’</em>{ij}$应该在均值0的附近，否则就是<strong>异常点(outlier)</strong>。</p>
+<p>实际情况往往会有一大部分的特征值非常的小，这意味着大多数的数据可以在更低维度的子空间下被表示。而那些特征值非常小的维度，因为数据的变化太小，可以被舍弃。从异常检测的角度上看，这是件好事：如果有的观测样本无法在更低维度的子空间下被表示，说明在其他某个特征值很小的方向上变化较大，这个就是异常点。</p>
+<p>再具体一点：假设大多数的variance在$k$维子空间被捕捉到，剩下的$(d-k)$维空间上几乎没有variance。我们计算观测数据到这个$k$维超平面的投影距离（超平面经过样本均值点），如果观测数据到超平面的距离过大（说明在其他维度空间上还有deviation），说明这个观测数据为异常点。那么如何度量观测数据到超平面的距离？</p>
+<h2 id="Hard-PCA"><a href="#Hard-PCA" class="headerlink" title="Hard PCA"></a>Hard PCA</h2><p>观测数据到超平面的squared欧式距离，可以分解为$(d-k)$个最小的特征值对应的特征向量方向的距离平方之和；同时每个方向的距离要除以对应的特征值，为了标准化variance。假设特征值是按照从大到小排序的，$\lambda_j$为第j个特征值，$e_j$为第j个特征向量：</p>
+<script type="math/tex; mode=display">
+Score({x})= \sum\limits_{j=d-k+1}^d\frac{|({x}-\mu)\cdot e_j|^2}{\lambda_j}</script><p>所以这个Score是沿着$(d-k)$个<strong>没有</strong>被选做主成分的特征向量方向来计算的，计算的结果是到$k$个主成分构成的子空间的距离。每一项做scaling的原因是：在特征向量方向上的variance就是特征值，因此一个比较小的特征值如果有了一个大的deviation，会对Score贡献更多。</p>
+<h2 id="Soft-PCA-amp-Mahalanobis距离"><a href="#Soft-PCA-amp-Mahalanobis距离" class="headerlink" title="Soft PCA &amp; Mahalanobis距离"></a>Soft PCA &amp; Mahalanobis距离</h2><p>前面的方法是直接选择前$k$大的特征值对应的特征向量，做为子空间的基，然后计算剩下$(d-k)$个方向的投影距离的加权之和。</p>
+<p>另外一种方法是选择所有特征向量的方向，计算沿着每个方向从观测数据点到centroid点$\mu$的标准化的距离（因为观测数据X是经过去中心化的，所以centroid点$\mu$是原点）：</p>
+<script type="math/tex; mode=display">
+Score(x) = \sum\limits_{j=1}^d\frac{|(x-\mu)\cdot e_j|^2}{\lambda_j}</script><p>分子是特征向量方向的投影长度，就是在新的空间下的坐标；分母是标准差，如果把数据的每一列提前标准化之后，分母就是1了。这样Score就变成了新坐标的平方和，即为欧式距离。再捋一遍求解过程：</p>
+<ol>
+<li>计算原始观测数据X的协方差矩阵S，并将S对角化$S=P\Lambda P^T$，</li>
+<li>将X坐标变换到新的空间下$X’=XP$，</li>
+<li>对$X’$的每一列都除以它对应的标准差（特征值），将每一列标准化，得到新的$X’$，</li>
+<li>对于新$X’$的每一行（每个样本），求解它到centroid点的欧式距离的平方。</li>
+</ol>
+<p>Score的取值主要由$\lambda_j$比较小、而且deviation比较大的样本造成。所以第3步的标准化将每一列拉到了同一个scale来计算，这个方法是给予每一列一个soft的权重，而不是直接hard的选择前k列。这个Score是Mahalanobis距离。</p>
+<h2 id="Hard-v-s-Soft"><a href="#Hard-v-s-Soft" class="headerlink" title="Hard v.s. Soft"></a>Hard v.s. Soft</h2><p>Soft PCA是对每一个特征向量的方向一个权重，而Hard PCA是预先选择出一部分特征向量。如果某个观测数据是在特征值最大的特征向量上面有很大的deviation，按照Hard PCA会不考虑这个特征向量的方向，这个异常点就会被忽略。所以Soft比Hard PCA更好。</p>
+<p>Hard PCA（不考虑那个Score的计算方法）考虑的是reconstruction error，使得样本在低维空间被表示；但同时Hard PCA也引入了额外的参数k。</p>
+<h2 id="Sensitivity-to-Noise"><a href="#Sensitivity-to-Noise" class="headerlink" title="Sensitivity to Noise"></a>Sensitivity to Noise</h2><p>PCA一般而言对异常点比较稳定，不太容易受到异常点的影响。这是因为PCA计算的是最优的超平面，而不是某个特定的变量。当观测数据加入了一些噪声数据之后，最优超平面不会产生非常剧烈的变化。不过有时候噪声数据确实会造成一些数据问题，我们依然有办法解决：</p>
+<ul>
+<li>首先使用PCA异常检测的方法发现明显的异常点</li>
+<li><p>删掉这些异常点，重新求协方差矩阵等等，这样数据会更加的robust</p>
+</li>
+<li><p>使用更新后的协方差矩阵，重新计算异常点Score</p>
+</li>
+</ul>
+<p>以上这个过程可以<strong>迭代</strong>的求解，在每一次迭代中，去掉明显的异常点，构建更robust的PCA。</p>
+<h2 id="Normalization-Issues"><a href="#Normalization-Issues" class="headerlink" title="Normalization Issues"></a>Normalization Issues</h2><p>PCA一般只是去中心化，但如果特征之间的scale差距很大，也可能使结果变得很差。假设有两个特征Age和Salary，Salary的scale往往比Age大的多，PCA更容易得到一个跟Salary方向平行的主成分，却没有考虑到Age跟Salary之间有很高的相关性，这不利于异常检测。可以通过归一化每个特征，即每个特征除以它的标准差，使得每个特征维度上的variance都是单位化的。这样我们就不必使用协方差矩阵，也可以使用correlation matrix了。（$Corr(X,Y) = \frac{Cov(X,Y)}{\sigma_x \sigma_y}$）</p>
+<h2 id="Regularization-Issues"><a href="#Regularization-Issues" class="headerlink" title="Regularization Issues"></a>Regularization Issues</h2><p>当观测数据的样本数量很少时，协方差矩阵不能很好的反应出真实情况。极端情况下，样本数量太少，使得有些维度的variance为0，低估了真实的取值变化。</p>
+<p>一种方法是<strong>加入正则项避免过拟合</strong>，这里的正则项类似于Laplacian smoothing，调整协方差矩阵为$(S+\alpha I)$，其中$I$是一个dxd维的单位矩阵，$\alpha&gt;0$. 使用调整后的协方差矩阵$(S+\alpha I)$计算异常Score。这样做的原因是，在计算Score之前，在每个维度上加入一些variance为$\alpha$的噪声。</p>
+<p>另一种方法是使用cross-validation，数据被分成m份，PCA通过其中的m-1份构造子空间，然后用剩下的一份数据来求Score。</p>
+<h2 id="How-many-Eigenvectors"><a href="#How-many-Eigenvectors" class="headerlink" title="How many Eigenvectors?"></a>How many Eigenvectors?</h2><p>虽然在用PCA做异常检测的时候，可以使用soft的方法对每一个特征向量做加权求和得到异常Score。但有时候也需要提前指定一定数量的特征向量，作为主成分。那么选择多少个特征向量比较合适呢？</p>
+<p>一个事实是，真实数据的大多数特征值都比较小，数据大多数的变化都来自于少数几个特征向量的方向。</p>
+<h2 id="非线性数据"><a href="#非线性数据" class="headerlink" title="非线性数据"></a>非线性数据</h2><p>Kernel PCA</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<li><a href="https://www.zhihu.com/question/280696035/answer/417091151" target="_blank" rel="noopener">数据挖掘中常见的「异常检测」算法有哪些？</a></li>
+<li><a href="https://www.academia.edu/download/57870486/Outlier-Analysis.pdf" target="_blank" rel="noopener">Outlier Analysis. Section 3.3</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PCA/" rel="tag"># PCA</a>
+          
+            <a href="/tags/线性模型/" rel="tag"># 线性模型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/13/VAE/" rel="next" title="VAE">
+                <i class="fa fa-chevron-left"></i> VAE
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">24</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA回顾"><span class="nav-number">1.</span> <span class="nav-text">PCA回顾</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PCA用于异常检测"><span class="nav-number">2.</span> <span class="nav-text">PCA用于异常检测</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hard-PCA"><span class="nav-number">2.1.</span> <span class="nav-text">Hard PCA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Soft-PCA-amp-Mahalanobis距离"><span class="nav-number">2.2.</span> <span class="nav-text">Soft PCA &amp; Mahalanobis距离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hard-v-s-Soft"><span class="nav-number">2.3.</span> <span class="nav-text">Hard v.s. Soft</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sensitivity-to-Noise"><span class="nav-number">2.4.</span> <span class="nav-text">Sensitivity to Noise</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Normalization-Issues"><span class="nav-number">2.5.</span> <span class="nav-text">Normalization Issues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Regularization-Issues"><span class="nav-number">2.6.</span> <span class="nav-text">Regularization Issues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-many-Eigenvectors"><span class="nav-number">2.7.</span> <span class="nav-text">How many Eigenvectors?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非线性数据"><span class="nav-number">2.8.</span> <span class="nav-text">非线性数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">3.</span> <span class="nav-text">References</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+  <div class="powered-by">
+    <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+      本站访客数:<span id="busuanzi_value_site_uv"></span>
+    </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共46.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
