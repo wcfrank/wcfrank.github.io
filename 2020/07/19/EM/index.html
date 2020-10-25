@@ -115,19 +115,20 @@
 
 
 
-  <meta name="description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta{MLE} = \arg\max\limits{\t">
-<meta name="keywords" content="EM,混合模型">
+  <meta name="description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) &#x3D; \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta_{MLE} &#x3D; \arg\max_\limits{">
 <meta property="og:type" content="article">
 <meta property="og:title" content="EM算法">
 <meta property="og:url" content="http://yoursite.com/2020/07/19/EM/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta{MLE} = \arg\max\limits{\t">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) &#x3D; \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta_{MLE} &#x3D; \arg\max_\limits{">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/2020/07/19/EM/EM_iteration.png">
-<meta property="og:updated_time" content="2020-08-11T16:00:00.000Z">
+<meta property="article:published_time" content="2020-07-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-11T16:00:00.000Z">
+<meta property="article:author" content="骚炼">
+<meta property="article:tag" content="EM">
+<meta property="article:tag" content="混合模型">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="EM算法">
-<meta name="twitter:description" content="EM算法解决带有隐变量的混合模型的参数估计（极大似然估计MLE），主要用来解决生成模型。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$. 一般的参数估计，比如MLE，$\theta{MLE} = \arg\max\limits{\t">
 <meta name="twitter:image" content="http://yoursite.com/2020/07/19/EM/EM_iteration.png">
 
 
@@ -183,7 +184,7 @@
   </style>
 </noscript>
 
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -195,7 +196,7 @@
   <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
-    <a href="https://github.com/wcfrank" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <a href="https://github.com/wcfrank" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
@@ -392,7 +393,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/机器学习/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a></span>
 
                 
                 
@@ -427,11 +428,11 @@
 
       
         <p>EM算法解决带有隐变量的混合模型的<strong>参数估计</strong>（极大似然估计MLE），主要用来解决<strong>生成模型</strong>。只求X的概率可能会非常复杂，无法得到X的概率形式，这时假设它是一个生成模型，假定有隐变量Z，数据从$Z\rightarrow$X. 因此，X具有了新的形式$p(X) = \frac{p(X,Z)}{p(Z|X)}$.</p>
-<p>一般的参数估计，比如MLE，$\theta<em>{MLE} = \arg\max</em>\limits{\theta}\log P(x|\theta)$，直接对$\theta$求导数，就可以直接得到解析解。但对于含有隐变量的混合模型（比如GMM），直接求得解析解非常困难。</p>
+<p>一般的参数估计，比如MLE，$\theta_{MLE} = \arg\max_\limits{\theta}\log P(x|\theta)$，直接对$\theta$求导数，就可以直接得到解析解。但对于含有隐变量的混合模型（比如GMM），直接求得解析解非常困难。</p>
 <p>EM是迭代的算法，</p>
 <script type="math/tex; mode=display">
 \theta^{(t+1)} = \arg\max\limits_{\theta}\int_z\log p(x,z|\theta)\cdot p(z|x, \theta^{(t)})dz = \arg\max\limits_{\theta}E_{z|x,\theta^{(t)}}[\log p(x,z|\theta)]  \tag{1}</script><p>其中E步是写出期望这个表达式，M步求期望最大的$\theta^{(t+1)}$.</p>
-<h1 id="算法收敛性"><a href="#算法收敛性" class="headerlink" title="算法收敛性"></a>算法收敛性</h1><p>通过上式的不断迭代，$\theta^{(t)}\rightarrow\theta^{(t+1)}$，$\log p(x|\theta^{(t)})\le\log p(x|\theta^{(t+1)})$，这样log-likelihood一直在增加，最终算法收敛。</p>
+<h1 id="算法收敛性">1. 算法收敛性</h1><p>通过上式的不断迭代，$\theta^{(t)}\rightarrow\theta^{(t+1)}$，$\log p(x|\theta^{(t)})\le\log p(x|\theta^{(t+1)})$，这样log-likelihood一直在增加，最终算法收敛。</p>
 <p>通项可写为：</p>
 <script type="math/tex; mode=display">
 \log p(x|\theta) = \log p(x,z|\theta) - \log p(z|x,\theta)\\</script><p>两边关于分布$p(z|x, \theta^{(t)}))$求积分（求期望）：</p>
@@ -450,7 +451,7 @@
 = & \int_z p(z|x,\theta^{(t)})\cdot\log\frac{p(z|x,\theta^{(t+1)})}{p(z|x,\theta^{(t)})}dz\\
 = & -KL(p(z|x,\theta^{(t)})~||~p(z|x,\theta^{(t+1)}))\\
 \le & 0
-\end{array}</script><h1 id="ELBO-KL-divergence"><a href="#ELBO-KL-divergence" class="headerlink" title="ELBO + KL divergence"></a>ELBO + KL divergence</h1><ul>
+\end{array}</script><h1 id="ELBO-KL-divergence">2. ELBO + KL divergence</h1><ul>
 <li>E-step：写出log complete data关于后验概率分布的期望$p(z|x,\theta^{(t)}) \rightarrow E_{z|x,\theta^{(t)}}[\log p(x,z|\theta)]$</li>
 <li>M-step：选择$\theta$使得期望达到最大</li>
 </ul>
@@ -469,7 +470,7 @@
 右边 & = {\color{red}\int_z q(z)\log\frac{p(x,z|\theta)}{q(z)}dz} ~{\color{blue} - \int_z q(z)\log\frac{p(z|x,\theta)}{q(z)}dz}\\
 & = {\color{red}ELBO} + {\color{blue}KL(q(z)~||~p(z|x,\theta))}
 \end{array}</script><p>所以有$\log p(x|\theta) = ELBO + KL(q(z)~||~p(z|x,\theta))$，其中p是后验。ELBO是Evidence of Lower Bound的缩写，可看作是关于q的期望，同时ELBO可写成q和$\theta$的函数$L(q,\theta)$。因为KL divergence $\ge0$，所以$\log p(x|\theta)\ge ELBO$. 当且仅当$p=q$时，$\log p(x|\theta) = ELBO$.</p>
-<h2 id="EM算法的思路"><a href="#EM算法的思路" class="headerlink" title="EM算法的思路"></a>EM算法的思路</h2><p>在每一步迭代，让ELBO达到最大，如果ELBO能够持续增大，那么log-likelihood$~\log p(x|\theta)$就可以持续增大。</p>
+<h2 id="EM算法的思路">2.1. EM算法的思路</h2><p>在每一步迭代，让ELBO达到最大，如果ELBO能够持续增大，那么log-likelihood$~\log p(x|\theta)$就可以持续增大。</p>
 <ul>
 <li><p><strong>E-step是固定参数$\theta$，调整q让ELBO达到最大。</strong>极大似然$p(x|\theta)$与$q(z)$的选择无关，$q(z)$在等于后验$p(z|x,\theta^{(t)})$时，能够使ELBO最大。也就是当KL divergence=0时，即$q(z) = p(z|x, \theta^{(t)})$时，$ELBO=\log p(x|\theta)$，Expectation就是ELBO，这时</p>
 <script type="math/tex; mode=display">
@@ -498,7 +499,7 @@ p(x|\theta) & = ELBO\\
 & \ge E_{q(z)}[\log\frac{p(x,z|\theta)}{q(z)}]\\
 & = ELBO \\
 \end{array}</script><p>$\frac{p(x,z|\theta)}{q(z)}$为常数时等号成立，可证明$q(z)=p(z|x,\theta)$.</p>
-<h2 id="Q函数与ELBO"><a href="#Q函数与ELBO" class="headerlink" title="Q函数与ELBO"></a>Q函数与ELBO</h2><p>在证明EM算法收敛性的时候，有提到过Q函数$Q(\theta,\theta^{(t)})=\int_z p(z|x,\theta^{(t)})\cdot \log p(x,z|\theta)dz$. 很多EM算法的E-step是计算Q函数，M-step是极大化Q函数。实际上，Q函数与ELBO是一致的：</p>
+<h2 id="Q函数与ELBO">2.2. Q函数与ELBO</h2><p>在证明EM算法收敛性的时候，有提到过Q函数$Q(\theta,\theta^{(t)})=\int_z p(z|x,\theta^{(t)})\cdot \log p(x,z|\theta)dz$. 很多EM算法的E-step是计算Q函数，M-step是极大化Q函数。实际上，Q函数与ELBO是一致的：</p>
 <script type="math/tex; mode=display">
 \begin{array}{rl}
 ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
@@ -506,7 +507,7 @@ ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
 & = \int_zp(z|x,\theta^{(t)})\cdot\log p(x,z|\theta)dz - \int_zp(z|x,\theta^{(t)})\cdot\log p(z|x,\theta^{(t)})\\
 & = Q(\theta, \theta^{(t)}) + const
 \end{array}</script><p>本文一开始的EM算法的公式$(1)$，用的就是Q函数的形式。</p>
-<h1 id="广义EM"><a href="#广义EM" class="headerlink" title="广义EM"></a>广义EM</h1><p>EM算法必须要求后验$p(z|x,\theta)$是tractable的，这样才可能$q(z)=p(z|x,\theta)$；如果$p(z|x,\theta)$是intractable的，则找不到$q(z)=p(z|x,\theta)$了。当p是intractable时，无法使用EM算法，只能用其他如变分推断或者MCMC采样的方法近似求出后验。</p>
+<h1 id="广义EM">3. 广义EM</h1><p>EM算法必须要求后验$p(z|x,\theta)$是tractable的，这样才可能$q(z)=p(z|x,\theta)$；如果$p(z|x,\theta)$是intractable的，则找不到$q(z)=p(z|x,\theta)$了。当p是intractable时，无法使用EM算法，只能用其他如变分推断或者MCMC采样的方法近似求出后验。</p>
 <p><strong>广义的EM：</strong></p>
 <p>如果后验p是intractable的，（ELBO=$L(q, \theta)$）</p>
 <ul>
@@ -519,7 +520,7 @@ ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
 <p>最后，引用一张PRML里的图（书中Figure 9.14）解释EM算法的迭代过程</p>
 <p><img src="/2020/07/19/EM/EM_iteration.png" alt="computing lower bound on the log-likelihood" style="zoom:50%;"></p>
 <p>这里的$L(q,\theta)$就是ELBO，所以EM算法的实质就是每次迭代尽可能的让ELBO增大，$\log p(X|\theta)$增大。不过，<strong>EM算法不能保证找到全局最优解</strong>。</p>
-<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<h1 id="References">4. References</h1><ol>
 <li><a href="https://www.bilibili.com/video/BV1qW411k7ao" target="_blank" rel="noopener">机器学习-白板推导系列(十)-EM算法（Expectation Maximization）</a></li>
 <li>PRML Chapter 9.4</li>
 <li><a href="https://www.zhihu.com/question/40797593/answer/275171156" target="_blank" rel="noopener">EM算法存在的意义是什么？ - 史博的回答 - 知乎</a>：我们这篇文章只介绍到了第1、2、4层境界</li>
@@ -546,7 +547,7 @@ ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
           
             <a href="/tags/EM/" rel="tag"># EM</a>
           
-            <a href="/tags/混合模型/" rel="tag"># 混合模型</a>
+            <a href="/tags/%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B/" rel="tag"># 混合模型</a>
           
         </div>
       
@@ -639,7 +640,7 @@ ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/archives/%20%7C%7C%20archive">
                 
                     <span class="site-state-item-count">24</span>
                     <span class="site-state-item-name">日志</span>
@@ -771,7 +772,7 @@ ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#算法收敛性"><span class="nav-number">1.</span> <span class="nav-text">算法收敛性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ELBO-KL-divergence"><span class="nav-number">2.</span> <span class="nav-text">ELBO + KL divergence</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EM算法的思路"><span class="nav-number">2.1.</span> <span class="nav-text">EM算法的思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q函数与ELBO"><span class="nav-number">2.2.</span> <span class="nav-text">Q函数与ELBO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#广义EM"><span class="nav-number">3.</span> <span class="nav-text">广义EM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">4.</span> <span class="nav-text">References</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#算法收敛性"><span class="nav-text">1. 算法收敛性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ELBO-KL-divergence"><span class="nav-text">2. ELBO + KL divergence</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EM算法的思路"><span class="nav-text">2.1. EM算法的思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q函数与ELBO"><span class="nav-text">2.2. Q函数与ELBO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#广义EM"><span class="nav-text">3. 广义EM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-text">4. References</span></a></li></ol></div>
             
 
           </div>
@@ -807,7 +808,7 @@ ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v4.2.0</div>
 
 
 
@@ -822,7 +823,7 @@ ELBO & = \int_zq(z)\cdot\log\frac{p(x,z|\theta)}{q(z)}dz\\
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共46.2k字</span>
+  <span class="post-count">博客全站共46.8k字</span>
 </div>
         
 
