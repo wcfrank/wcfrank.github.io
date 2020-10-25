@@ -84,3 +84,10 @@ deploy:
   repository: https://wcfrank:wc19880519@github.com/wcfrank/wcfrank.github.io.git
   branch: master
   # message:  now('YYYY-MM-DD HH:mm:ss')
+
+heading_index:
+  enable: true
+  index_styles: "{1} {1} {1} {1} {1} {1}"
+  connector: "."
+  global_prefix: ""
+  global_suffix: ". "
