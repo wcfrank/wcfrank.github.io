@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前面两篇文章分别介绍了傅立叶变换和图的拉普拉斯矩阵，有这两篇文章作为基础，我们终于可以学习GCN了。 GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectual domain与顶点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GCN">
+<meta property="og:url" content="http://yoursite.com/2021/01/20/GCN/index.html">
+<meta property="og:site_name" content="Hardcore Coder">
+<meta property="og:description" content="前面两篇文章分别介绍了傅立叶变换和图的拉普拉斯矩阵，有这两篇文章作为基础，我们终于可以学习GCN了。 GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectual domain与顶点">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-19T16:00:00.000Z">
+<meta property="article:author" content="骚炼">
+<meta property="article:tag" content="Laplace">
+<meta property="article:tag" content="GCN">
+<meta property="article:tag" content="Fourier Transform">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/01/20/GCN/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>GCN | Hardcore Coder</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/wcfrank" target="_blank" rel="noopener" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hardcore Coder</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/20/GCN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="骚炼">
+      <meta itemprop="description" content="我爱七月">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hardcore Coder">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GCN
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-01-20 00:00:00" itemprop="dateCreated datePublished" datetime="2021-01-20T00:00:00+08:00">2021-01-20</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GNN/" itemprop="url" rel="index"><span itemprop="name">GNN</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面两篇文章分别介绍了<a href="Fourier_transform.md">傅立叶变换</a>和<a href="Laplace.md">图的拉普拉斯矩阵</a>，有这两篇文章作为基础，我们终于可以学习GCN了。</p>
+<p>GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectual domain与顶点信息没有关系了，而是考虑每个特征向量的“份量”。那么拉普拉斯的特征值和特征向量与傅立叶变换有什么关系呢？本文首先讨论的图傅立叶变换，就会将前面两篇文章的知识点结合起来。</p>
+<h1 id="Graph-Fourier-Transform">1. Graph Fourier Transform</h1><p>在傅立叶变换一文中，最后的总结：</p>
+<blockquote>
+<p>傅立叶逆变换本质是把任意一个函数表示成了若干个正交基函数的线性组合；<br>傅立叶正变换本质是求线性组合的系数。也就是由原函数和基函数的共轭的内积求得。</p>
+</blockquote>
+<p>比如在传统的傅立叶变换中，就是用不同频率的三角函数作为一组正交基，它们的线性组合来表示时域信号。那图上的信号由什么来表示呢？</p>
+<h2 id="图傅立叶正变换">1.1. 图傅立叶正变换</h2><p>对于图上的信号，也可以进行傅立叶变换，即找到一组正交基的线性组合来表示图的信号。那么问题就是图的信号由一组什么样的基来组成呢？</p>
+<p>回忆传统的傅立叶变换$g(\hat{f}) =\sum\limits_{t=-\infty}^\infty F(t)e^{-2\pi i\hat{f}t}= \int_{-\infty}^\infty F(t)e^{-2\pi i \hat{f}t}dt$，令$w=2\pi\hat{f}$，那么傅立叶变换的公式为</p>
+<script type="math/tex; mode=display">
+g(w) = \int F(t)e^{-iwt}dt</script><p>即时域信号可以由一组不同频率的基函数$e^{-iwt}$的线性组合来表示。我们来观察一下这一组基$e^{-iwt}$，除了它是正交基，还满足是拉普拉斯算子的特征函数。为什么呢？</p>
+<p>首先我们把特征向量推广到特征函数：特征向量满足$Ax=\lambda x$，把矩阵$A$推广为任意的一种变换（算子），把特征向量$x$推广为特征函数（无限维特征向量）。我们要验证基函数$e^{-iwt}$是拉普拉斯算子$\Delta=\sum\limits_{i}\frac{\partial^2}{\partial^2 x_i}$的特征函数，即</p>
+<script type="math/tex; mode=display">
+\Delta e^{-iwt} = \frac{\partial^2}{\partial^2 t}e^{-iwt} = -w^2e^{-iwt}</script><p>所以<strong>传统傅立叶变换的基$e^{-iwt}$是拉普拉斯算子的特征函数，傅立叶变换是时域信号与拉普拉斯算子特征函数的积分。</strong>由之前的<a href="Laplace.md">文章</a>，图上的拉普拉斯算子就是图的拉普拉斯矩阵，所以把时域信号推广到<strong>离散的</strong>图信号上，<strong>图上的傅立叶变换是图信号与拉普拉斯矩阵特征向量的求和。</strong></p>
+<script type="math/tex; mode=display">
+g(\lambda_l) = \sum\limits_{i=1}^n f(i)*u^*_l(i)</script><p>以上就是图的傅立叶变换。其中，图有n个顶点，顶点$i$上的图信号为$f(i)$（图信号对应传统傅立叶变换的时域信号）；图上拉普拉斯矩阵的n个特征向量为$u_1,u_2,\dots,u_n$，而且这n个特征向量是正交的，第$l$个特征向量的第$i$个分量是$u_l(i)$；$\lambda_l$为图拉普拉斯矩阵的第$l$个特征向量对应的特征值。上面的求和运算使用的是特征向量的共轭$u^*_l$，这是因为特征向量是定义在复平面的，为了保证正交性，所以内积用共轭，这在<a href="Fourier_transform.md">傅立叶变换</a>一文中解释过。</p>
+<p>将图上的傅立叶变换写成矩阵形式：</p>
+<script type="math/tex; mode=display">
+\begin{pmatrix}g(\lambda_1)\\g(\lambda_2)\\\dots\\g(\lambda_n)\end{pmatrix}=
+\begin{pmatrix}u_1(1)&u_1(2)&\dots&u_1(n)\\
+u_2(1)&u_2(2)&\dots&u_2(n)\\
+\vdots&\vdots&\ddots&\vdots\\
+u_n(1)&u_n(2)&\dots&u_n(n)
+\end{pmatrix}
+\begin{pmatrix}
+f(1)\\f(2)\\\dots\\f(n)
+\end{pmatrix}</script><p>简写为$g=U^Tf$. 这里的$U$就是<a href="Laplace.md">拉普拉斯矩阵</a>一文中的$U$，即</p>
+<blockquote>
+<p>$U=(u_1,u_2,\dots,u_n)$是<strong>列向量</strong>为单位特征向量的矩阵，且$U$是正交矩阵，即$UU^T=I$</p>
+</blockquote>
+<h2 id="图傅立叶逆变换">1.2. 图傅立叶逆变换</h2><p>类似的，传统傅立叶逆变换公式$F(t) = \sum\limits_{\hat{f}=-\infty}^\infty g(\hat{f})e^{2\pi i\hat{f}t}=\int_{-\infty}^\infty g(\hat{f})e^{2\pi i\hat{f}t}d\hat{f}$，令$w=2\pi\hat{f}$，则傅立叶逆变换公式为$F(t)=\frac{1}{2\pi}\int_{w}g(w)e^{iwt}dw$，从频域变换到时域。在图傅立叶逆变换中，从频域信号变换到图上的信号，</p>
+<script type="math/tex; mode=display">
+f(i) = \sum\limits_{l=1}^n g(\lambda_l)u_l(i)</script><p>将图上的傅立叶逆变换写成矩阵形式：</p>
+<script type="math/tex; mode=display">
+\begin{pmatrix}
+f(1)\\f(2)\\\dots\\f(n)
+\end{pmatrix}=
+\begin{pmatrix}u_1(1)&u_2(1)&\dots&u_n(1)\\
+u_1(2)&u_2(2)&\dots&u_n(2)\\
+\vdots&\vdots&\ddots&\vdots\\
+u_1(n)&u_2(n)&\dots&u_n(n)
+\end{pmatrix}
+\begin{pmatrix}g(\lambda_1)\\g(\lambda_2)\\\dots\\g(\lambda_n)\end{pmatrix}</script><p>简写为$f=UU^{-1}f=UU^Tf=Ug$. </p>
+<h2 id="两点疑问revisited">1.3. 两点疑问revisited</h2><ol>
+<li>为什么拉普拉斯矩阵的<strong>特征向量</strong>可以作为图傅立叶变换的基？<br>傅立叶变换的本质是把一个函数表示称一组基函数的线性组合。通过前面的公式看出，图上的信号$f(i)$，其中$i$是顶点，可以表示成拉普拉斯矩阵特征向量的线性组合。因为拉普拉斯矩阵的特征向量$u_1,u_2,\dots,u_n$是n维空间（n个顶点）下n个线性无关的正交向量，所以这组特征向量构成空间的一组基，可以表示<strong>任意</strong>信号$f(i)$. 另外一个<a href="https://www.zhihu.com/question/355874991/answer/1204283923" target="_blank" rel="noopener">解释</a>的角度比较难懂，姑且看之。</li>
+<li>为什么拉普拉斯矩阵的<strong>特征值</strong>表示的频率是什么？<br>在图上确实无法直观的展示“频率”这个概念。至少经过图傅立叶变换，顶点的信号被变换成了“频率”信号，从此我们在<strong>spectual domain</strong>上研究问题，而不是在<strong>vertex domain</strong>上了。将拉普拉斯的n个特征值从小到大排列，$\lambda_1\le\lambda_2\le\dots\lambda_n$，因为拉普拉斯矩阵是半正定的，所以这些特征值都非负。而且最小的特征值$\lambda_1=0$，这是因为全1向量也是拉普拉斯矩阵的特征向量（拉普拉斯矩阵的定义），对应的特征值为0。在图的n维空间中，越小的特征值$\lambda_l$代表着特征向量$u_l$的占有的份量越少，是可以忽略的低频部分。这个跟图像压缩、PCA降维有异曲同工之妙，都是把特征值小的部分变成0，保留特征值大的部分。</li>
+</ol>
+<h1 id="图卷积">2. 图卷积</h1><h2 id="函数卷积定义">2.1. 函数卷积定义</h2><p>关于卷积的定义可以参考<a href="https://www.zhihu.com/question/22298352/answer/637156871" target="_blank" rel="noopener">此回答</a>，此问题下许多其他回答都蛮好。教科书上的定义函数$f_1, f_2$的卷积为$f_1*f_2(n)$，</p>
+<ul>
+<li>连续形式：$f_1*f_2(n)=\int_{-\infty}^{\infty}f_1(\tau)f_2(n-\tau)d\tau$</li>
+<li>离散形式：$(f_1*f_2)(n) = \sum\limits_{\tau=-\infty}^{\infty}f_1(\tau)f_2(n-\tau)$</li>
+</ul>
+<p>形象的解释就是把函数$g$进行翻转，把函数$g$沿着数轴从右边对折，到了左边，也就是“<strong>卷</strong>”的由来。然后把函数沿着自变量方向平移$n$，再对两个函数的对应元素相乘，再求和，这就是“<strong>积</strong>”的由来。</p>
+<h2 id="函数卷积的傅里叶变换">2.2. 函数卷积的傅里叶变换</h2><p>传统傅里叶卷积：<strong>函数卷积的傅里叶变换是函数傅里叶变换的乘积；或者说函数卷积是函数傅里叶变化乘积的逆变换。</strong></p>
+<p>设两个时域信号$f_1(t), f_2(t)$，它们卷积的傅里叶变换为$f_1(t)*f_2(t)=\int_{-\infty}^\infty f_1(\tau)f_2(t-\tau)d\tau$，下面证明卷积的傅里叶变换是傅里叶变换的乘积：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+\text{Fourier}(f_1(t)*f_2(t))&=\int_{-\infty}^\infty[\int_{-\infty}^\infty f_1(\tau)f_2(t-\tau)d\tau]e^{-iwt}dt\\
+&=\int_{-\infty}^\infty f_1(\tau)e^{-iw\tau}d\tau \int_{-\infty}^\infty f_2(t-\tau)e^{-iw(t-\tau)}d(t-r)\\
+&=g_1(w)g_2(w)\\
+f_1(t)*f_2(t) &= \text{Inverse_Fourier}(g_1(w)g_2(w))\\
+&=\frac{1}{2\pi}\int g_1(w)g_2(w)e^{iwt}dw
+\end{array}</script><h2 id="图卷积-1">2.3. 图卷积</h2><p>GCN中的C就是convolution，终于到这里了！图的卷积需要类比传统卷积公式并结合傅里叶变换来定义：两个图信号的卷积是图信号傅里叶变换乘积的逆变换。</p>
+<p>假设图信号$f$的傅里叶变换为$g=U^Tf$，卷积核（另一个图信号）$h$的傅里叶变换定义为一个对角矩阵</p>
+<script type="math/tex; mode=display">
+\begin{pmatrix}
+\hat{h}(\lambda_1)&&\\
+&\ddots&\\
+&&\hat{h}(\lambda_n)
+\end{pmatrix}</script><p>其中$\hat{h}(\lambda_l) = \sum\limits_{i=1}^nh(i)u^<em>_l(i)$，是<em>*根据需要设计出来的卷积核$h$在图上的傅里叶变换</em></em>，其实我们只在乎傅里叶变换之后的矩阵，不在乎原来的卷积核$h$长什么样子。</p>
+<p>这两个傅里叶变换的乘积为（这里的$U$与上一章的$U$相同）</p>
+<script type="math/tex; mode=display">
+\begin{pmatrix}
+\hat{h}(\lambda_1)&&\\
+&\ddots&\\
+&&\hat{h}(\lambda_n)
+\end{pmatrix}
+U^Tf</script><p>最后的，参考图傅里叶逆变换，这个乘积的逆变换为</p>
+<script type="math/tex; mode=display">
+(f*h)_G=U
+\begin{pmatrix}
+\hat{h}(\lambda_1)&&\\
+&\ddots&\\
+&&\hat{h}(\lambda_n)
+\end{pmatrix}
+U^Tf</script><p>以上即为图卷积的公式，也可以写作$(f*h)_G=U((U^Th)\odot(U^Tf))$，其中$\odot$表示Hadamard product，是逐元素乘积运算，<a href="https://zhuanlan.zhihu.com/p/121090537" target="_blank" rel="noopener">这篇文章</a>证明了以上两个公式是等价的。</p>
+<h1 id="深度学习中的图卷积">3. 深度学习中的图卷积</h1><p>CNN中的卷积核是可训练的、参数共享的kernel，在图神经网络中也是一样的目的。结合上面图卷积的结论，<strong>这个共享的卷积参数就是对角矩阵$\text{diag}(\hat{h}(\lambda_l))$.</strong> </p>
+<p>我们只讨论一层图卷积神经网络的结构$y_=\sigma(U\cdot\text{diag}(\hat{h}(\lambda_l)\cdot U^Tx)$，其中$x$是图信号（每个顶点的feature vector），$\sigma$是激活函数，$y$是经过这层图卷积网络的输出。</p>
+<h2 id="GCN-v1">3.1. GCN v1</h2><p>把卷积核$\text{diag}(\hat{h}(\lambda_l))$简化为$\text{diag}(\theta_l)$（或者记为$g_{\theta}(\Lambda)$），这样$y_=\sigma(U\cdot g_{\theta}(\Lambda)\cdot U^Tx)$，其中</p>
+<script type="math/tex; mode=display">
+g_{\theta}(\Lambda)=
+\begin{pmatrix}
+\theta_1&&\\
+&\ddots&\\
+&&\theta_n
+\end{pmatrix}</script><p>矩阵中的元素$(\theta_1,\theta_2,\dots,\theta_n)$就是神经网络里面的weights参数，用来训练。</p>
+<p>这种GCN的缺点：</p>
+<ul>
+<li>每一次前向传播都需要计算$(U\cdot\text{diag}(\hat{h}(\lambda_l)\cdot U^T)$三个矩阵乘积，时间复杂度太高</li>
+<li>这种卷积核不具有Spatial localization</li>
+<li>卷积核需要n个参数</li>
+</ul>
+<h2 id="GCN-v2">3.2. GCN v2</h2><p>基于v1的几个缺点进行改进，出现了第二代卷积核。</p>
+<p>把卷积核$\text{diag}(\hat{h}(\lambda_l))$的每一项设为$\sum\limits_{j=0}^K\alpha_j\lambda_l^j$，则</p>
+<script type="math/tex; mode=display">
+g_{\theta}(\Lambda)=
+\begin{pmatrix}
+\sum\limits_{j=0}^K\alpha_j\lambda_1^j&&\\
+&\ddots&\\
+&&\sum\limits_{j=0}^K\alpha_j\lambda_n^j
+\end{pmatrix}</script><h1 id="Reference">4. Reference</h1><ol>
+<li><p><a href="https://www.zhihu.com/question/54504471/answer/332657604" target="_blank" rel="noopener">如何理解 Graph Convolutional Network（GCN）？</a> （重点参考）</p>
+</li>
+<li><p>Graph Fourier Transform</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Graph_Fourier_Transform" target="_blank" rel="noopener">Wiki: Graph Fourier Transform</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/137897522" target="_blank" rel="noopener">图卷积神经网络系列：2. | 图傅里叶变换</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/272559663" target="_blank" rel="noopener">图上的傅里叶变换和逆变换</a>（重点参考）</li>
+</ul>
+</li>
+<li>图卷积<ul>
+<li><a href="https://www.zhihu.com/question/22298352" target="_blank" rel="noopener">如何通俗易懂地解释卷积？</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/123362731" target="_blank" rel="noopener">从传统傅里叶变换到图卷积</a></li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Laplace/" rel="tag"># Laplace</a>
+          
+            <a href="/tags/GCN/" rel="tag"># GCN</a>
+          
+            <a href="/tags/Fourier-Transform/" rel="tag"># Fourier Transform</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/09/Laplace/" rel="next" title="拉普拉斯矩阵与拉普拉斯算子">
+                <i class="fa fa-chevron-left"></i> 拉普拉斯矩阵与拉普拉斯算子
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">骚炼</p>
+              <p class="site-description motion-element" itemprop="description">我爱七月</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/%20%7C%7C%20archive">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wcfrank" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:wangchao0519@hotmail.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Graph-Fourier-Transform"><span class="nav-text">1. Graph Fourier Transform</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#图傅立叶正变换"><span class="nav-text">1.1. 图傅立叶正变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图傅立叶逆变换"><span class="nav-text">1.2. 图傅立叶逆变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两点疑问revisited"><span class="nav-text">1.3. 两点疑问revisited</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图卷积"><span class="nav-text">2. 图卷积</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数卷积定义"><span class="nav-text">2.1. 函数卷积定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#函数卷积的傅里叶变换"><span class="nav-text">2.2. 函数卷积的傅里叶变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图卷积-1"><span class="nav-text">2.3. 图卷积</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#深度学习中的图卷积"><span class="nav-text">3. 深度学习中的图卷积</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GCN-v1"><span class="nav-text">3.1. GCN v1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCN-v2"><span class="nav-text">3.2. GCN v2</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-text">4. Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">骚炼</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v4.2.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Mist</a> v6.4.1</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共55.9k字</span>
+</div>
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
