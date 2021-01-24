@@ -115,12 +115,12 @@
 
 
 
-  <meta name="description" content="前面两篇文章分别介绍了傅立叶变换和图的拉普拉斯矩阵，有这两篇文章作为基础，我们终于可以学习GCN了。 GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectual domain与顶点">
+  <meta name="description" content="前面两篇文章分别介绍了《傅立叶变换》和《图的拉普拉斯矩阵与拉普拉斯算子》，有这两篇文章作为基础，我们终于可以学习GCN了。 GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectua">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GCN">
 <meta property="og:url" content="http://yoursite.com/2021/01/20/GCN/index.html">
 <meta property="og:site_name" content="Hardcore Coder">
-<meta property="og:description" content="前面两篇文章分别介绍了傅立叶变换和图的拉普拉斯矩阵，有这两篇文章作为基础，我们终于可以学习GCN了。 GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectual domain与顶点">
+<meta property="og:description" content="前面两篇文章分别介绍了《傅立叶变换》和《图的拉普拉斯矩阵与拉普拉斯算子》，有这两篇文章作为基础，我们终于可以学习GCN了。 GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectua">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-01-19T16:00:00.000Z">
 <meta property="article:modified_time" content="2021-01-19T16:00:00.000Z">
@@ -410,7 +410,7 @@
       
 
       
-        <p>前面两篇文章分别介绍了<a href="Fourier_transform.md">傅立叶变换</a>和<a href="Laplace.md">图的拉普拉斯矩阵</a>，有这两篇文章作为基础，我们终于可以学习GCN了。</p>
+        <p>前面两篇文章分别介绍了《傅立叶变换》和《图的拉普拉斯矩阵与拉普拉斯算子》，有这两篇文章作为基础，我们终于可以学习GCN了。</p>
 <p>GCN的理论基础是Spectual Graph Theory，Spectual Graph Theory是将图的拉普拉斯矩阵进行谱分解，用它的特征值和特征向量来表示图上的信息。这样图上的信息就由vertex domain变换到了spectual domain上，spectual domain与顶点信息没有关系了，而是考虑每个特征向量的“份量”。那么拉普拉斯的特征值和特征向量与傅立叶变换有什么关系呢？本文首先讨论的图傅立叶变换，就会将前面两篇文章的知识点结合起来。</p>
 <h1 id="Graph-Fourier-Transform">1. Graph Fourier Transform</h1><p>在傅立叶变换一文中，最后的总结：</p>
 <blockquote>
@@ -423,9 +423,9 @@
 g(w) = \int F(t)e^{-iwt}dt</script><p>即时域信号可以由一组不同频率的基函数$e^{-iwt}$的线性组合来表示。我们来观察一下这一组基$e^{-iwt}$，除了它是正交基，还满足是拉普拉斯算子的特征函数。为什么呢？</p>
 <p>首先我们把特征向量推广到特征函数：特征向量满足$Ax=\lambda x$，把矩阵$A$推广为任意的一种变换（算子），把特征向量$x$推广为特征函数（无限维特征向量）。我们要验证基函数$e^{-iwt}$是拉普拉斯算子$\Delta=\sum\limits_{i}\frac{\partial^2}{\partial^2 x_i}$的特征函数，即</p>
 <script type="math/tex; mode=display">
-\Delta e^{-iwt} = \frac{\partial^2}{\partial^2 t}e^{-iwt} = -w^2e^{-iwt}</script><p>所以<strong>传统傅立叶变换的基$e^{-iwt}$是拉普拉斯算子的特征函数，傅立叶变换是时域信号与拉普拉斯算子特征函数的积分。</strong>由之前的<a href="Laplace.md">文章</a>，图上的拉普拉斯算子就是图的拉普拉斯矩阵，所以把时域信号推广到<strong>离散的</strong>图信号上，<strong>图上的傅立叶变换是图信号与拉普拉斯矩阵特征向量的求和。</strong></p>
+\Delta e^{-iwt} = \frac{\partial^2}{\partial^2 t}e^{-iwt} = -w^2e^{-iwt}</script><p>所以<strong>传统傅立叶变换的基$e^{-iwt}$是拉普拉斯算子的特征函数，傅立叶变换是时域信号与拉普拉斯算子特征函数的积分。</strong>由之前的《拉普拉斯矩阵与拉普拉斯算子》，图上的拉普拉斯算子就是图的拉普拉斯矩阵，所以把时域信号推广到<strong>离散的</strong>图信号上，<strong>图上的傅立叶变换是图信号与拉普拉斯矩阵特征向量的求和。</strong></p>
 <script type="math/tex; mode=display">
-g(\lambda_l) = \sum\limits_{i=1}^n f(i)*u^*_l(i)</script><p>以上就是图的傅立叶变换。其中，图有n个顶点，顶点$i$上的图信号为$f(i)$（图信号对应传统傅立叶变换的时域信号）；图上拉普拉斯矩阵的n个特征向量为$u_1,u_2,\dots,u_n$，而且这n个特征向量是正交的，第$l$个特征向量的第$i$个分量是$u_l(i)$；$\lambda_l$为图拉普拉斯矩阵的第$l$个特征向量对应的特征值。上面的求和运算使用的是特征向量的共轭$u^*_l$，这是因为特征向量是定义在复平面的，为了保证正交性，所以内积用共轭，这在<a href="Fourier_transform.md">傅立叶变换</a>一文中解释过。</p>
+g(\lambda_l) = \sum\limits_{i=1}^n f(i)*u^*_l(i)</script><p>以上就是图的傅立叶变换。其中，图有n个顶点，顶点$i$上的图信号为$f(i)$（图信号对应传统傅立叶变换的时域信号）；图上拉普拉斯矩阵的n个特征向量为$u_1,u_2,\dots,u_n$，而且这n个特征向量是正交的，第$l$个特征向量的第$i$个分量是$u_l(i)$；$\lambda_l$为图拉普拉斯矩阵的第$l$个特征向量对应的特征值。上面的求和运算使用的是特征向量的共轭$u^*_l$，这是因为特征向量是定义在复平面的，为了保证正交性，所以内积用共轭，这在《傅立叶变换》一文中解释过。</p>
 <p>将图上的傅立叶变换写成矩阵形式：</p>
 <script type="math/tex; mode=display">
 \begin{pmatrix}g(\lambda_1)\\g(\lambda_2)\\\dots\\g(\lambda_n)\end{pmatrix}=
@@ -436,7 +436,7 @@ u_n(1)&u_n(2)&\dots&u_n(n)
 \end{pmatrix}
 \begin{pmatrix}
 f(1)\\f(2)\\\dots\\f(n)
-\end{pmatrix}</script><p>简写为$g=U^Tf$. 这里的$U$就是<a href="Laplace.md">拉普拉斯矩阵</a>一文中的$U$，即</p>
+\end{pmatrix}</script><p>简写为$g=U^Tf$. 这里的$U$就是《拉普拉斯矩阵与拉普拉斯算子》一文中的$U$，即</p>
 <blockquote>
 <p>$U=(u_1,u_2,\dots,u_n)$是<strong>列向量</strong>为单位特征向量的矩阵，且$U$是正交矩阵，即$UU^T=I$</p>
 </blockquote>
