@@ -123,10 +123,16 @@
 <meta property="og:description" content="[1] GCN提取特征的方式不是spatial的，而是spectral的，基于spectral graph theory来实现图上的卷积操作。Spectral graph theory是借助图的拉普拉斯矩阵的特征值和特征向量来研究图的性质。本文就是介绍什么是拉普拉斯矩阵、拉普拉斯算子，以及它们之间的关系。 1. 拉普拉斯矩阵给定图$G&#x3D;(V,E)$，  定义$D$是顶点的度矩阵（对角阵），对角线上">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/2021/01/09/Laplace/Laplacian_matrix.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/09/Laplace/Laplacian_summary.png">
 <meta property="og:image" content="https://pic2.zhimg.com/80/v2-f1e7c13a78ec8123200a604f2a6bb23d_720w.jpg">
 <meta property="og:image" content="https://pic3.zhimg.com/80/v2-6b498216b66bdc5a81d7876ca665fd32_720w.jpg">
+<meta property="og:image" content="http://yoursite.com/2021/01/09/Laplace/eg1.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/09/Laplace/eg2.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/09/Laplace/eg3.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/09/Laplace/eg4.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/09/Laplace/Graph_fourier_transform.png">
 <meta property="article:published_time" content="2021-01-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-01-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-28T16:00:00.000Z">
 <meta property="article:author" content="骚炼">
 <meta property="article:tag" content="Laplace">
 <meta name="twitter:card" content="summary">
@@ -364,6 +370,22 @@
             
 
             
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2021-01-29 00:00:00" itemprop="dateModified" datetime="2021-01-29T00:00:00+08:00">2021-01-29</time>
+              
+            
           </span>
 
           
@@ -419,7 +441,7 @@
 <li>定义$A$是邻接矩阵，如果$v_i$与$v_j$有边相连，那么$A_{ij}=1$；反之$A_{ij}$为0. 显然无向图的邻接矩阵为对称矩阵。</li>
 <li><p>定义拉普拉斯矩阵$L=D-A$，如下图所示<br><img src="/2021/01/09/Laplace/Laplacian_matrix.png" alt="Laplacian Matrix"></p>
 </li>
-<li><p>拉普拉斯矩阵的其他形式：$L^{sys}=D^{-1/2}LD^{-1/2}$，这是GCN中使用的拉普拉斯矩阵；$L^{rw}=D^{-1}L$</p>
+<li><p>拉普拉斯矩阵的其他形式（归一化形式）：$L^{sys}=D^{-1/2}LD^{-1/2}$，$L^{rw}=D^{-1}L$</p>
 </li>
 </ul>
 <h2 id="拉普拉斯矩阵的性质">1.1. 拉普拉斯矩阵的性质</h2><ol>
@@ -453,7 +475,9 @@ L=U
 &\dots&\\
 && \lambda_n
 \end{pmatrix}
-U^{T}</script><h1 id="拉普拉斯算子">2. 拉普拉斯算子</h1><h2 id="函数的拉普拉斯算子">2.1. 函数的拉普拉斯算子</h2><p>令$\Delta$是拉普拉斯算子，$f$是欧氏空间中的二阶可微实函数，$\Delta f$就是欧氏空间中求$f$的二阶微分之和（散度）。例如函数$f(x,y,z)$有三个变量，$\Delta f=\frac{\partial^2 f}{\partial x^2}+\frac{\partial^2 f}{\partial y^2}+\frac{\partial^2 f}{\partial z^2}$，散度是一个标量。</p>
+U^{T}</script><p>总结：</p>
+<p><img src="/2021/01/09/Laplace/Laplacian_summary.png" alt="Laplacian summary"></p>
+<h1 id="拉普拉斯算子">2. 拉普拉斯算子</h1><h2 id="函数的拉普拉斯算子">2.1. 函数的拉普拉斯算子</h2><p>令$\Delta$是拉普拉斯算子，$f$是欧氏空间中的二阶可微实函数，$\Delta f$就是欧氏空间中求$f$的二阶微分之和（散度）。例如函数$f(x,y,z)$有三个变量，$\Delta f=\frac{\partial^2 f}{\partial x^2}+\frac{\partial^2 f}{\partial y^2}+\frac{\partial^2 f}{\partial z^2}$，散度是一个标量。</p>
 <p>以上是拉普拉斯算子传统的定义，但这个定义不容易推广到图上，因为图上没有二阶可微实函数$f$，而是一组高维feature向量$f$.  所以可认为变量是<strong>离散的</strong>，$\frac{\partial^2 f}{\partial x^2}=f’’(x)\approx f’(x)-f’(x-1)=f(x+1)+f(x-1)-2f(x)$. 将拉普拉斯算子推广到二维的离散形式：</p>
 <script type="math/tex; mode=display">
 \begin{array}{rl}
@@ -478,11 +502,35 @@ U^{T}</script><h1 id="拉普拉斯算子">2. 拉普拉斯算子</h1><h2 id="函�
 \begin{pmatrix}\Delta f_1\\\vdots\\\Delta f_N\\\end{pmatrix}=
 diag(d_i)f-Wf=(D-W)f=Lf
 \end{array}</script><p>这里的$D-W$就是拉普拉斯矩阵的定义，拉普拉斯矩阵的第$i$行反应了第$i$个节点对其它所有节点产生扰动的累积增益。</p>
-<h1 id="为什么GCN要用拉普拉斯矩阵？">3. 为什么GCN要用拉普拉斯矩阵？</h1><p>在spectual graph theory里面，会将图上的信号进行傅立叶变换。而傅立叶（逆）变换的本质是找到一组正交基的线性组合来表示这个信号。正交基就可以选择拉普拉斯矩阵的特征向量。因为拉普拉斯矩阵是实对称矩阵，所以它的特征向量是n维空间中n个线性无关的正交向量，就是一组正交基。这组正交基可以用来表示图上的任意信号。具体见下篇文章。</p>
+<h1 id="为什么GCN要用拉普拉斯矩阵？">3. 为什么GCN要用拉普拉斯矩阵？</h1><p>在spectual graph theory里面，会将图上的信号进行傅立叶变换。而傅立叶（逆）变换的本质是找到一组正交基的线性组合来表示这个信号。正交基就可以选择拉普拉斯矩阵的特征向量。因为拉普拉斯矩阵是实对称矩阵，所以它的特征向量是n维空间中n个线性无关的正交向量，就是一组正交基。这组正交基可以用来表示图上的任意信号。</p>
+<h2 id="定义一个图例">3.1. 定义一个图例</h2><p>有一个4个顶点的图，图上每个点都有标量信号，组成向量$f$. 另外，可以轻易求出拉普拉斯矩阵，然后特征分解得到拉普拉斯矩阵的特征值和特征向量。那拉普拉斯矩阵的特征值与特征向量与图信号有什么关系呢？</p>
+<p><img src="/2021/01/09/Laplace/eg1.png" alt="eg1"></p>
+<h2 id="拉普拉斯矩阵的特征向量">3.2. 拉普拉斯矩阵的特征向量</h2><p>特征向量是4维空间下的4个正交基向量，所以这四个正交基可以线性表示这个空间下的任何向量，包括图信号$f$. 下面就是这四个向量：</p>
+<p><img src="/2021/01/09/Laplace/eg2.png" alt="eg2"></p>
+<h2 id="拉普拉斯矩阵的特征值">3.3. 拉普拉斯矩阵的特征值</h2><p>拉普拉斯矩阵的特征向量已经明白了，就是正交基；那么特征值$\lambda$在图上的意义是什么呢？在回答这个问题之前，我们先来看一下拉普拉斯矩阵$L$（即拉普拉斯算子）对图信号$f$做了什么处理：</p>
+<p><img src="/2021/01/09/Laplace/eg3.png" alt="eg3"></p>
+<p>由上一节拉普拉斯算子的定义可知，$Lf$的每个元素就是这个点与所有邻居点的信号差之和。从图示可以验证，$Lf$在$v_0$节点的值为相邻的$v_1$信号之差+相邻的$v_2$信号之差。记为$(Lf)(v_i)=\sum_{v_j\in V}a_{ij}(f(v_i)-f(v_j))$，其中$a_{ij}$是邻接矩阵$A$的第$(i,j)$个元素。</p>
+<p>单纯的差值可能有正有负，如果真想表达每个点与邻居点之间信号的差异大小，需要用平方的形式，定义如下：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rl}
+f^TLf &= \sum\limits_{v_i\in V}f(v_i)\sum\limits_{v_j\in V}a_{ij}(f(v_i)-f(v_j))\\
+&= \sum\limits_{v_i\in V}\sum\limits_{v_j\in V}a_{ij}(f^2(v_j)-f(v_i)f(v_j))\\
+&= \frac{1}{2}\sum\limits_{v_i\in V}\sum\limits_{v_j\in V}a_{ij}(f^2(v_i)-f(v_i)f(v_j)+f^2(v_j)-f(v_j)f(v_i))\\
+&= \frac{1}{2}\sum\limits_{v_i\in V}\sum\limits_{v_j\in V}a_{ij}(f(v_i)-f(v_j))^2
+\end{array}</script><p>联想离散傅立叶变换的不同频率的基，基的频率越大，相邻两个时域信号的差异越大；基的频率越小，相邻两个时域信号越smooth。类比于图信号，如果频率越大，说明每个点与其邻居点的信号差异越大；频率越小，点与邻居点的信号差异越小。$f^TLf$就表示顶点之间的信号差异，也蕴含着频率的“概念”。</p>
+<p><strong>为什么特征向量对应的特征值是特征向量的频率呢？</strong>把特征向量$u_i$（图信号空间中的一个instance）代入$f^TLf$，</p>
+<script type="math/tex; mode=display">
+u_i^TLu_i=u_i^T\lambda_iu_i=\lambda_iu_i^Tu_i=\lambda_i</script><p>所以对于特征向量，点与邻居点之间的信号差异（频率）就等于特征值$\lambda_i$. </p>
+<p>回到例子，最明显的就是$\lambda=0$时，由上面的结论，$u$中点与点之间的信号差异为0，实际上确实如此。$\lambda$越大，频率越来越高，这个特征向量的相邻点的信号差异越大。</p>
+<p><img src="/2021/01/09/Laplace/eg4.png" alt="eg4"></p>
+<h2 id="结论">3.4. 结论</h2><p>拉普拉斯矩阵以及它的特征向量和特征值，是Spectral graph theory的理论基础。通过拉普拉斯矩阵的特征向量，可以完成信号从vertex domain到spectral domain的变换，也就是图傅立叶变换。</p>
+<p><img src="/2021/01/09/Laplace/Graph_fourier_transform.png" alt="Graph Fourier Transform"></p>
+<p>图信号（vertex domain）使用图傅立叶变换（spectral domain），加上卷积核，得到的结果再图傅立叶逆变换回去，变成新的vertex domain的图信号（graph embedding），就是GCN的大致思想了。</p>
 <h1 id="参考资料">4. 参考资料</h1><ol>
 <li><a href="https://www.zhihu.com/question/54504471/answer/332657604" target="_blank" rel="noopener">如何理解 Graph Convolutional Network（GCN）？</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Laplacian_matrix" target="_blank" rel="noopener">Laplacian matrix</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/85287578" target="_blank" rel="noopener">拉普拉斯矩阵与拉普拉斯算子的关系</a></li>
+<li><a href="https://www.youtube.com/watch?v=M9ht8vsVEw8&amp;list=PLJV_el3uVTsM8QoIIe9JrSDjB0e1UkbEC&amp;index=2" target="_blank" rel="noopener">李宏毅助教课（Graph Neural Network）Youtube</a></li>
 </ol>
 
       
@@ -737,7 +785,7 @@ diag(d_i)f-Wf=(D-W)f=Lf
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#拉普拉斯矩阵"><span class="nav-text">1. 拉普拉斯矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#拉普拉斯矩阵的性质"><span class="nav-text">1.1. 拉普拉斯矩阵的性质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拉普拉斯矩阵的特征分解（谱分解）"><span class="nav-text">1.2. 拉普拉斯矩阵的特征分解（谱分解）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拉普拉斯算子"><span class="nav-text">2. 拉普拉斯算子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数的拉普拉斯算子"><span class="nav-text">2.1. 函数的拉普拉斯算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图上的拉普拉斯算子"><span class="nav-text">2.2. 图上的拉普拉斯算子</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么GCN要用拉普拉斯矩阵？"><span class="nav-text">3. 为什么GCN要用拉普拉斯矩阵？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">4. 参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#拉普拉斯矩阵"><span class="nav-text">1. 拉普拉斯矩阵</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#拉普拉斯矩阵的性质"><span class="nav-text">1.1. 拉普拉斯矩阵的性质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拉普拉斯矩阵的特征分解（谱分解）"><span class="nav-text">1.2. 拉普拉斯矩阵的特征分解（谱分解）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拉普拉斯算子"><span class="nav-text">2. 拉普拉斯算子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#函数的拉普拉斯算子"><span class="nav-text">2.1. 函数的拉普拉斯算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图上的拉普拉斯算子"><span class="nav-text">2.2. 图上的拉普拉斯算子</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么GCN要用拉普拉斯矩阵？"><span class="nav-text">3. 为什么GCN要用拉普拉斯矩阵？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义一个图例"><span class="nav-text">3.1. 定义一个图例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拉普拉斯矩阵的特征向量"><span class="nav-text">3.2. 拉普拉斯矩阵的特征向量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拉普拉斯矩阵的特征值"><span class="nav-text">3.3. 拉普拉斯矩阵的特征值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-text">3.4. 结论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">4. 参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -788,7 +836,7 @@ diag(d_i)f-Wf=(D-W)f=Lf
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共55.9k字</span>
+  <span class="post-count">博客全站共59.6k字</span>
 </div>
         
 
