@@ -134,8 +134,8 @@
 <meta property="article:modified_time" content="2021-01-30T16:00:00.000Z">
 <meta property="article:author" content="骚炼">
 <meta property="article:tag" content="Laplace">
-<meta property="article:tag" content="GCN">
 <meta property="article:tag" content="Fourier Transform">
+<meta property="article:tag" content="GCN">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://yoursite.com/2021/01/20/GCN/Fourier_transform_convolution.png">
 
@@ -486,7 +486,7 @@ u_1(n)&u_2(n)&\dots&u_n(n)
 <p>延续上图的例子，假设要得到顶点$v_0$的图信号$f(v_0)$，就是把正交基的第一个分量相应的乘以频率的分量，非常直观！</p>
 <p><img src="/2021/01/20/GCN/Inverse_graph_fourier_transform.png" alt="Inverse Graph Fourier Transform"></p>
 <h2 id="两点疑问revisited">1.3. 两点疑问revisited</h2><ol>
-<li><p>为什么拉普拉斯矩阵的<strong>特征向量</strong>可以作为图傅立叶变换的基？<br>傅立叶变换的本质是把一个函数表示称一组基函数的线性组合。通过前面的公式看出，图上的信号$f(i)$，其中$i$是顶点，可以表示成拉普拉斯矩阵特征向量的线性组合。因为拉普拉斯矩阵的特征向量$u_1,u_2,\dots,u_n$是n维空间（n个顶点）下n个线性无关的正交向量，所以这组特征向量构成空间的一组基，可以表示<strong>任意</strong>信号$f(i)$. 另外一个<a href="https://www.zhihu.com/question/355874991/answer/1204283923" target="_blank" rel="noopener">解释</a>的角度比较难懂，姑且看之。</p>
+<li><p>为什么拉普拉斯矩阵的<strong>特征向量</strong>可以作为图傅立叶变换的基？<br> 傅立叶变换的本质是把一个函数表示称一组基函数的线性组合。通过前面的公式看出，图上的信号$f(i)$，其中$i$是顶点，可以表示成拉普拉斯矩阵特征向量的线性组合。因为拉普拉斯矩阵的特征向量$u_1,u_2,\dots,u_n$是n维空间（n个顶点）下n个线性无关的正交向量，所以这组特征向量构成空间的一组基，可以表示<strong>任意</strong>信号$f(i)$. 另外一个<a href="https://www.zhihu.com/question/355874991/answer/1204283923" target="_blank" rel="noopener">解释</a>的角度比较难懂，姑且看之。</p>
 </li>
 <li><p>为什么拉普拉斯矩阵的<strong>特征值</strong>表示的频率是什么？</p>
 <p><strong>这个问题更好的解释请移步《拉普拉斯矩阵与拉普拉斯算子》一文最后一节。</strong>在图上确实无法直观的展示“频率”这个概念。至少经过图傅立叶变换，顶点的信号被变换成了“频率”信号，从此我们在<strong>spectual domain</strong>上研究问题，而不是在<strong>vertex domain</strong>上了。将拉普拉斯的n个特征值从小到大排列，$\lambda_1\le\lambda_2\le\dots\lambda_n$，因为拉普拉斯矩阵是半正定的，所以这些特征值都非负。而且最小的特征值$\lambda_1=0$，这是因为全1向量也是拉普拉斯矩阵的特征向量（拉普拉斯矩阵的定义），对应的特征值为0。在图的n维空间中，越小的特征值$\lambda_l$代表着特征向量$u_l$的占有的份量越少，是可以忽略的低频部分。这个跟图像压缩、PCA降维有异曲同工之妙，都是把特征值小的部分变成0，保留特征值大的部分。</p>
@@ -518,7 +518,7 @@ f_1(t)*f_2(t) &= \text{Inverse_Fourier}(g_1(w)g_2(w))\\
 \hat{h}(\lambda_1)&&\\
 &\ddots&\\
 &&\hat{h}(\lambda_n)
-\end{pmatrix}</script><p>其中$\hat{h}(\lambda_l) = \sum\limits_{i=1}^nh(i)u^<em>_l(i)$，是<em>*根据需要设计出来的卷积核$h$在图上的傅里叶变换</em></em>，其实我们只在乎傅里叶变换之后的矩阵，不在乎原来的卷积核$h$长什么样子。</p>
+\end{pmatrix}</script><p>其中<script type="math/tex">\hat{h}(\lambda_l) = \sum\limits_{i=1}^nh(i)u^*_l(i)</script>，是<strong>根据需要设计出来的卷积核$h$在图上的傅里叶变换</strong>，其实我们只在乎傅里叶变换之后的矩阵，不在乎原来的卷积核$h$长什么样子。</p>
 <p>这两个傅里叶变换的乘积为（这里的$U$与上一章的$U$相同）</p>
 <script type="math/tex; mode=display">
 \begin{pmatrix}
@@ -736,9 +736,9 @@ h_v=f(\frac{1}{|\mathcal{N}(v)|}\sum_{u\in\mathcal{N}(v)}Wx_u+b),~~\forall v\in 
           
             <a href="/tags/Laplace/" rel="tag"># Laplace</a>
           
-            <a href="/tags/GCN/" rel="tag"># GCN</a>
-          
             <a href="/tags/Fourier-Transform/" rel="tag"># Fourier Transform</a>
+          
+            <a href="/tags/GCN/" rel="tag"># GCN</a>
           
         </div>
       
